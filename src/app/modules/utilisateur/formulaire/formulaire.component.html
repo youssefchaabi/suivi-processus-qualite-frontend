@@ -1,0 +1,59 @@
+<div class="form-container">
+  <mat-card class="form-card">
+    <mat-card-title>
+      {{ modeEdition ? '✏️ Modifier un utilisateur' : '➕ Ajouter un utilisateur' }}
+    </mat-card-title>
+
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+        <!-- 🔹 Nom -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nom complet</mat-label>
+          <input matInput formControlName="nom" placeholder="Ex: Mohamed Ali" required>
+          <mat-error *ngIf="form.get('nom')?.hasError('required')">Le nom est requis</mat-error>
+        </mat-form-field>
+
+        <!-- 🔹 Email -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Adresse Email</mat-label>
+          <input matInput formControlName="email" placeholder="exemple@email.com">
+          <mat-error *ngIf="form.get('email')?.hasError('required')">Email requis</mat-error>
+          <mat-error *ngIf="form.get('email')?.hasError('email')">Email invalide</mat-error>
+        </mat-form-field>
+
+        <!-- 🔹 Rôle -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Rôle</mat-label>
+          <mat-select formControlName="role">
+            <mat-option *ngFor="let role of rolesDisponibles" [value]="role">{{ role }}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="form.get('role')?.hasError('required')">Le rôle est requis</mat-error>
+        </mat-form-field>
+
+        <!-- 🔹 Email actif (toggle) -->
+        <mat-slide-toggle color="primary" formControlName="emailActif">
+          Recevoir des notifications par email
+        </mat-slide-toggle>
+
+        <!-- 🔹 Types de notifications -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Types de notifications</mat-label>
+          <mat-select formControlName="typesNotifications" multiple>
+            <mat-option *ngFor="let type of typesNotifDisponibles" [value]="type">{{ type }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- 🔘 Boutons -->
+        <div class="form-buttons">
+          <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+            {{ modeEdition ? '💾 Enregistrer' : '✅ Ajouter' }}
+          </button>
+          <button mat-button color="warn" type="button" routerLink="/utilisateurs">
+            ❌ Annuler
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,0 +1,57 @@
+<div class="container">
+  <h2>📋 Liste des Fiches Qualité</h2>
+
+  <div class="actions">
+    <button mat-raised-button color="primary" (click)="addFiche()" *ngIf="authService.isAdmin() || authService.isChefProjet()">
+      <mat-icon>add</mat-icon>
+      Ajouter une fiche
+    </button>
+  </div>
+
+  <mat-spinner *ngIf="loading"></mat-spinner>
+
+  <div *ngIf="!loading && fiches.length === 0">
+    <p>Aucune fiche qualité trouvée.</p>
+  </div>
+
+  <mat-table [dataSource]="dataSource" class="mat-elevation-z8" *ngIf="!loading && fiches.length > 0" matSort>
+
+    <!-- Titre -->
+    <ng-container matColumnDef="titre">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Titre </mat-header-cell>
+      <mat-cell *matCellDef="let f"> {{ f.titre }} </mat-cell>
+    </ng-container>
+
+    <!-- Type -->
+    <ng-container matColumnDef="typeFiche">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Type </mat-header-cell>
+      <mat-cell *matCellDef="let f"> {{ f.typeFiche }} </mat-cell>
+    </ng-container>
+
+    <!-- Statut -->
+    <ng-container matColumnDef="statut">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Statut </mat-header-cell>
+      <mat-cell *matCellDef="let f">
+        <mat-chip [color]="getChipColor(f.statut)" selected>{{ f.statut }}</mat-chip>
+      </mat-cell>
+    </ng-container>
+
+    <!-- Actions -->
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+      <mat-cell *matCellDef="let f">
+        <button mat-icon-button color="accent" (click)="editFiche(f)" *ngIf="authService.isAdmin() || authService.isChefProjet()">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="deleteFiche(f)" *ngIf="authService.isAdmin() || authService.isChefProjet()">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="colonnes"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: colonnes;"></mat-row>
+  </mat-table>
+
+  <mat-paginator [pageSize]="5" showFirstLastButtons></mat-paginator>
+</div>

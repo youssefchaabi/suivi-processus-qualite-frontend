@@ -1,0 +1,52 @@
+<div class="fiche-projet-form-container">
+  <h2><mat-icon style="vertical-align: middle; color: #1976d2;">assignment</mat-icon>
+    {{ modeEdition ? 'Modifier le projet' : 'Créer un projet' }}
+  </h2>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nom du projet</mat-label>
+      <input matInput formControlName="nom" required autofocus />
+      <mat-error *ngIf="form.get('nom')?.hasError('required')">Champ obligatoire</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" required></textarea>
+      <mat-error *ngIf="form.get('description')?.hasError('required')">Champ obligatoire</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Objectifs</mat-label>
+      <textarea matInput formControlName="objectifs" required></textarea>
+      <mat-error *ngIf="form.get('objectifs')?.hasError('required')">Champ obligatoire</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Responsable</mat-label>
+      <mat-select formControlName="responsable" required>
+        <mat-option *ngFor="let user of utilisateurs" [value]="user.nom">{{ user.nom }} ({{ user.role }})</mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('responsable')?.hasError('required')">Champ obligatoire</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Echéance</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="echeance" required autocomplete="off" (keydown)="$event.preventDefault()" (focus)="picker.open()" />
+      <mat-datepicker-toggle matSuffix matDatepicker="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-error *ngIf="form.get('echeance')?.hasError('required')">Champ obligatoire</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Statut</mat-label>
+      <mat-select formControlName="statut" required>
+        <mat-option *ngFor="let statut of statutOptions" [value]="statut">{{ statut }}</mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('statut')?.hasError('required')">Champ obligatoire</mat-error>
+    </mat-form-field>
+    <div class="form-actions">
+      <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || loading">
+        <mat-icon>save</mat-icon> {{ modeEdition ? 'Enregistrer' : 'Créer' }}
+        <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+      </button>
+      <button mat-raised-button color="accent" type="button" (click)="retourListe()" [disabled]="loading">
+        <mat-icon>arrow_back</mat-icon> Retour à la liste
+      </button>
+    </div>
+  </form>
+</div> 

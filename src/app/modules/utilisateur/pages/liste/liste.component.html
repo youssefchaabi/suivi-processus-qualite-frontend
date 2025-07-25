@@ -1,0 +1,70 @@
+<div class="container utilisateur-list-container">
+  <h2><mat-icon style="vertical-align: middle; color: #1976d2;">group</mat-icon> Liste des Utilisateurs</h2>
+
+  <div class="actions">
+    <button *ngIf="authService.isAdmin()" mat-raised-button color="primary" routerLink="/utilisateurs/nouveau">
+      <mat-icon>person_add</mat-icon>
+      Ajouter un utilisateur
+    </button>
+    <button mat-raised-button color="accent" routerLink="/admin/dashboard" style="margin-left: 16px;">
+      <mat-icon>arrow_back</mat-icon>
+      Retour Dashboard Admin
+    </button>
+  </div>
+
+  <mat-spinner *ngIf="loading"></mat-spinner>
+
+  <div *ngIf="!loading && utilisateurs.length == 0">
+    <p>Aucun utilisateur trouvé.</p>
+  </div>
+
+  <div class="table-responsive">
+    <mat-table [dataSource]="dataSource" class="mat-elevation-z8 utilisateur-table">
+      <ng-container matColumnDef="nom">
+        <mat-header-cell *matHeaderCellDef> <mat-icon>person</mat-icon> Nom </mat-header-cell>
+        <mat-cell *matCellDef="let u">
+          <mat-icon class="avatar">account_circle</mat-icon>
+          {{ u.nom }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="email">
+        <mat-header-cell *matHeaderCellDef> <mat-icon>email</mat-icon> Email </mat-header-cell>
+        <mat-cell *matCellDef="let u"> {{ u.email }} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="role">
+        <mat-header-cell *matHeaderCellDef> <mat-icon>verified_user</mat-icon> Rôle </mat-header-cell>
+        <mat-cell *matCellDef="let u">
+          <span class="role-badge" [ngClass]="{
+            'admin': u.role === 'ADMIN',
+            'chef': u.role === 'CHEF_PROJET',
+            'pilote': u.role === 'PILOTE_QUALITE'
+          }">
+            <mat-icon *ngIf="u.role === 'ADMIN'">security</mat-icon>
+            <mat-icon *ngIf="u.role === 'CHEF_PROJET'">engineering</mat-icon>
+            <mat-icon *ngIf="u.role === 'PILOTE_QUALITE'">insights</mat-icon>
+            {{ u.role }}
+          </span>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+        <mat-cell *matCellDef="let u">
+          <button *ngIf="authService.isAdmin()" mat-mini-fab color="primary" (click)="modifierUtilisateur(u.id)" matTooltip="Modifier">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button *ngIf="authService.isAdmin()" mat-mini-fab color="warn" (click)="supprimerUtilisateur(u.id)" matTooltip="Supprimer" style="margin-left: 8px;">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns" sticky></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;" class="utilisateur-row"></mat-row>
+    </mat-table>
+  </div>
+
+  <mat-paginator [pageSize]="5" showFirstLastButtons></mat-paginator>
+</div>

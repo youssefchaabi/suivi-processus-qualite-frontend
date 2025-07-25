@@ -1,0 +1,46 @@
+<mat-toolbar color="primary" class="navbar">
+  <span class="logo" (click)="goToDashboard()" style="cursor:pointer">
+    <mat-icon>home</mat-icon>
+    <span class="app-title">Qualité</span>
+  </span>
+
+  <span class="spacer"></span>
+
+  <!-- Liens dynamiques selon le rôle -->
+  <ng-container *ngIf="authService.isLoggedIn()">
+    <a mat-button routerLink="/admin/dashboard" *ngIf="authService.isAdmin()">Dashboard Admin</a>
+    <a mat-button routerLink="/fiche-qualite/dashboard" *ngIf="authService.isChefProjet()">Dashboard Chef de Projet</a>
+    <a mat-button routerLink="/fiche-suivi/dashboard" *ngIf="authService.isPiloteQualite()">Dashboard Pilote Qualité</a>
+    <a mat-button routerLink="/fiche-qualite" *ngIf="authService.isAdmin() || authService.isChefProjet()">Fiches Qualité</a>
+    <a mat-button routerLink="/fiche-projet" *ngIf="authService.isAdmin() || authService.isChefProjet()">Fiches Projet</a>
+    <a mat-button routerLink="/fiche-suivi" *ngIf="authService.isAdmin() || authService.isChefProjet() || authService.isPiloteQualite()">Fiches Suivi</a>
+    <a mat-button routerLink="/kpi" *ngIf="authService.isPiloteQualite()">KPI</a>
+    <a mat-button routerLink="/utilisateurs" *ngIf="authService.isAdmin()">Utilisateurs</a>
+    <a mat-button routerLink="/nomenclatures" *ngIf="authService.isAdmin()">Nomenclatures</a>
+  </ng-container>
+
+  <!-- Notifications (préparation) -->
+  <button mat-icon-button *ngIf="authService.isLoggedIn()">
+    <mat-icon>notifications</mat-icon>
+    <!-- <span class="notification-badge">3</span> -->
+  </button>
+
+  <!-- Menu utilisateur à droite -->
+  <ng-container *ngIf="authService.isLoggedIn()">
+    <button mat-icon-button [matMenuTriggerFor]="userMenu">
+      <mat-icon>account_circle</mat-icon>
+    </button>
+    <mat-menu #userMenu="matMenu">
+      <button mat-menu-item disabled>
+        <mat-icon>person</mat-icon>
+        {{ authService.getRole() }}
+      </button>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        Déconnexion
+      </button>
+    </mat-menu>
+  </ng-container>
+</mat-toolbar>
+
+<!-- Responsive styles à ajouter dans le SCSS -->

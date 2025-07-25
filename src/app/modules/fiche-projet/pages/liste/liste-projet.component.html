@@ -1,0 +1,54 @@
+<div class="container fiche-projet-list-container">
+  <h2><mat-icon style="vertical-align: middle; color: #1976d2;">assignment</mat-icon> Gestion des Fiches Projet</h2>
+  <div class="actions">
+    <button mat-raised-button color="primary" (click)="ajouterProjet()" *ngIf="authService.isAdmin() || authService.isChefProjet()">
+      <mat-icon>add</mat-icon> Ajouter un projet
+    </button>
+  </div>
+  <mat-spinner *ngIf="loading"></mat-spinner>
+  <span *ngIf="loading" class="loading-message">Chargement...</span>
+  <mat-table [dataSource]="dataSource" matSort *ngIf="!loading">
+    <ng-container matColumnDef="nom">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Nom</mat-header-cell>
+      <mat-cell *matCellDef="let projet">{{ projet.nom }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="description">
+      <mat-header-cell *matHeaderCellDef>Description</mat-header-cell>
+      <mat-cell *matCellDef="let projet">{{ projet.description }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="objectifs">
+      <mat-header-cell *matHeaderCellDef>Objectifs</mat-header-cell>
+      <mat-cell *matCellDef="let projet">{{ projet.objectifs }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="responsable">
+      <mat-header-cell *matHeaderCellDef>Responsable</mat-header-cell>
+      <mat-cell *matCellDef="let projet">{{ projet.responsable }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="echeance">
+      <mat-header-cell *matHeaderCellDef>Echéance</mat-header-cell>
+      <mat-cell *matCellDef="let projet">
+        <span *ngIf="projet.echeance">{{ projet.echeance | date:'dd/MM/yyyy' }}</span>
+        <span *ngIf="!projet.echeance">-</span>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="statut">
+      <mat-header-cell *matHeaderCellDef>Statut</mat-header-cell>
+      <mat-cell *matCellDef="let projet">{{ projet.statut }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+      <mat-cell *matCellDef="let projet">
+        <button mat-mini-fab color="accent" aria-label="Modifier" (click)="modifierProjet(projet.id)" *ngIf="authService.isAdmin() || authService.isChefProjet()">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-mini-fab color="warn" aria-label="Supprimer" (click)="supprimerProjet(projet.id)" *ngIf="authService.isAdmin() || authService.isChefProjet()">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+  <mat-paginator [pageSize]="5" showFirstLastButtons></mat-paginator>
+  <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+</div> 

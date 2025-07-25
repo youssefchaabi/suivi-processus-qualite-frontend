@@ -14,12 +14,21 @@
           <mat-error *ngIf="form.get('nom')?.hasError('required')">Le nom est requis</mat-error>
         </mat-form-field>
 
+        <!-- 🔹 Mot de passe (création uniquement ou si modifié) -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Mot de passe</mat-label>
+          <input matInput formControlName="password" type="password" placeholder="Mot de passe..." [required]="!modeEdition">
+          <mat-error *ngIf="form.get('password')?.hasError('required') && !modeEdition">Le mot de passe est requis</mat-error>
+          <mat-error *ngIf="form.get('password')?.hasError('minlength')">Le mot de passe doit contenir au moins 6 caractères</mat-error>
+        </mat-form-field>
+
         <!-- 🔹 Email -->
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Adresse Email</mat-label>
           <input matInput formControlName="email" placeholder="exemple@email.com">
           <mat-error *ngIf="form.get('email')?.hasError('required')">Email requis</mat-error>
           <mat-error *ngIf="form.get('email')?.hasError('email')">Email invalide</mat-error>
+          <mat-error *ngIf="erreurDoublonEmail">Cet email est déjà utilisé par un autre utilisateur</mat-error>
         </mat-form-field>
 
         <!-- 🔹 Rôle -->
@@ -29,19 +38,6 @@
             <mat-option *ngFor="let role of rolesDisponibles" [value]="role">{{ role }}</mat-option>
           </mat-select>
           <mat-error *ngIf="form.get('role')?.hasError('required')">Le rôle est requis</mat-error>
-        </mat-form-field>
-
-        <!-- 🔹 Email actif (toggle) -->
-        <mat-slide-toggle color="primary" formControlName="emailActif">
-          Recevoir des notifications par email
-        </mat-slide-toggle>
-
-        <!-- 🔹 Types de notifications -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Types de notifications</mat-label>
-          <mat-select formControlName="typesNotifications" multiple>
-            <mat-option *ngFor="let type of typesNotifDisponibles" [value]="type">{{ type }}</mat-option>
-          </mat-select>
         </mat-form-field>
 
         <!-- 🔘 Boutons -->

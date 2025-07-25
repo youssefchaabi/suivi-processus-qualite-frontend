@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { UtilisateurModule } from './modules/utilisateur/utilisateur.module';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -12,11 +12,17 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { SuccessSnackbarComponent } from './shared/success-snackbar/success-snackbar.component';
 import { MatIconModule } from '@angular/material/icon';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { AuthInterceptor } from './auth.interceptor';
+import { NavbarComponent } from './shared/navbar/navbar.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @NgModule({
   declarations: [
     AppComponent,
     SuccessSnackbarComponent,
+    NavbarComponent,
 
   ],
   imports: [
@@ -29,9 +35,15 @@ import { MatIconModule } from '@angular/material/icon';
     MatMenuModule,
     UtilisateurModule,
     MatSnackBarModule,
-    MatIconModule
+    MatIconModule,
+    MatToolbarModule,
+    MatDatepickerModule,
+    MatNativeDateModule
+
+  ], 
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
   ],
-  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

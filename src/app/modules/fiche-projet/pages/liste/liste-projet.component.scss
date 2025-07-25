@@ -1,0 +1,70 @@
+.fiche-projet-list-container {
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 24px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+h2 {
+  margin-bottom: 24px;
+  font-weight: 600;
+  color: #1976d2;
+  display: flex;
+  align-items: center;
+}
+
+.actions {
+  margin-bottom: 18px;
+  display: flex;
+  gap: 12px;
+}
+
+.loading-message {
+  display: block;
+  margin: 16px 0;
+  color: #888;
+  font-size: 1.1em;
+}
+
+.error-message {
+  color: #c00;
+  margin-top: 18px;
+  text-align: center;
+}
+
+.mat-table {
+  margin-bottom: 16px;
+}
+
+.mat-header-cell, .mat-cell {
+  padding: 10px 8px;
+  font-size: 1em;
+}
+
+.mat-header-row, .mat-row {
+  min-height: 48px;
+}
+
+.mat-mini-fab {
+  margin-right: 6px;
+  transition: box-shadow 0.2s;
+}
+
+.mat-mini-fab:hover {
+  box-shadow: 0 2px 8px #1976d2;
+}
+
+@media (max-width: 900px) {
+  .fiche-projet-list-container {
+    padding: 8px;
+  }
+  .mat-header-cell, .mat-cell {
+    font-size: 0.95em;
+    padding: 6px 2px;
+  }
+  h2 {
+    font-size: 1.2em;
+  }
+} 

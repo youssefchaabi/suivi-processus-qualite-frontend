@@ -1,0 +1,57 @@
+.navbar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0 24px;
+  min-height: 64px;
+  .logo {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    .app-title {
+      font-weight: bold;
+      font-size: 1.3rem;
+      margin-left: 8px;
+    }
+  }
+  .spacer {
+    flex: 1 1 auto;
+  }
+  a[mat-button] {
+    margin: 0 8px;
+    font-weight: 500;
+    color: white;
+  }
+  button[mat-icon-button] {
+    margin-left: 8px;
+    color: white;
+  }
+}
+
+@media (max-width: 600px) {
+  .navbar {
+    flex-direction: column;
+    align-items: stretch;
+    .logo {
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+    a[mat-button], button[mat-icon-button] {
+      width: 100%;
+      justify-content: flex-start;
+    }
+  }
+}
+
+.notification-badge {
+  background: #e53935;
+  color: white;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+

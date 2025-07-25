@@ -16,7 +16,8 @@ export class FormulaireComponent implements OnInit {
   modeEdition = false;
   utilisateurId: string | null = null;
   rolesDisponibles = ['ADMIN', 'CHEF_PROJET', 'PILOTE_QUALITE'];
-  typesNotifDisponibles = ['FICHE_QUALITE', 'FICHE_SUIVI'];
+  utilisateursExistants: Utilisateur[] = [];
+  erreurDoublonEmail = false;
 
   constructor(
     private fb: FormBuilder,
@@ -29,25 +30,50 @@ export class FormulaireComponent implements OnInit {
     this.form = this.fb.group({
       nom: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      role: ['', Validators.required],
-      emailActif: [true],
-      typesNotifications: [[]]
+      password: ['', []],
+      role: ['', Validators.required]
     });
   }
 
   ngOnInit(): void {
+    // Charger tous les utilisateurs pour vérifier l'unicité de l'email
+    this.utilisateurService.getUtilisateurs().subscribe(data => { this.utilisateursExistants = data; });
     this.utilisateurId = this.route.snapshot.paramMap.get('id');
     this.modeEdition = !!this.utilisateurId;
 
     if (this.modeEdition && this.utilisateurId) {
       this.utilisateurService.getUtilisateurById(this.utilisateurId).subscribe(data => {
         this.form.patchValue(data);
+        // En édition, le mot de passe n'est pas requis
+        this.form.get('password')?.clearValidators();
+        this.form.get('password')?.updateValueAndValidity();
       });
+    } else {
+      // En création, le mot de passe est requis et min 6 caractères
+      this.form.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
+      this.form.get('password')?.updateValueAndValidity();
     }
   }
 
   onSubmit(): void {
   if (this.form.invalid) return;
+
+    // Vérification unicité email (hors édition sur soi-même)
+    const email = this.form.value.email.trim().toLowerCase();
+    const doublon = this.utilisateursExistants.some(u =>
+      u.email.trim().toLowerCase() === email &&
+      (!this.modeEdition || u.id !== this.utilisateurId)
+    );
+    if (doublon) {
+      this.erreurDoublonEmail = true;
+      this.snackBar.open('❌ Cet email est déjà utilisé par un autre utilisateur', 'Fermer', {
+        duration: 3500,
+        panelClass: ['snackbar-error']
+      });
+      return;
+    } else {
+      this.erreurDoublonEmail = false;
+    }
 
   const utilisateur: Utilisateur = this.form.value;
 
@@ -69,17 +95,7 @@ export class FormulaireComponent implements OnInit {
     });
     this.router.navigate(['/utilisateurs']);
   });
-}}
-
-  onToggleNotification(type: string, checked: boolean): void {
-  const current = this.form.value.typesNotifications || [];
-  if (checked && !current.includes(type)) {
-    this.form.patchValue({ typesNotifications: [...current, type] });
-  } else if (!checked && current.includes(type)) {
-    this.form.patchValue({
-      typesNotifications: current.filter((t: string) => t !== type)
-    });
+    }
   }
-}
 
 }

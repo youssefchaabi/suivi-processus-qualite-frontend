@@ -6,6 +6,7 @@ import { Utilisateur, UtilisateurService } from 'src/app/services/utilisateur.se
 import { Router } from '@angular/router';
 import { SuccessSnackbarComponent } from 'src/app/shared/success-snackbar/success-snackbar.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthService } from 'src/app/services/authentification.service';
 
 @Component({
   selector: 'app-liste',
@@ -27,8 +28,8 @@ export class ListeComponent implements OnInit {
 
   constructor(private utilisateurService: UtilisateurService,
     private router: Router,
-      private snackBar: MatSnackBar // ✅ Angular injecte directement ici
-
+    private snackBar: MatSnackBar,
+    public authService: AuthService
   ) {}
 
   ngOnInit(): void {

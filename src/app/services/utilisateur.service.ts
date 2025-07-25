@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 export interface Utilisateur {
   id: string;
   nom: string;
   email: string;
   role: string;
-  emailActif: boolean;
-  typesNotifications: string[];
+  password?: string;
 }
 
 @Injectable({
@@ -16,11 +16,17 @@ export interface Utilisateur {
 })
 export class UtilisateurService {
   private apiUrl = 'http://localhost:8080/api/utilisateurs';  // ✅ à adapter selon ton backend
+  private adminApiUrl = 'http://localhost:8080/api/admin';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getUtilisateurs(): Observable<Utilisateur[]> {
-    return this.http.get<Utilisateur[]>(this.apiUrl);
+    return this.http.get<Utilisateur[]>(this.apiUrl).pipe(
+      catchError(error => {
+        console.error('Erreur lors de la récupération des utilisateurs:', error);
+        return throwError(() => error);
+      })
+    );
   }
 
   getUtilisateurById(id: string): Observable<Utilisateur> {
@@ -32,12 +38,24 @@ export class UtilisateurService {
   }
 
   createUtilisateur(utilisateur: Utilisateur): Observable<Utilisateur> {
-  return this.http.post<Utilisateur>(this.apiUrl, utilisateur);
-}
+    // Utilise le endpoint admin qui hash le mot de passe
+    const payload = {
+      email: utilisateur.email,
+      nom: utilisateur.nom,
+      role: utilisateur.role,
+      password: utilisateur.password
+    };
+    return this.http.post<Utilisateur>(`${this.adminApiUrl}/create-user`, payload).pipe(
+      catchError(error => {
+        console.error('Erreur lors de la création de l\'utilisateur:', error);
+        return throwError(() => error);
+      })
+    );
+  }
 
-updateUtilisateur(id: string, utilisateur: Utilisateur): Observable<Utilisateur> {
-  return this.http.put<Utilisateur>(`${this.apiUrl}/${id}`, utilisateur);
-}
+  updateUtilisateur(id: string, utilisateur: Utilisateur): Observable<Utilisateur> {
+    return this.http.put<Utilisateur>(`${this.apiUrl}/${id}`, utilisateur);
+  }
 
 
 

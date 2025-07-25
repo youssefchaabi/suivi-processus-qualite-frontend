@@ -18,6 +18,7 @@ yarn-error.log*
 pnpm-debug.log*
 
 # Testing & coverage
+
 /coverage
 /libpeerconnection.log
 testem.log

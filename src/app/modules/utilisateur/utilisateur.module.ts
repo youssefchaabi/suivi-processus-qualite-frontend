@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 
 import { UtilisateurRoutingModule } from './utilisateur-routing.module';
 import { UtilisateurComponent } from './utilisateur.component';
-import { ListeComponent } from './liste/liste.component';
-import { FormulaireComponent } from './formulaire/formulaire.component';
+import { ListeComponent } from './pages/liste/liste.component';
+import { FormulaireComponent } from './pages/formulaire/formulaire.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';

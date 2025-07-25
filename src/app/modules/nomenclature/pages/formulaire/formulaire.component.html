@@ -1,0 +1,42 @@
+<div class="container formulaire-container">
+  <mat-card class="form-card">
+    <h2>
+      <mat-icon style="vertical-align: middle; color: #1976d2;">{{ modeEdition ? 'edit' : 'add' }}</mat-icon>
+      {{ modeEdition ? 'Modifier' : 'Ajouter' }} une nomenclature
+    </h2>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Type</mat-label>
+        <mat-select formControlName="type" required autofocus>
+          <mat-option *ngFor="let type of typesDisponibles" [value]="type">
+            {{ type }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get('type')?.hasError('required')">
+          Le type est requis
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Valeur</mat-label>
+        <input matInput formControlName="valeur" required>
+        <mat-error *ngIf="form.get('valeur')?.hasError('required')">
+          La valeur est requise
+        </mat-error>
+      </mat-form-field>
+
+      <div class="actions">
+        <button *ngIf="authService.isAdmin()" mat-raised-button color="primary" type="submit" [disabled]="form.invalid || loading" aria-label="Soumettre nomenclature">
+          <mat-icon>{{ modeEdition ? 'save' : 'add' }}</mat-icon>
+          <span *ngIf="!loading">{{ modeEdition ? 'Mettre à jour' : 'Ajouter' }}</span>
+          <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+        </button>
+        <button mat-raised-button color="accent" type="button" routerLink="/nomenclatures" aria-label="Retour nomenclatures">
+          <mat-icon>arrow_back</mat-icon>
+          Retour
+        </button>
+      </div>
+    </form>
+  </mat-card>
+</div> 

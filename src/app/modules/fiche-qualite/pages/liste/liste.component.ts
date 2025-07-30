@@ -82,16 +82,20 @@ export class ListeComponent implements OnInit {
     }
   }
 
-  getChipColor(statut: string): 'primary' | 'warn' | 'accent' {
-  switch (statut.toLowerCase()) {
-    case 'validée':
-      return 'primary';
-    case 'refusée':
-      return 'warn';
-    case 'en_cours':
+  getChipColor(statut: string | null | undefined): 'primary' | 'warn' | 'accent' {
+    if (!statut) return 'accent';
+    
+    switch (statut.toLowerCase()) {
+      case 'validée':
+      case 'termine':
+        return 'primary';
+      case 'refusée':
+      case 'bloque':
+        return 'warn';
+      case 'en_cours':
       case 'en_attente':
-    default:
-      return 'accent';
+      default:
+        return 'accent';
+    }
   }
-}
 }

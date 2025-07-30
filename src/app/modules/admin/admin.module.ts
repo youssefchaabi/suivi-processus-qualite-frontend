@@ -5,7 +5,6 @@ import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.compo
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 
-
 @NgModule({
   declarations: [
     AdminDashboardComponent

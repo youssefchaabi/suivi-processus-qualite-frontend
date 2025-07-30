@@ -3,8 +3,8 @@
   margin: 30px auto;
   padding: 24px;
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(25, 118, 210, 0.10);
 }
 
 h2 {
@@ -21,21 +21,12 @@ h2 {
   gap: 12px;
 }
 
-.loading-message {
-  display: block;
-  margin: 16px 0;
-  color: #888;
-  font-size: 1.1em;
-}
-
-.error-message {
-  color: #c00;
-  margin-top: 18px;
-  text-align: center;
-}
-
 .mat-table {
   margin-bottom: 16px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(25, 118, 210, 0.10);
 }
 
 .mat-header-cell, .mat-cell {
@@ -50,10 +41,30 @@ h2 {
 .mat-mini-fab {
   margin-right: 6px;
   transition: box-shadow 0.2s;
+  border-radius: 50%;
 }
 
 .mat-mini-fab:hover {
   box-shadow: 0 2px 8px #1976d2;
+  background: rgba(25, 118, 210, 0.08);
+}
+
+tr.mat-row:hover {
+  background: #e3f2fd;
+  transition: background 0.2s;
+}
+
+.loading-message {
+  display: block;
+  margin: 16px 0;
+  color: #888;
+  font-size: 1.1em;
+}
+
+.error-message {
+  color: #c00;
+  margin-top: 18px;
+  text-align: center;
 }
 
 @media (max-width: 900px) {

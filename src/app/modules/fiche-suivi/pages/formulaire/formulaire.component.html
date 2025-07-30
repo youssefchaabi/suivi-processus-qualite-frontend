@@ -94,7 +94,7 @@
             <mat-icon>{{ modeEdition ? 'save' : 'add' }}</mat-icon>
             {{ modeEdition ? 'Mettre à jour' : 'Créer' }}
           </button>
-          <button mat-raised-button color="accent" type="button" (click)="annuler()" [disabled]="loading">
+          <button mat-stroked-button color="accent" type="button" (click)="annuler()" [disabled]="loading" matTooltip="Annuler et revenir à la liste">
             <mat-icon>arrow_back</mat-icon>
             Annuler
           </button>

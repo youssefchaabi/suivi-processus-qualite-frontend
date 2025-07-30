@@ -1,8 +1,8 @@
 <div class="container">
-  <h2>📋 Liste des Fiches Qualité</h2>
+  <h2><mat-icon style="vertical-align: middle; color: #1976d2;">assignment</mat-icon> Liste des Fiches Qualité</h2>
 
   <div class="actions">
-    <button mat-raised-button color="primary" (click)="addFiche()" *ngIf="authService.isAdmin() || authService.isChefProjet()">
+    <button mat-raised-button color="primary" (click)="addFiche()" *ngIf="authService.isAdmin() || authService.isChefProjet()" matTooltip="Ajouter une fiche qualité">
       <mat-icon>add</mat-icon>
       Ajouter une fiche
     </button>
@@ -14,7 +14,7 @@
     <p>Aucune fiche qualité trouvée.</p>
   </div>
 
-  <mat-table [dataSource]="dataSource" class="mat-elevation-z8" *ngIf="!loading && fiches.length > 0" matSort>
+  <mat-table [dataSource]="dataSource" class="mat-elevation-z8 fiche-qualite-table" *ngIf="!loading && fiches.length > 0" matSort>
 
     <!-- Titre -->
     <ng-container matColumnDef="titre">
@@ -25,14 +25,14 @@
     <!-- Type -->
     <ng-container matColumnDef="typeFiche">
       <mat-header-cell *matHeaderCellDef mat-sort-header> Type </mat-header-cell>
-      <mat-cell *matCellDef="let f"> {{ f.typeFiche }} </mat-cell>
+      <mat-cell *matCellDef="let f"> {{ f.typeFiche || 'Non défini' }} </mat-cell>
     </ng-container>
 
     <!-- Statut -->
     <ng-container matColumnDef="statut">
       <mat-header-cell *matHeaderCellDef mat-sort-header> Statut </mat-header-cell>
       <mat-cell *matCellDef="let f">
-        <mat-chip [color]="getChipColor(f.statut)" selected>{{ f.statut }}</mat-chip>
+        <mat-chip [color]="getChipColor(f.statut)" selected>{{ f.statut || 'Non défini' }}</mat-chip>
       </mat-cell>
     </ng-container>
 
@@ -40,17 +40,17 @@
     <ng-container matColumnDef="actions">
       <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
       <mat-cell *matCellDef="let f">
-        <button mat-icon-button color="accent" (click)="editFiche(f)" *ngIf="authService.isAdmin() || authService.isChefProjet()">
+        <button mat-icon-button color="accent" (click)="editFiche(f)" *ngIf="authService.isAdmin() || authService.isChefProjet()" matTooltip="Modifier la fiche qualité">
           <mat-icon>edit</mat-icon>
         </button>
-        <button mat-icon-button color="warn" (click)="deleteFiche(f)" *ngIf="authService.isAdmin() || authService.isChefProjet()">
+        <button mat-icon-button color="warn" (click)="deleteFiche(f)" *ngIf="authService.isAdmin() || authService.isChefProjet()" matTooltip="Supprimer la fiche qualité">
           <mat-icon>delete</mat-icon>
         </button>
       </mat-cell>
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="colonnes"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: colonnes;"></mat-row>
+    <mat-row *matRowDef="let row; columns: colonnes;" class="fiche-qualite-row"></mat-row>
   </mat-table>
 
   <mat-paginator [pageSize]="5" showFirstLastButtons></mat-paginator>

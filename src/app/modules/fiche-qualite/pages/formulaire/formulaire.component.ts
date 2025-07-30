@@ -142,14 +142,11 @@ export class FormulaireComponent implements OnInit {
 
     // Vérification doublon (hors édition sur soi-même)
     const ficheData: FicheQualite = {
-      ...this.form.value,
-      creePar: 'Utilisateur actuel', // À remplacer par l'utilisateur connecté
-      dateCreation: new Date(),
-      dateDerniereModification: new Date()
+      ...this.form.value
     };
     const doublon = this.fichesExistantes.some(f =>
-      f.titre.trim().toLowerCase() === ficheData.titre.trim().toLowerCase() &&
-      f.typeFiche === ficheData.typeFiche &&
+      ((f.titre || '').trim().toLowerCase() === (ficheData.titre || '').trim().toLowerCase()) &&
+      (f.typeFiche === ficheData.typeFiche) &&
       (!this.modeEdition || f.id !== this.ficheId)
     );
     if (doublon) {

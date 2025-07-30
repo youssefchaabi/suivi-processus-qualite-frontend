@@ -2,12 +2,16 @@
   display: flex;
   justify-content: center;
   padding: 2rem;
+  background: #f5f7fa;
 }
 
 .form-card {
   width: 100%;
   max-width: 600px;
-  padding: 1.5rem;
+  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(25, 118, 210, 0.10);
+  background: #fff;
 }
 
 .full-width {
@@ -18,5 +22,28 @@
 .form-buttons {
   display: flex;
   justify-content: space-between;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
+  gap: 16px;
+  button {
+    min-width: 120px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 1.05em;
+    letter-spacing: 0.5px;
+    box-shadow: 0 1px 4px rgba(25, 118, 210, 0.08);
+  }
+}
+
+@media (max-width: 600px) {
+  .form-card {
+    padding: 1rem 0.5rem;
+    max-width: 98vw;
+  }
+  .form-buttons {
+    flex-direction: column;
+    gap: 10px;
+    button {
+      width: 100%;
+    }
+  }
 }

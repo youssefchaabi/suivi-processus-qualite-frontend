@@ -1,39 +1,39 @@
-<mat-toolbar color="primary" class="navbar">
-  <span class="logo" (click)="goToDashboard()" style="cursor:pointer">
+<mat-toolbar color="primary" class="navbar mat-elevation-z4">
+  <span class="logo" (click)="goToDashboard()" tabindex="0" aria-label="Accueil Qualité">
     <mat-icon>home</mat-icon>
     <span class="app-title">Qualité</span>
   </span>
-
   <span class="spacer"></span>
 
   <!-- Liens dynamiques selon le rôle -->
   <ng-container *ngIf="authService.isLoggedIn()">
-    <a mat-button routerLink="/admin/dashboard" *ngIf="authService.isAdmin()">Dashboard Admin</a>
-    <a mat-button routerLink="/fiche-qualite/dashboard" *ngIf="authService.isChefProjet()">Dashboard Chef de Projet</a>
-    <a mat-button routerLink="/fiche-suivi/dashboard" *ngIf="authService.isPiloteQualite()">Dashboard Pilote Qualité</a>
-    <a mat-button routerLink="/fiche-qualite" *ngIf="authService.isAdmin() || authService.isChefProjet()">Fiches Qualité</a>
-    <a mat-button routerLink="/fiche-projet" *ngIf="authService.isAdmin() || authService.isChefProjet()">Fiches Projet</a>
-    <a mat-button routerLink="/fiche-suivi" *ngIf="authService.isAdmin() || authService.isChefProjet() || authService.isPiloteQualite()">Fiches Suivi</a>
-    <a mat-button routerLink="/kpi" *ngIf="authService.isPiloteQualite()">KPI</a>
-    <a mat-button routerLink="/utilisateurs" *ngIf="authService.isAdmin()">Utilisateurs</a>
-    <a mat-button routerLink="/nomenclatures" *ngIf="authService.isAdmin()">Nomenclatures</a>
+    <a mat-button routerLink="/admin/dashboard" *ngIf="authService.isAdmin()" matTooltip="Dashboard Admin">Dashboard Admin</a>
+    <a mat-button routerLink="/fiche-qualite/dashboard" *ngIf="authService.isChefProjet()" matTooltip="Dashboard Chef de Projet">Dashboard Chef de Projet</a>
+    <a mat-button routerLink="/fiche-suivi/dashboard" *ngIf="authService.isPiloteQualite()" matTooltip="Dashboard Pilote Qualité">Dashboard Pilote Qualité</a>
+    <a mat-button routerLink="/fiche-qualite" *ngIf="authService.isAdmin() || authService.isChefProjet()" matTooltip="Fiches Qualité">Fiches Qualité</a>
+    <a mat-button routerLink="/fiche-projet" *ngIf="authService.isAdmin() || authService.isChefProjet()" matTooltip="Fiches Projet">Fiches Projet</a>
+    <a mat-button routerLink="/fiche-suivi" *ngIf="authService.isAdmin() || authService.isChefProjet() || authService.isPiloteQualite()" matTooltip="Fiches Suivi">Fiches Suivi</a>
+    <a mat-button routerLink="/kpi" *ngIf="authService.isPiloteQualite()" matTooltip="KPI">KPI</a>
+    <a mat-button routerLink="/ai-dashboard" *ngIf="authService.isPiloteQualite()" matTooltip="Dashboard IA">Dashboard IA</a>
+    <a mat-button routerLink="/utilisateurs" *ngIf="authService.isAdmin()" matTooltip="Utilisateurs">Utilisateurs</a>
+    <a mat-button routerLink="/nomenclatures" *ngIf="authService.isAdmin()" matTooltip="Nomenclatures">Nomenclatures</a>
   </ng-container>
 
-  <!-- Notifications (préparation) -->
-  <button mat-icon-button *ngIf="authService.isLoggedIn()">
+  <!-- Notifications -->
+  <button mat-icon-button class="notif-btn" *ngIf="authService.isLoggedIn()" matTooltip="Notifications" aria-label="Notifications">
     <mat-icon>notifications</mat-icon>
-    <!-- <span class="notification-badge">3</span> -->
+    <span class="notification-badge" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
   </button>
 
   <!-- Menu utilisateur à droite -->
   <ng-container *ngIf="authService.isLoggedIn()">
-    <button mat-icon-button [matMenuTriggerFor]="userMenu">
+    <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Menu utilisateur">
       <mat-icon>account_circle</mat-icon>
     </button>
     <mat-menu #userMenu="matMenu">
       <button mat-menu-item disabled>
         <mat-icon>person</mat-icon>
-        {{ authService.getRole() }}
+        {{ getUserName() || authService.getRole() }}
       </button>
       <button mat-menu-item (click)="logout()">
         <mat-icon>logout</mat-icon>
@@ -42,5 +42,3 @@
     </mat-menu>
   </ng-container>
 </mat-toolbar>
-
-<!-- Responsive styles à ajouter dans le SCSS -->

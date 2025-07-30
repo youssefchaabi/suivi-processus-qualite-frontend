@@ -18,6 +18,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSortModule } from '@angular/material/sort';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { DashboardChefComponent } from './dashboard-chef/dashboard-chef.component';
 
 @NgModule({
@@ -42,7 +45,10 @@ import { DashboardChefComponent } from './dashboard-chef/dashboard-chef.componen
     MatProgressSpinnerModule,
     MatSelectModule,
     MatButtonModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatSortModule,
+    MatMenuModule,
+    MatTooltipModule
   ]
 })
 export class FicheQualiteModule { }

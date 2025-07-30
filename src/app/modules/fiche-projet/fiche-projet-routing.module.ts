@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { FormulaireProjetComponent } from './pages/formulaire/formulaire-projet.component';
-import { AuthGuard } from 'src/app/guards/auth.guard';
 import { ListeProjetComponent } from './pages/liste/liste-projet.component';
+import { FormulaireProjetComponent } from './pages/formulaire/formulaire-projet.component';
+import { AuthGuard } from '../../guards/auth.guard';
 
 const routes: Routes = [
   { path: '', component: ListeProjetComponent, canActivate: [AuthGuard], data: { role: ['ADMIN', 'CHEF_PROJET', 'PILOTE_QUALITE'] } },

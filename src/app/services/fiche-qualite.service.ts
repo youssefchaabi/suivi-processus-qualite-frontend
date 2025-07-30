@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { Observable, tap } from "rxjs";
 import { FicheQualite } from '../models/fiche-qualite';
 // 
 //  Assurez-vous que le chemin est correct
@@ -11,7 +11,20 @@ export class FicheQualiteService {
   constructor(private http: HttpClient) {}
 
   getAll(): Observable<FicheQualite[]> {
-    return this.http.get<FicheQualite[]>(this.apiUrl);
+    return this.http.get<FicheQualite[]>(this.apiUrl).pipe(
+      tap(data => {
+        console.log('🔍 Données reçues du backend:', data);
+        data.forEach((fiche, index) => {
+          console.log(`📋 Fiche ${index + 1}:`, {
+            id: fiche.id,
+            titre: fiche.titre,
+            typeFiche: fiche.typeFiche,
+            statut: fiche.statut,
+            responsable: fiche.responsable
+          });
+        });
+      })
+    );
   }
 
   getById(id: string): Observable<FicheQualite> {
@@ -19,6 +32,7 @@ export class FicheQualiteService {
   }
 
   create(fiche: FicheQualite): Observable<FicheQualite> {
+    console.log('📤 Envoi de la fiche au backend:', fiche);
     return this.http.post<FicheQualite>(this.apiUrl, fiche);
   }
 

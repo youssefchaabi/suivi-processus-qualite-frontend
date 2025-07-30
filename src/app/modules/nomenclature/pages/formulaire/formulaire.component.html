@@ -1,11 +1,11 @@
 <div class="container formulaire-container">
-  <mat-card class="form-card">
+  <mat-card class="form-card mat-elevation-z4">
     <h2>
       <mat-icon style="vertical-align: middle; color: #1976d2;">{{ modeEdition ? 'edit' : 'add' }}</mat-icon>
       {{ modeEdition ? 'Modifier' : 'Ajouter' }} une nomenclature
     </h2>
 
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Type</mat-label>
         <mat-select formControlName="type" required autofocus>
@@ -20,7 +20,7 @@
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Valeur</mat-label>
-        <input matInput formControlName="valeur" required>
+        <input matInput formControlName="valeur" required autocomplete="off">
         <mat-error *ngIf="form.get('valeur')?.hasError('required')">
           La valeur est requise
         </mat-error>
@@ -32,7 +32,7 @@
           <span *ngIf="!loading">{{ modeEdition ? 'Mettre à jour' : 'Ajouter' }}</span>
           <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
         </button>
-        <button mat-raised-button color="accent" type="button" routerLink="/nomenclatures" aria-label="Retour nomenclatures">
+        <button mat-stroked-button color="accent" type="button" routerLink="/nomenclatures" aria-label="Retour nomenclatures">
           <mat-icon>arrow_back</mat-icon>
           Retour
         </button>

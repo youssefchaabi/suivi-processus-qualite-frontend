@@ -95,10 +95,10 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef> Actions </th>
         <td mat-cell *matCellDef="let fiche">
-          <button mat-icon-button color="accent" (click)="modifierFiche(fiche.id)">
+          <button mat-icon-button color="accent" (click)="modifierFiche(fiche.id)" matTooltip="Modifier la fiche de suivi">
             <mat-icon>edit</mat-icon>
           </button>
-          <button mat-icon-button color="warn" (click)="supprimerFiche(fiche.id)">
+          <button mat-icon-button color="warn" (click)="supprimerFiche(fiche.id)" matTooltip="Supprimer la fiche de suivi">
             <mat-icon>delete</mat-icon>
           </button>
         </td>

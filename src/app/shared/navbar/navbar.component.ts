@@ -9,6 +9,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent {
+  notificationCount = 0; // À brancher plus tard sur le service de notifications
+
   constructor(public authService: AuthService, private router: Router, private snackBar: MatSnackBar) {}
 
   logout() {
@@ -31,8 +33,14 @@ export class NavbarComponent {
   }
 
   getUserName(): string {
-    // Préparé pour afficher le nom de l'utilisateur si dispo dans le JWT
-    // À compléter selon la structure du token
-    return '';
+    // Affiche le nom de l'utilisateur si dispo dans le JWT
+    const token = localStorage.getItem('token');
+    if (!token) return '';
+    try {
+      const decoded: any = JSON.parse(atob(token.split('.')[1]));
+      return decoded.nom || '';
+    } catch {
+      return '';
+    }
   }
 }

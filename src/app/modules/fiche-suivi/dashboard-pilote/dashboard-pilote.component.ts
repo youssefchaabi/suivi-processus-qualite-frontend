@@ -14,7 +14,10 @@ import { Component } from '@angular/core';
           <a mat-raised-button color="accent" routerLink="/kpi">
             <mat-icon>bar_chart</mat-icon> KPI
           </a>
-          <a mat-raised-button color="warn" routerLink="/notifications">
+          <a mat-raised-button color="warn" routerLink="/ai-dashboard">
+            <mat-icon>psychology</mat-icon> Dashboard IA
+          </a>
+          <a mat-raised-button color="primary" routerLink="/notifications">
             <mat-icon>notifications</mat-icon> Notifications
           </a>
         </div>

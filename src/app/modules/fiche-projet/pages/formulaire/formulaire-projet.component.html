@@ -44,7 +44,7 @@
         <mat-icon>save</mat-icon> {{ modeEdition ? 'Enregistrer' : 'Créer' }}
         <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
       </button>
-      <button mat-raised-button color="accent" type="button" (click)="retourListe()" [disabled]="loading">
+      <button mat-stroked-button color="accent" type="button" (click)="retourListe()" [disabled]="loading" matTooltip="Retour à la liste des projets">
         <mat-icon>arrow_back</mat-icon> Retour à la liste
       </button>
     </div>

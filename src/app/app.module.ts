@@ -17,13 +17,26 @@ import { AuthInterceptor } from './auth.interceptor';
 import { NavbarComponent } from './shared/navbar/navbar.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatCardModule } from '@angular/material/card';
+import { MatTableModule } from '@angular/material/table';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { KpiComponent } from './kpi/kpi.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     SuccessSnackbarComponent,
     NavbarComponent,
-
+    KpiComponent
   ],
   imports: [
     BrowserModule,
@@ -38,8 +51,20 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatIconModule,
     MatToolbarModule,
     MatDatepickerModule,
-    MatNativeDateModule
-
+    MatNativeDateModule,
+    MatCardModule,
+    MatTableModule,
+    MatChipsModule,
+    MatProgressSpinnerModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatTooltipModule,
+    MatPaginatorModule,
+    MatSortModule,
+    FormsModule,
+    ReactiveFormsModule
   ], 
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }

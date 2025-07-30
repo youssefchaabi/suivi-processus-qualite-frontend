@@ -56,7 +56,4 @@ export class UtilisateurService {
   updateUtilisateur(id: string, utilisateur: Utilisateur): Observable<Utilisateur> {
     return this.http.put<Utilisateur>(`${this.apiUrl}/${id}`, utilisateur);
   }
-
-
-
 }

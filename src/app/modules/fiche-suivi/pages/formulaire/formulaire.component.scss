@@ -5,9 +5,11 @@
 }
 
 .form-card {
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(33, 150, 243, 0.12);
   overflow: hidden;
+  background: #fff;
+  animation: slideIn 0.3s ease-out;
 }
 
 mat-card-header {
@@ -59,6 +61,10 @@ mat-form-field {
   align-items: center;
   gap: 0.5rem;
   font-weight: 500;
+  border-radius: 8px;
+  font-size: 1.08em;
+  letter-spacing: 0.5px;
+  box-shadow: 0 1px 4px rgba(33, 150, 243, 0.08);
 }
 
 .loading-container {
@@ -73,39 +79,28 @@ mat-form-field {
   color: #666;
 }
 
-// Responsive design
 @media (max-width: 768px) {
   .form-container {
     margin: 1rem auto;
     padding: 0 0.5rem;
   }
-  
   mat-card-header {
     padding: 1rem;
   }
-  
   mat-card-title {
     font-size: 1.25rem;
   }
-  
   mat-card-content {
     padding: 0 1rem 1rem 1rem;
   }
-  
   .form-actions {
     flex-direction: column;
     gap: 0.5rem;
   }
-  
   .form-actions button {
     width: 100%;
     justify-content: center;
   }
-}
-
-// Animations
-.form-card {
-  animation: slideIn 0.3s ease-out;
 }
 
 @keyframes slideIn {
@@ -119,7 +114,6 @@ mat-form-field {
   }
 }
 
-// Hover effects
 mat-form-field:hover {
   transform: translateY(-2px);
   transition: transform 0.2s ease;
@@ -127,6 +121,6 @@ mat-form-field:hover {
 
 .form-actions button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.15);
   transition: all 0.2s ease;
 }

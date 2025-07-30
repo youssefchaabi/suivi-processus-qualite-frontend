@@ -1,0 +1,479 @@
+.ai-dashboard {
+  padding: 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+
+  .dashboard-header {
+    text-align: center;
+    margin-bottom: 32px;
+    color: white;
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 300;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+
+      mat-icon {
+        font-size: 2.5rem;
+        width: 2.5rem;
+        height: 2.5rem;
+      }
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      margin: 0;
+    }
+  }
+
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+    color: white;
+
+    p {
+      margin-top: 16px;
+      font-size: 1.1rem;
+    }
+  }
+
+  .dashboard-content {
+    .ai-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+
+      .ai-metric-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+        &:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .metric-content {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+
+          .metric-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+
+            mat-icon {
+              font-size: 28px;
+              width: 28px;
+              height: 28px;
+            }
+          }
+
+          .metric-info {
+            flex: 1;
+
+            .metric-value {
+              font-size: 2rem;
+              font-weight: 700;
+              margin: 0 0 4px 0;
+              color: #333;
+            }
+
+            .metric-title {
+              font-size: 1rem;
+              font-weight: 600;
+              margin: 0 0 4px 0;
+              color: #666;
+            }
+
+            .metric-description {
+              font-size: 0.9rem;
+              margin: 0;
+              color: #888;
+            }
+          }
+        }
+      }
+    }
+
+    .ai-analyses-section {
+      margin-bottom: 32px;
+
+      .analysis-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 24px;
+        margin-bottom: 24px;
+
+        .analysis-card {
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(10px);
+          border-radius: 16px;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+          mat-card-header {
+            padding: 24px 24px 0 24px;
+
+            mat-card-title {
+              display: flex;
+              align-items: center;
+              gap: 12px;
+              font-size: 1.3rem;
+              font-weight: 600;
+              color: #333;
+
+              mat-icon {
+                color: #667eea;
+              }
+            }
+          }
+
+          mat-card-content {
+            padding: 16px 24px 24px 24px;
+
+            .predictions-list, .recommendations-list, .trends-list, .optimizations-list {
+              .prediction-item, .recommendation-item, .trend-item, .optimization-item {
+                background: #f8f9fa;
+                border-radius: 12px;
+                padding: 20px;
+                margin-bottom: 16px;
+                border-left: 4px solid #667eea;
+
+                &:last-child {
+                  margin-bottom: 0;
+                }
+
+                .prediction-header, .rec-header, .trend-header {
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-bottom: 12px;
+
+                  .risk-level, .rec-type {
+                    padding: 4px 12px;
+                    border-radius: 20px;
+                    color: white;
+                    font-size: 0.8rem;
+                    font-weight: 600;
+                  }
+
+                  .probability, .rec-priority {
+                    font-weight: 600;
+                    color: #666;
+                  }
+                }
+
+                .prediction-description, .rec-title, .opt-process {
+                  font-weight: 600;
+                  color: #333;
+                  margin-bottom: 8px;
+                }
+
+                .prediction-impact, .rec-description {
+                  color: #666;
+                  margin-bottom: 12px;
+                }
+
+                .recommendations, .rec-actions, .actions-optimization {
+                  margin-bottom: 12px;
+
+                  h4, h5 {
+                    font-weight: 600;
+                    color: #333;
+                    margin-bottom: 8px;
+                  }
+
+                  ul {
+                    margin: 0;
+                    padding-left: 20px;
+
+                    li {
+                      color: #666;
+                      margin-bottom: 4px;
+                    }
+                  }
+                }
+
+                .rec-impact {
+                  background: #e3f2fd;
+                  padding: 12px;
+                  border-radius: 8px;
+                  margin-top: 12px;
+
+                  p {
+                    margin: 4px 0;
+                    color: #1976d2;
+                    font-size: 0.9rem;
+                  }
+                }
+
+                .trend-variation {
+                  font-weight: 600;
+                  margin: 8px 0;
+                }
+
+                .trend-explanation {
+                  color: #666;
+                  font-size: 0.9rem;
+                }
+
+                .efficiency-comparison {
+                  margin: 16px 0;
+
+                  .efficiency-bar {
+                    display: flex;
+                    height: 24px;
+                    border-radius: 12px;
+                    overflow: hidden;
+                    background: #e0e0e0;
+
+                    .current-efficiency {
+                      background: #4caf50;
+                      color: white;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      font-size: 0.8rem;
+                      font-weight: 600;
+                      min-width: 40px;
+                    }
+
+                    .optimal-efficiency {
+                      background: #2196f3;
+                      color: white;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      font-size: 0.8rem;
+                      font-weight: 600;
+                      min-width: 40px;
+                    }
+                  }
+                }
+
+                .gains-potentiels {
+                  margin-bottom: 16px;
+
+                  h5 {
+                    font-weight: 600;
+                    color: #333;
+                    margin-bottom: 8px;
+                  }
+
+                  ul {
+                    margin: 0;
+                    padding-left: 20px;
+
+                    li {
+                      color: #666;
+                      margin-bottom: 4px;
+                    }
+                  }
+                }
+
+                .implementation-delay {
+                  background: #fff3e0;
+                  padding: 8px 12px;
+                  border-radius: 6px;
+                  margin: 0;
+                  color: #f57c00;
+                  font-size: 0.9rem;
+                }
+              }
+            }
+
+            .no-data {
+              text-align: center;
+              color: #999;
+              font-style: italic;
+              padding: 40px 20px;
+            }
+          }
+        }
+      }
+    }
+
+    .recent-data-section {
+      margin-bottom: 32px;
+
+      .data-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 24px;
+
+        .data-card {
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(10px);
+          border-radius: 16px;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+          mat-card-header {
+            padding: 24px 24px 0 24px;
+
+            mat-card-title {
+              display: flex;
+              align-items: center;
+              gap: 12px;
+              font-size: 1.3rem;
+              font-weight: 600;
+              color: #333;
+
+              mat-icon {
+                color: #667eea;
+              }
+            }
+          }
+
+          mat-card-content {
+            padding: 16px 24px 24px 24px;
+
+            .data-table {
+              width: 100%;
+
+              th {
+                font-weight: 600;
+                color: #333;
+                background: #f5f5f5;
+              }
+
+              td {
+                color: #666;
+              }
+
+              mat-chip {
+                font-size: 0.8rem;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .ai-summary-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+      mat-card-header {
+        padding: 24px 24px 0 24px;
+
+        mat-card-title {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-size: 1.3rem;
+          font-weight: 600;
+          color: #333;
+
+          mat-icon {
+            color: #667eea;
+          }
+        }
+      }
+
+      mat-card-content {
+        padding: 16px 24px 24px 24px;
+
+        .ai-summary {
+          .summary-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 4px solid #667eea;
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+
+            mat-icon {
+              flex-shrink: 0;
+            }
+
+            span {
+              color: #333;
+              font-size: 0.95rem;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .ai-dashboard {
+    padding: 16px;
+
+    .dashboard-header {
+      h1 {
+        font-size: 2rem;
+        flex-direction: column;
+        gap: 8px;
+      }
+    }
+
+    .dashboard-content {
+      .ai-metrics-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      .ai-analyses-section {
+        .analysis-row {
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+      }
+
+      .recent-data-section {
+        .data-row {
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ai-metric-card, .analysis-card, .data-card, .ai-summary-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.ai-metric-card:nth-child(1) { animation-delay: 0.1s; }
+.ai-metric-card:nth-child(2) { animation-delay: 0.2s; }
+.ai-metric-card:nth-child(3) { animation-delay: 0.3s; }
+.ai-metric-card:nth-child(4) { animation-delay: 0.4s; } 

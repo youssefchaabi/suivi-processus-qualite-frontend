@@ -72,9 +72,7 @@ export class FormulaireProjetComponent implements OnInit {
     if (projet.echeance && typeof projet.echeance !== 'object') {
       projet.echeance = new Date(projet.echeance);
     }
-    // Ajout : renseigner creePar avec l'ID utilisateur connecté
-    const userId = this.authService.getUserId();
-    projet.creePar = userId === null ? undefined : userId;
+    
     if (this.modeEdition && this.projetId) {
       this.ficheProjetService.updateProjet(this.projetId, projet).subscribe({
         next: () => {

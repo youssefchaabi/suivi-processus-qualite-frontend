@@ -8,10 +8,11 @@
 
 .form-card {
   padding: 40px 32px;
-  border-radius: 18px;
-  box-shadow: 0 4px 24px rgba(25, 118, 210, 0.10);
+  border-radius: 20px;
+  box-shadow: 0 4px 24px rgba(25, 118, 210, 0.12);
   max-width: 500px;
   width: 100%;
+  background: #fff;
 }
 
 .full-width {
@@ -29,6 +30,11 @@
 .actions button {
   flex: 1;
   min-width: 120px;
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 1.05em;
+  letter-spacing: 0.5px;
+  box-shadow: 0 1px 4px rgba(25, 118, 210, 0.08);
 }
 
 .mat-spinner {
@@ -45,6 +51,7 @@ mat-error {
 @media (max-width: 600px) {
   .form-card {
     padding: 18px 4px;
+    max-width: 98vw;
   }
   .actions {
     flex-direction: column;

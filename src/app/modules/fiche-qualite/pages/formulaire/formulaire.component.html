@@ -1,5 +1,5 @@
 <div class="form-container">
-  <mat-card class="form-card">
+  <mat-card class="form-card mat-elevation-z4">
     <mat-card-header>
       <mat-card-title>
         <mat-icon style="vertical-align: middle; color: #1976d2;">
@@ -10,12 +10,12 @@
     </mat-card-header>
 
     <mat-card-content>
-      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off">
         
         <!-- Titre -->
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Titre de la fiche</mat-label>
-          <input matInput formControlName="titre" placeholder="Ex: Audit qualité projet X" required>
+          <input matInput formControlName="titre" placeholder="Ex: Audit qualité projet X" required autocomplete="off">
           <mat-error *ngIf="form.get('titre')?.hasError('required')">
             Le titre est requis
           </mat-error>
@@ -91,8 +91,8 @@
             {{ modeEdition ? 'Mettre à jour' : 'Créer' }}
           </button>
           
-          <button mat-raised-button color="accent" type="button" 
-                  (click)="annuler()" [disabled]="loading">
+          <button mat-stroked-button color="accent" type="button" 
+                  (click)="annuler()" [disabled]="loading" matTooltip="Annuler et revenir à la liste">
             <mat-icon>arrow_back</mat-icon>
             Annuler
           </button>

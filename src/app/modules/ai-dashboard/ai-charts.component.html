@@ -1,0 +1,74 @@
+<div class="ai-charts-container">
+  <div class="charts-grid">
+    <!-- Graphique d'évolution des tendances -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3><i class="material-icons">trending_up</i> Évolution des Tendances</h3>
+        <p>Analyse de l'évolution du taux de conformité sur 8 mois</p>
+      </div>
+      <div class="chart-container">
+        <canvas #trendChart width="400" height="300"></canvas>
+      </div>
+    </div>
+
+    <!-- Graphique d'analyse prédictive -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3><i class="material-icons">analytics</i> Analyse Prédictive</h3>
+        <p>Risques prédits par type d'activité</p>
+      </div>
+      <div class="chart-container">
+        <canvas #predictionChart width="400" height="300"></canvas>
+      </div>
+    </div>
+
+    <!-- Graphique des KPI -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3><i class="material-icons">pie_chart</i> Répartition des KPI</h3>
+        <p>Répartition des indicateurs de performance qualité</p>
+      </div>
+      <div class="chart-container">
+        <canvas #kpiChart width="400" height="300"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contrôles interactifs -->
+  <div class="chart-controls">
+    <div class="control-group">
+      <label>Période d'analyse :</label>
+      <select (change)="onPeriodChange($event)">
+        <option value="8">8 derniers mois</option>
+        <option value="6">6 derniers mois</option>
+        <option value="12">12 derniers mois</option>
+      </select>
+    </div>
+    
+    <div class="control-group">
+      <label>Type de graphique :</label>
+      <select (change)="onChartTypeChange($event)">
+        <option value="line">Ligne</option>
+        <option value="bar">Barres</option>
+        <option value="area">Zone</option>
+      </select>
+    </div>
+
+    <button class="refresh-btn" (click)="refreshCharts()">
+      <i class="material-icons">refresh</i>
+      Actualiser
+    </button>
+
+    <!-- Boutons d'export -->
+    <div class="export-controls">
+      <button class="export-btn pdf-btn" (click)="exportToPDF()">
+        <i class="material-icons">picture_as_pdf</i>
+        PDF
+      </button>
+      <button class="export-btn excel-btn" (click)="exportToExcel()">
+        <i class="material-icons">table_chart</i>
+        Excel
+      </button>
+    </div>
+  </div>
+</div> 

@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AiDashboardComponent } from './ai-dashboard.component';
+import { AiChartsComponent } from './ai-charts.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
@@ -12,7 +13,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
-    AiDashboardComponent
+    AiDashboardComponent,
+    AiChartsComponent
   ],
   imports: [
     CommonModule,

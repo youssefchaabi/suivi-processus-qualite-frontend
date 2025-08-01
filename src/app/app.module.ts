@@ -31,6 +31,10 @@ import { MatSortModule } from '@angular/material/sort';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { KpiComponent } from './kpi/kpi.component';
 
+// Import Chart.js
+import { Chart, registerables } from 'chart.js';
+Chart.register(...registerables);
+
 @NgModule({
   declarations: [
     AppComponent,

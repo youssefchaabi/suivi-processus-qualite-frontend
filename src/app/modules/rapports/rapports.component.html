@@ -1,0 +1,123 @@
+<div class="rapports-container">
+  <div class="rapports-header">
+    <h1>
+      <mat-icon>assessment</mat-icon>
+      Rapports
+    </h1>
+    <p class="subtitle">Génération et gestion des rapports qualité</p>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Génération du rapport en cours...</p>
+  </div>
+
+  <!-- Rapports Content -->
+  <div *ngIf="!loading" class="rapports-content">
+    <!-- Actions -->
+    <div class="actions-section">
+      <mat-card class="actions-card">
+        <mat-card-header>
+          <mat-card-title>Générer un Rapport</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="action-buttons">
+            <button mat-raised-button 
+                    color="primary" 
+                    (click)="generateReport('MENSUEL')"
+                    [disabled]="loading">
+              <mat-icon>calendar_month</mat-icon>
+              Rapport Mensuel
+            </button>
+            
+            <button mat-raised-button 
+                    color="accent" 
+                    (click)="generateReport('IA')"
+                    [disabled]="loading">
+              <mat-icon>psychology</mat-icon>
+              Rapport IA
+            </button>
+            
+            <button mat-raised-button 
+                    color="warn" 
+                    (click)="generateReport('TRIMESTRIEL')"
+                    [disabled]="loading">
+              <mat-icon>assessment</mat-icon>
+              Rapport Trimestriel
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Rapports List -->
+    <div class="reports-list">
+      <h2>Rapports Disponibles</h2>
+      
+      <div class="reports-grid">
+        <mat-card *ngFor="let report of reports" class="report-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon [color]="getReportColor(report.type)">
+                {{ getReportIcon(report.type) }}
+              </mat-icon>
+              {{ report.title }}
+            </mat-card-title>
+            <mat-card-subtitle>
+              {{ report.description }}
+            </mat-card-subtitle>
+          </mat-card-header>
+          
+          <mat-card-content>
+            <div class="report-info">
+              <div class="info-item">
+                <strong>Type:</strong> {{ report.type }}
+              </div>
+              <div class="info-item">
+                <strong>Date:</strong> {{ report.date | date:'dd/MM/yyyy HH:mm' }}
+              </div>
+              <div class="info-item">
+                <strong>Statut:</strong>
+                <mat-chip [color]="getStatusColor(report.status)" selected>
+                  {{ report.status }}
+                </mat-chip>
+              </div>
+            </div>
+          </mat-card-content>
+          
+          <mat-card-actions>
+            <button mat-button 
+                    color="primary" 
+                    (click)="exportToPDF(report)"
+                    [disabled]="report.status !== 'GÉNÉRÉ'">
+              <mat-icon>picture_as_pdf</mat-icon>
+              PDF
+            </button>
+            
+            <button mat-button 
+                    color="accent" 
+                    (click)="exportToExcel(report)"
+                    [disabled]="report.status !== 'GÉNÉRÉ'">
+              <mat-icon>table_chart</mat-icon>
+              Excel
+            </button>
+            
+            <button mat-button 
+                    color="warn">
+              <mat-icon>delete</mat-icon>
+              Supprimer
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="reports.length === 0" class="empty-state">
+      <mat-icon>description</mat-icon>
+      <h3>Aucun rapport disponible</h3>
+      <p>Générez votre premier rapport en utilisant les boutons ci-dessus</p>
+    </div>
+  </div>
+</div> 

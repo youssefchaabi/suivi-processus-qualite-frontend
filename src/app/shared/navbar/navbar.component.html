@@ -15,6 +15,8 @@
     <a mat-button routerLink="/fiche-suivi" *ngIf="authService.isAdmin() || authService.isChefProjet() || authService.isPiloteQualite()" matTooltip="Fiches Suivi">Fiches Suivi</a>
     <a mat-button routerLink="/kpi" *ngIf="authService.isPiloteQualite()" matTooltip="KPI">KPI</a>
     <a mat-button routerLink="/ai-dashboard" *ngIf="authService.isPiloteQualite()" matTooltip="Dashboard IA">Dashboard IA</a>
+    <a mat-button routerLink="/notifications" *ngIf="authService.isPiloteQualite()" matTooltip="Notifications">Notifications</a>
+    <a mat-button routerLink="/rapports" *ngIf="authService.isPiloteQualite()" matTooltip="Rapports">Rapports</a>
     <a mat-button routerLink="/utilisateurs" *ngIf="authService.isAdmin()" matTooltip="Utilisateurs">Utilisateurs</a>
     <a mat-button routerLink="/nomenclatures" *ngIf="authService.isAdmin()" matTooltip="Nomenclatures">Nomenclatures</a>
   </ng-container>

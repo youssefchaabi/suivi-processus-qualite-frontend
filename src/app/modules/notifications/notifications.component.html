@@ -1,0 +1,90 @@
+<div class="notifications-container">
+  <div class="notifications-header">
+    <h1>
+      <mat-icon>notifications</mat-icon>
+      Notifications
+    </h1>
+    <p class="subtitle">Gestion des alertes et notifications système</p>
+  </div>
+
+  <!-- Résumé des alertes -->
+  <div class="alerts-summary">
+    <div class="summary-card critical">
+      <mat-icon>error</mat-icon>
+      <div class="summary-content">
+        <h3>{{ getCriticalAlertsCount() }}</h3>
+        <span>{{ getCriticalAlertsCount() }} Alertes critiques</span>
+      </div>
+    </div>
+    <div class="summary-card urgent">
+      <mat-icon>warning</mat-icon>
+      <div class="summary-content">
+        <h3>{{ getUrgentAlertsCount() }}</h3>
+        <span>{{ getUrgentAlertsCount() }} Alertes urgentes</span>
+      </div>
+    </div>
+    <div class="summary-card info">
+      <mat-icon>info</mat-icon>
+      <div class="summary-content">
+        <h3>{{ getInfoAlertsCount() }}</h3>
+        <span>{{ getInfoAlertsCount() }} Informations</span>
+      </div>
+    </div>
+    <div class="summary-card unread">
+      <mat-icon>mark_email_unread</mat-icon>
+      <div class="summary-content">
+        <h3>{{ getUnreadAlertsCount() }}</h3>
+        <span>{{ getUnreadAlertsCount() }} Non lues</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Liste des alertes -->
+  <div class="alerts-list" *ngIf="!loading">
+    <div class="alert-item" *ngFor="let alert of alerts" 
+         [class.unread]="!alert.isRead"
+         [class.critical]="alert.type === 'CRITIQUE'"
+         [class.urgent]="alert.type === 'URGENT'"
+         [class.info]="alert.type === 'INFO'">
+      
+      <div class="alert-icon">
+        <mat-icon [style.color]="getAlertColor(alert.type)">
+          {{ getAlertIcon(alert.type) }}
+        </mat-icon>
+      </div>
+      
+      <div class="alert-content">
+        <div class="alert-header">
+          <h4>{{ alert.message }}</h4>
+          <span class="alert-date">{{ alert.date | date:'short' }}</span>
+        </div>
+        <div class="alert-actions">
+          <button mat-button 
+                  *ngIf="!alert.isRead"
+                  (click)="markAsRead(alert)"
+                  class="mark-read-btn">
+            <mat-icon>check</mat-icon>
+            Marquer comme lu
+          </button>
+          <span class="action-required" *ngIf="alert.actionRequired">
+            <mat-icon>priority_high</mat-icon>
+            Action requise
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading spinner -->
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner></mat-spinner>
+    <p>Chargement des notifications...</p>
+  </div>
+
+  <!-- Message si aucune alerte -->
+  <div class="no-alerts" *ngIf="!loading && alerts.length === 0">
+    <mat-icon>notifications_none</mat-icon>
+    <h3>Aucune notification</h3>
+    <p>Toutes les alertes sont à jour</p>
+  </div>
+</div> 

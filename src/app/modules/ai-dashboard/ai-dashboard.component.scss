@@ -365,6 +365,44 @@
       }
     }
 
+    .charts-section {
+      margin-bottom: 32px;
+
+      .charts-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+
+        mat-card-header {
+          padding: 24px 24px 0 24px;
+
+          mat-card-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+
+            mat-icon {
+              color: #667eea;
+            }
+          }
+
+          mat-card-subtitle {
+            color: #666;
+            font-size: 0.95rem;
+            margin-top: 4px;
+          }
+        }
+
+        mat-card-content {
+          padding: 16px 24px 24px 24px;
+        }
+      }
+    }
+
     .ai-summary-card {
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);

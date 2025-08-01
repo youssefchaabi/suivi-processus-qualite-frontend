@@ -36,6 +36,8 @@ const routes: Routes = [{ path: 'utilisateurs', loadChildren: () => import('./mo
 },
 { path: 'kpi', component: KpiComponent, canActivate: [AuthGuard], data: { role: 'PILOTE_QUALITE' } },
 { path: 'ai-dashboard', canActivate: [AuthGuard], loadChildren: () => import('./modules/ai-dashboard/ai-dashboard.module').then(m => m.AiDashboardModule), data: { role: 'PILOTE_QUALITE' } },
+{ path: 'notifications', canActivate: [AuthGuard], loadChildren: () => import('./modules/notifications/notifications.module').then(m => m.NotificationsModule), data: { role: 'PILOTE_QUALITE' } },
+{ path: 'rapports', canActivate: [AuthGuard], loadChildren: () => import('./modules/rapports/rapports.module').then(m => m.RapportsModule), data: { role: 'PILOTE_QUALITE' } },
 { path: 'fiche-projet', canActivate: [AuthGuard], loadChildren: () => import('./modules/fiche-projet/fiche-projet.module').then(m => m.FicheProjetModule), data: { role: ['ADMIN', 'CHEF_PROJET', 'PILOTE_QUALITE'] } },
 { path: 'unauthorized', component: UnauthorizedComponent }, // Crée ce composant si besoin
 { path: '**', redirectTo: 'auth/login' }

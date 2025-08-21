@@ -41,7 +41,7 @@ export class ListeComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
-    this.displayedColumns = ['ficheQualite', 'dateSuivi', 'etat', 'problemes', 'decisions', 'indicateursKpi', 'responsable'];
+    this.displayedColumns = ['ficheQualite', 'dateSuivi', 'etat', 'delai', 'problemes', 'decisions', 'indicateursKpi', 'responsable'];
     if (!this.authService.isPiloteQualite()) {
       this.displayedColumns.push('actions');
     }

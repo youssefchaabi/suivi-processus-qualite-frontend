@@ -1,124 +1,843 @@
-mat-header-cell {
-  background-color: #f5f5f5;
-  font-weight: bold;
-  color: #3f51b5;
+// Variables et mixins
+$primary-color: #1976d2;
+$accent-color: #ff4081;
+$warn-color: #f44336;
+$success-color: #4caf50;
+$background-color: #fafafa;
+$card-background: #ffffff;
+$text-primary: #212121;
+$text-secondary: #757575;
+$border-radius: 12px;
+$shadow-light: 0 2px 8px rgba(0, 0, 0, 0.1);
+$shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.15);
+$transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+// Mixins pour la responsivité
+@mixin mobile {
+  @media (max-width: 768px) { @content; }
 }
 
-mat-cell {
-  padding: 0.75rem;
+@mixin tablet {
+  @media (min-width: 769px) and (max-width: 1024px) { @content; }
 }
 
-mat-table {
-  width: 100%;
-  margin-top: 1rem;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #fff;
-  box-shadow: 0 2px 12px rgba(25, 118, 210, 0.08);
+@mixin desktop {
+  @media (min-width: 1025px) { @content; }
 }
 
-.actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
-  gap: 16px;
-  button {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+// Container principal
+.utilisateur-list-container {
+  padding: 24px;
+  background: $background-color;
+  min-height: 100vh;
+  font-family: 'Roboto', sans-serif;
+
+  @include mobile {
+    padding: 16px;
   }
 }
 
-.utilisateur-list-container {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 32px 16px;
+// Section header
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 20px;
+
+  @include mobile {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
 
-.table-responsive {
-  overflow-x: auto;
+.title-section {
+  flex: 1;
+
+  .main-title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 0 0 8px 0;
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: $text-primary;
+    line-height: 1.2;
+
+    @include mobile {
+      font-size: 2rem;
+    }
+
+    .title-icon {
+      font-size: 2.5rem;
+      color: $primary-color;
+      width: 2.5rem;
+      height: 2.5rem;
+
+      @include mobile {
+        font-size: 2rem;
+        width: 2rem;
+        height: 2rem;
+      }
+    }
+  }
+
+  .subtitle {
+    margin: 0;
+    color: $text-secondary;
+    font-size: 1.1rem;
+    font-weight: 400;
+
+    @include mobile {
+      font-size: 1rem;
+    }
+  }
+}
+
+.header-actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+
+  @include mobile {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .add-button {
+    background: linear-gradient(135deg, $primary-color, #1565c0);
+    color: white;
+    border-radius: $border-radius;
+    padding: 12px 24px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: $shadow-medium;
+    transition: $transition;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(25, 118, 210, 0.3);
+    }
+
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+
+  .back-button {
+    border-radius: $border-radius;
+    padding: 12px 24px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: $transition;
+
+    &:hover {
+      background-color: rgba(255, 64, 129, 0.1);
+      transform: translateY(-1px);
+    }
+
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+}
+
+// Section recherche et filtres
+.search-filters-section {
+  background: $card-background;
+  border-radius: $border-radius;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: $shadow-light;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 20px;
+  align-items: center;
+
+  @include mobile {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 20px;
+  }
+
+  @include tablet {
+    grid-template-columns: 1fr auto;
+    gap: 16px;
+  }
+}
+
+.search-container {
+  .search-field {
+    width: 100%;
+    
+    .mat-form-field-wrapper {
+      padding-bottom: 0;
+    }
+
+    .mat-form-field-outline {
+      border-radius: $border-radius;
+    }
+
+    .search-input {
+      font-size: 1rem;
+      padding: 16px 0;
+    }
+
+    .clear-search {
+      color: $text-secondary;
+      transition: $transition;
+
+      &:hover {
+        color: $text-primary;
+        transform: scale(1.1);
+      }
+    }
+  }
+}
+
+.filters-container {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+
+  @include mobile {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .filter-field {
+    min-width: 200px;
+
+    @include mobile {
+      width: 100%;
+      min-width: unset;
+    }
+  }
+
+  .clear-filters {
+    border-radius: $border-radius;
+    padding: 12px 20px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: $transition;
+
+    &:hover {
+      background-color: rgba(244, 67, 54, 0.1);
+      transform: translateY(-1px);
+    }
+
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+}
+
+.view-toggle {
+  .toggle-button {
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    transition: $transition;
+
+    &:hover {
+      transform: scale(1.1);
+      background-color: rgba(25, 118, 210, 0.1);
+    }
+
+    mat-icon {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+    }
+  }
+}
+
+// Section statistiques
+.stats-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+
+  @include mobile {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+.stat-card {
+  background: $card-background;
+  border-radius: $border-radius;
+  padding: 24px;
+  box-shadow: $shadow-light;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: $transition;
+  border-left: 4px solid $primary-color;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadow-medium;
+  }
+
+  .stat-icon {
+    font-size: 2.5rem;
+    color: $primary-color;
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .stat-content {
+    display: flex;
+    flex-direction: column;
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: $text-primary;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: $text-secondary;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 4px;
+    }
+  }
+}
+
+// Indicateurs de chargement et d'erreur
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+
+  .loading-spinner {
+    margin-bottom: 20px;
+  }
+
+  .loading-text {
+    color: $text-secondary;
+    font-size: 1.1rem;
+    margin: 0;
+  }
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  background: $card-background;
+  border-radius: $border-radius;
+  box-shadow: $shadow-light;
+
+  .error-icon {
+    font-size: 4rem;
+    color: $warn-color;
+    width: 4rem;
+    height: 4rem;
+    margin-bottom: 20px;
+  }
+
+  .error-text {
+    color: $text-secondary;
+    font-size: 1.1rem;
+    margin: 0;
+  }
+}
+
+// Section des cartes utilisateurs
+.cards-container {
+  .no-results {
+    text-align: center;
+    padding: 60px 20px;
+    background: $card-background;
+    border-radius: $border-radius;
+    box-shadow: $shadow-light;
+
+    .no-results-icon {
+      font-size: 4rem;
+      color: $text-secondary;
+      width: 4rem;
+      height: 4rem;
+      margin-bottom: 20px;
+    }
+
+    h3 {
+      color: $text-primary;
+      margin: 0 0 16px 0;
+      font-weight: 500;
+    }
+
+    p {
+      color: $text-secondary;
+      margin: 0 0 24px 0;
+      font-size: 1.1rem;
+    }
+
+    button {
+      border-radius: $border-radius;
+      padding: 12px 24px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+}
+
+.user-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+
+  @include mobile {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  @include tablet {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+}
+
+.user-card {
+  border-radius: $border-radius;
+  overflow: hidden;
+  transition: $transition;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: $shadow-medium;
+  }
+
+  .card-header {
+    padding: 24px 24px 16px 24px;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+
+    .user-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, $primary-color, #1565c0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+
+      .avatar-icon {
+        color: white;
+        font-size: 2rem;
+        width: 2rem;
+        height: 2rem;
+      }
+    }
+
+    .user-name {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: $text-primary;
+      margin: 0 0 8px 0;
+      line-height: 1.2;
+    }
+
+    .user-email {
+      font-size: 1rem;
+      color: $text-secondary;
+      margin: 0;
+      font-weight: 400;
+    }
+  }
+
+  .card-content {
+    padding: 16px 24px 24px 24px;
+
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+
+      &.role-admin {
+        background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        color: white;
+
+        .role-icon {
+          color: white;
+        }
+      }
+
+      &.role-chef {
+        background: linear-gradient(135deg, #4ecdc4, #44a08d);
+        color: white;
+
+        .role-icon {
+          color: white;
+        }
+      }
+
+      &.role-pilote {
+        background: linear-gradient(135deg, #45b7d1, #96c93d);
+        color: white;
+
+        .role-icon {
+          color: white;
+        }
+      }
+
+      .role-icon {
+        font-size: 1rem;
+        width: 1rem;
+        height: 1rem;
+      }
+
+      .role-text {
+        font-weight: 600;
+      }
+    }
+  }
+
+  .card-actions {
+    padding: 0 24px 24px 24px;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+
+    .action-button {
+      transition: $transition;
+
+      &:hover {
+        transform: scale(1.1);
+      }
+
+      &.edit-button {
+        background: linear-gradient(135deg, $primary-color, #1565c0);
+      }
+
+      &.delete-button {
+        background: linear-gradient(135deg, $warn-color, #d32f2f);
+      }
+
+      mat-icon {
+        color: white;
+      }
+    }
+  }
+}
+
+// Section du tableau
+.table-container {
+  .no-results {
+    text-align: center;
+    padding: 60px 20px;
+    background: $card-background;
+    border-radius: $border-radius;
+    box-shadow: $shadow-light;
+
+    .no-results-icon {
+      font-size: 4rem;
+      color: $text-secondary;
+      width: 4rem;
+      height: 4rem;
+      margin-bottom: 20px;
+    }
+
+    h3 {
+      color: $text-primary;
+      margin: 0 0 16px 0;
+      font-weight: 500;
+    }
+
+    p {
+      color: $text-secondary;
+      margin: 0 0 24px 0;
+      font-size: 1.1rem;
+    }
+
+    button {
+      border-radius: $border-radius;
+      padding: 12px 24px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
 }
 
 .utilisateur-table {
-  width: 100%;
-  min-width: 600px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(25, 118, 210, 0.08);
-}
+  border-radius: $border-radius;
+  overflow: hidden;
+  margin-top: 24px;
 
-.mat-header-cell {
-  font-weight: bold;
-  background: #f5f7fa;
-  color: #1976d2;
-  font-size: 1.1em;
-}
+  .table-header {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    color: $text-primary;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 20px 16px;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.08);
 
-.mat-row.utilisateur-row:hover {
-  background: #e3f2fd;
-  transition: background 0.2s;
-}
-
-.avatar {
-  vertical-align: middle;
-  margin-right: 8px;
-  color: #90caf9;
-  font-size: 28px;
-}
-
-.user-name {
-  font-weight: 500;
-  color: #222;
-  font-size: 1.08em;
-}
-
-.role-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 12px;
-  border-radius: 16px;
-  font-size: 0.98em;
-  font-weight: 500;
-  background: #e3f2fd;
-  color: #1976d2;
-  box-shadow: 0 1px 4px rgba(25, 118, 210, 0.08);
-  letter-spacing: 0.5px;
-  text-transform: capitalize;
-}
-.role-badge.admin {
-  background: #ffe0b2;
-  color: #ef6c00;
-}
-.role-badge.chef {
-  background: #c8e6c9;
-  color: #388e3c;
-}
-.role-badge.pilote {
-  background: #fff9c4;
-  color: #fbc02d;
-}
-
-@media (max-width: 800px) {
-  .utilisateur-table {
-    min-width: 0;
-    font-size: 0.95em;
+    mat-icon {
+      margin-right: 8px;
+      color: $primary-color;
+    }
   }
-  .mat-header-cell, .mat-cell {
-    padding: 8px 4px;
+
+  .table-cell {
+    padding: 20px 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    vertical-align: middle;
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .user-avatar-icon {
+        color: $primary-color;
+        font-size: 1.5rem;
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+
+      .user-name-text {
+        font-weight: 500;
+        color: $text-primary;
+      }
+    }
+
+    .role-badge-table {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-weight: 500;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+
+      &.role-admin {
+        background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        color: white;
+      }
+
+      &.role-chef {
+        background: linear-gradient(135deg, #4ecdc4, #44a08d);
+        color: white;
+      }
+
+      &.role-pilote {
+        background: linear-gradient(135deg, #45b7d1, #96c93d);
+        color: white;
+      }
+
+      .role-icon-small {
+        font-size: 0.8rem;
+        width: 0.8rem;
+        height: 0.8rem;
+        color: white;
+      }
+    }
+
+    .table-actions {
+      display: flex;
+      gap: 8px;
+
+      .action-button-table {
+        transition: $transition;
+
+        &:hover {
+          transform: scale(1.1);
+        }
+
+        mat-icon {
+          color: white;
+        }
+      }
+    }
   }
-  .actions {
-    flex-direction: column;
-    gap: 8px;
+
+  .table-header-row {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  }
+
+  .table-row {
+    transition: $transition;
+
+    &:hover {
+      background-color: rgba(25, 118, 210, 0.04);
+    }
   }
 }
 
-@media (max-width: 500px) {
+.table-paginator {
+  margin-top: 24px;
+  border-radius: $border-radius;
+  background: $card-background;
+  box-shadow: $shadow-light;
+}
+
+// Animations
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// Classes d'animation
+.header-section {
+  animation: slideInLeft 0.6s ease-out;
+}
+
+.search-filters-section {
+  animation: fadeInUp 0.6s ease-out 0.2s both;
+}
+
+.stats-section {
+  animation: fadeInUp 0.6s ease-out 0.4s both;
+}
+
+.user-card {
+  animation: scaleIn 0.5s ease-out both;
+
+  @for $i from 1 through 20 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{0.1 * $i}s;
+    }
+  }
+}
+
+// Responsive design avancé
+@media (max-width: 480px) {
   .utilisateur-list-container {
-    padding: 8px 2px;
+    padding: 12px;
   }
-  h2 {
-    font-size: 1.1em;
+
+  .header-section {
+    margin-bottom: 24px;
+  }
+
+  .main-title {
+    font-size: 1.8rem !important;
+  }
+
+  .title-icon {
+    font-size: 1.8rem !important;
+    width: 1.8rem !important;
+    height: 1.8rem !important;
+  }
+
+  .search-filters-section {
+    padding: 16px;
+  }
+
+  .user-cards-grid {
+    gap: 12px;
+  }
+
+  .user-card {
+    .card-header {
+      padding: 20px 20px 12px 20px;
+
+      .user-avatar {
+        width: 50px;
+        height: 50px;
+
+        .avatar-icon {
+          font-size: 1.5rem;
+          width: 1.5rem;
+          height: 1.5rem;
+        }
+      }
+
+      .user-name {
+        font-size: 1.3rem;
+      }
+    }
+
+    .card-content {
+      padding: 12px 20px 20px 20px;
+    }
+
+    .card-actions {
+      padding: 0 20px 20px 20px;
+    }
+  }
+}
+
+// Améliorations pour l'accessibilité
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+// Mode sombre (optionnel)
+@media (prefers-color-scheme: dark) {
+  .utilisateur-list-container {
+    background: #121212;
+    color: #ffffff;
+  }
+
+  .card-background {
+    background: #1e1e1e;
+  }
+
+  .text-primary {
+    color: #ffffff;
+  }
+
+  .text-secondary {
+    color: #b0b0b0;
   }
 }

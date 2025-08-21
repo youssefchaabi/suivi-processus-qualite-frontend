@@ -75,12 +75,25 @@
           </mat-select>
         </mat-form-field>
 
+        <!-- Taux de conformité (%) -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Taux de conformité (%)</mat-label>
+          <input matInput type="number" formControlName="tauxConformite" placeholder="ex: 85" min="0" max="100">
+          <mat-hint>Valeur entre 0 et 100</mat-hint>
+        </mat-form-field>
+
+        <!-- Délai de traitement (jours) -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Délai de traitement (jours)</mat-label>
+          <input matInput type="number" formControlName="delaiTraitementJours" placeholder="ex: 3" min="0">
+        </mat-form-field>
+
         <!-- Responsable -->
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Responsable</mat-label>
           <mat-select formControlName="ajoutePar" required>
-            <mat-option *ngFor="let resp of responsables" [value]="resp.valeur">
-              {{ resp.valeur }}
+            <mat-option *ngFor="let user of utilisateurs" [value]="user.nom">
+              {{ user.nom }} ({{ user.role }})
             </mat-option>
           </mat-select>
           <mat-error *ngIf="form.get('ajoutePar')?.hasError('required')">

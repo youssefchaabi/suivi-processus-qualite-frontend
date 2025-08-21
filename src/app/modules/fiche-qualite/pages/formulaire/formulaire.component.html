@@ -67,8 +67,8 @@
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Responsable</mat-label>
           <mat-select formControlName="responsable" required>
-            <mat-option *ngFor="let resp of responsables" [value]="resp.valeur">
-              {{ resp.valeur }}
+            <mat-option *ngFor="let user of utilisateurs" [value]="user.nom">
+              {{ user.nom }} ({{ user.role }})
             </mat-option>
           </mat-select>
           <mat-error *ngIf="form.get('responsable')?.hasError('required')">

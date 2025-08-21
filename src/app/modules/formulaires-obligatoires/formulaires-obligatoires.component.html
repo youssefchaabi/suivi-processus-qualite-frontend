@@ -1,0 +1,243 @@
+<div class="formulaires-container">
+  <div class="header">
+    <h1>Formulaires Obligatoires</h1>
+    <p>Gérez les formulaires obligatoires et leurs échéances</p>
+  </div>
+
+  <!-- Actions principales -->
+  <div class="actions-section">
+    <mat-card>
+      <mat-card-content>
+        <div class="actions-grid">
+          <button mat-raised-button color="primary" (click)="openCreateDialog()">
+            <mat-icon>add</mat-icon>
+            Nouveau Formulaire
+          </button>
+          <button mat-stroked-button (click)="verifierRetards()">
+            <mat-icon>warning</mat-icon>
+            Vérifier Retards
+          </button>
+          <button mat-stroked-button (click)="verifierEcheances()">
+            <mat-icon>schedule</mat-icon>
+            Vérifier Échéances
+          </button>
+          <button mat-stroked-button (click)="exportFormulaires()">
+            <mat-icon>download</mat-icon>
+            Exporter
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Statistiques -->
+  <div class="stats-section">
+    <div class="stats-grid">
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-value">{{totalFormulaires}}</div>
+          <div class="stat-label">Total Formulaires</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card warning">
+        <mat-card-content>
+          <div class="stat-value">{{formulairesEnRetard}}</div>
+          <div class="stat-label">En Retard</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card info">
+        <mat-card-content>
+          <div class="stat-value">{{formulairesEcheanceProche}}</div>
+          <div class="stat-label">Échéance Proche</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card success">
+        <mat-card-content>
+          <div class="stat-value">{{formulairesSoumis}}</div>
+          <div class="stat-label">Soumis</div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <div class="filters-section">
+    <mat-card>
+      <mat-card-content>
+        <div class="filters-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Statut</mat-label>
+            <mat-select [(ngModel)]="selectedStatut" (selectionChange)="applyFilters()">
+              <mat-option value="">Tous les statuts</mat-option>
+              <mat-option value="EN_ATTENTE">En Attente</mat-option>
+              <mat-option value="SOUMIS">Soumis</mat-option>
+              <mat-option value="EN_RETARD">En Retard</mat-option>
+              <mat-option value="ANNULE">Annulé</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Priorité</mat-label>
+            <mat-select [(ngModel)]="selectedPriorite" (selectionChange)="applyFilters()">
+              <mat-option value="">Toutes les priorités</mat-option>
+              <mat-option value="HAUTE">Haute</mat-option>
+              <mat-option value="MOYENNE">Moyenne</mat-option>
+              <mat-option value="BASSE">Basse</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Responsable</mat-label>
+            <mat-select [(ngModel)]="selectedResponsable" (selectionChange)="applyFilters()">
+              <mat-option value="">Tous les responsables</mat-option>
+              <mat-option *ngFor="let user of users" [value]="user.id">
+                {{user.nom}} {{user.prenom}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Type de formulaire</mat-label>
+            <mat-select [(ngModel)]="selectedType" (selectionChange)="applyFilters()">
+              <mat-option value="">Tous les types</mat-option>
+              <mat-option value="QUALITE">Qualité</mat-option>
+              <mat-option value="SUIVI">Suivi</mat-option>
+              <mat-option value="AUDIT">Audit</mat-option>
+              <mat-option value="CONTROLE">Contrôle</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="search-section">
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Rechercher</mat-label>
+            <input matInput [(ngModel)]="searchTerm" (input)="applyFilters()" placeholder="Nom, description...">
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+
+          <button mat-stroked-button (click)="clearFilters()">
+            <mat-icon>clear</mat-icon>
+            Effacer
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Liste des formulaires -->
+  <div class="formulaires-list">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Formulaires Obligatoires</mat-card-title>
+        <mat-card-subtitle>
+          {{filteredFormulaires.length}} formulaire(s) trouvé(s)
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="loading-container" *ngIf="loading">
+          <mat-spinner></mat-spinner>
+          <p>Chargement des formulaires...</p>
+        </div>
+
+        <div class="no-data" *ngIf="!loading && filteredFormulaires.length === 0">
+          <mat-icon>assignment</mat-icon>
+          <p>Aucun formulaire trouvé pour les critères sélectionnés</p>
+        </div>
+
+        <div class="formulaires-grid" *ngIf="!loading && filteredFormulaires.length > 0">
+          <div class="formulaire-card" *ngFor="let formulaire of paginatedFormulaires" 
+               [ngClass]="getStatutClass(formulaire.statut)">
+            <div class="formulaire-header">
+              <div class="formulaire-title">
+                <h3>{{formulaire.nom}}</h3>
+                <div class="formulaire-type">{{formulaire.typeFormulaire}}</div>
+              </div>
+              <div class="formulaire-actions">
+                <button mat-icon-button [matMenuTriggerFor]="menu">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item (click)="editFormulaire(formulaire)">
+                    <mat-icon>edit</mat-icon>
+                    Modifier
+                  </button>
+                  <button mat-menu-item (click)="viewFormulaire(formulaire)">
+                    <mat-icon>visibility</mat-icon>
+                    Voir
+                  </button>
+                  <button mat-menu-item (click)="marquerSoumis(formulaire)" 
+                          *ngIf="formulaire.statut === 'EN_ATTENTE'">
+                    <mat-icon>check</mat-icon>
+                    Marquer comme soumis
+                  </button>
+                  <button mat-menu-item (click)="deleteFormulaire(formulaire)" 
+                          class="danger">
+                    <mat-icon>delete</mat-icon>
+                    Supprimer
+                  </button>
+                </mat-menu>
+              </div>
+            </div>
+
+            <div class="formulaire-content">
+              <p class="description">{{formulaire.description}}</p>
+              
+              <div class="formulaire-details">
+                <div class="detail-item">
+                  <span class="label">Responsable:</span>
+                  <span class="value">{{getResponsableName(formulaire.responsableId)}}</span>
+                </div>
+                
+                <div class="detail-item">
+                  <span class="label">Échéance:</span>
+                  <span class="value" [ngClass]="getEcheanceClass(formulaire.dateEcheance)">
+                    {{formulaire.dateEcheance | date:'dd/MM/yyyy'}}
+                  </span>
+                </div>
+
+                <div class="detail-item">
+                  <span class="label">Priorité:</span>
+                  <span class="value priorite" [ngClass]="getPrioriteClass(formulaire.priorite)">
+                    {{formulaire.priorite}}
+                  </span>
+                </div>
+
+                <div class="detail-item">
+                  <span class="label">Statut:</span>
+                  <span class="value statut" [ngClass]="getStatutClass(formulaire.statut)">
+                    {{getStatutLabel(formulaire.statut)}}
+                  </span>
+                </div>
+              </div>
+
+              <div class="formulaire-footer">
+                <div class="notifications" *ngIf="formulaire.notifie">
+                  <mat-icon>notifications_active</mat-icon>
+                  Notifications activées
+                </div>
+                
+                <div class="commentaires" *ngIf="formulaire.commentaires">
+                  <mat-icon>comment</mat-icon>
+                  {{formulaire.commentaires}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <mat-paginator 
+          [length]="filteredFormulaires.length"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="[6, 12, 24, 48]"
+          (page)="onPageChange($event)"
+          showFirstLastButtons>
+        </mat-paginator>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div> 

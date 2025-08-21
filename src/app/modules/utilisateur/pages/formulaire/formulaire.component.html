@@ -15,11 +15,11 @@
           <mat-error *ngIf="form.get('nom')?.hasError('required')">Le nom est requis</mat-error>
         </mat-form-field>
 
-        <!-- Mot de passe (création uniquement ou si modifié) -->
-        <mat-form-field appearance="outline" class="full-width">
+        <!-- Mot de passe (création uniquement) -->
+        <mat-form-field *ngIf="!modeEdition" appearance="outline" class="full-width">
           <mat-label>Mot de passe</mat-label>
-          <input matInput formControlName="password" type="password" placeholder="Mot de passe..." [required]="!modeEdition" autocomplete="new-password">
-          <mat-error *ngIf="form.get('password')?.hasError('required') && !modeEdition">Le mot de passe est requis</mat-error>
+          <input matInput formControlName="password" type="password" placeholder="Mot de passe..." required autocomplete="new-password">
+          <mat-error *ngIf="form.get('password')?.hasError('required')">Le mot de passe est requis</mat-error>
           <mat-error *ngIf="form.get('password')?.hasError('minlength')">Le mot de passe doit contenir au moins 6 caractères</mat-error>
         </mat-form-field>
 

@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FicheQualite } from 'src/app/models/fiche-qualite';
 import { FicheQualiteService } from 'src/app/services/fiche-qualite.service';
 import { NomenclatureService, Nomenclature } from 'src/app/services/nomenclature.service';
+import { UtilisateurService, Utilisateur } from 'src/app/services/utilisateur.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SuccessSnackbarComponent } from 'src/app/shared/success-snackbar/success-snackbar.component';
 
@@ -23,12 +24,14 @@ export class FormulaireComponent implements OnInit {
   // Nomenclatures dynamiques
   typesFiche: Nomenclature[] = [];
   statuts: Nomenclature[] = [];
-  responsables: Nomenclature[] = [];
+  // Liste des utilisateurs pour le champ responsable
+  utilisateurs: Utilisateur[] = [];
 
   constructor(
     private fb: FormBuilder,
     private ficheService: FicheQualiteService,
     private nomenclatureService: NomenclatureService,
+    private utilisateurService: UtilisateurService,
     private route: ActivatedRoute,
     private router: Router,
     private snackBar: MatSnackBar
@@ -44,15 +47,13 @@ export class FormulaireComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.chargerNomenclatures();
-    // Charger toutes les fiches pour vérifier les doublons
-    this.ficheService.getAll().subscribe(data => { this.fichesExistantes = data; });
     this.ficheId = this.route.snapshot.paramMap.get('id');
-    
     if (this.ficheId) {
       this.modeEdition = true;
       this.chargerFiche();
     }
+    this.chargerNomenclatures();
+    this.chargerUtilisateurs();
   }
 
   chargerNomenclatures(): void {
@@ -95,20 +96,20 @@ export class FormulaireComponent implements OnInit {
         ];
       }
     });
+  }
 
-    // Charger les responsables (utilisateurs)
-    this.nomenclatureService.getNomenclaturesByType('RESPONSABLE').subscribe({
-      next: (data) => {
-        this.responsables = data;
+  chargerUtilisateurs(): void {
+    // Charger la liste des utilisateurs pour le champ responsable
+    this.utilisateurService.getUtilisateurs().subscribe({
+      next: (users) => {
+        this.utilisateurs = users;
+        if (users.length > 0 && !this.modeEdition) {
+          this.form.patchValue({ responsable: users[0].nom });
+        }
       },
       error: (error) => {
-        console.error('Erreur lors du chargement des responsables:', error);
-        // Fallback vers des valeurs par défaut
-        this.responsables = [
-          { type: 'RESPONSABLE', valeur: 'Chef Projet A' },
-          { type: 'RESPONSABLE', valeur: 'Chef Projet B' },
-          { type: 'RESPONSABLE', valeur: 'Pilote Qualité' }
-        ];
+        console.error('Erreur lors du chargement des utilisateurs:', error);
+        this.utilisateurs = [];
       }
     });
   }

@@ -1,0 +1,198 @@
+<div class="historique-container">
+  <div class="header">
+    <h1>Historique des Actions</h1>
+    <p>Consultez l'historique complet des actions effectuées dans le système</p>
+  </div>
+
+  <!-- Filtres -->
+  <div class="filters-section">
+    <mat-card>
+      <mat-card-content>
+        <div class="filters-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Type d'action</mat-label>
+            <mat-select [(ngModel)]="selectedType" (selectionChange)="applyFilters()">
+              <mat-option value="">Tous les types</mat-option>
+              <mat-option value="CREATION">Création</mat-option>
+              <mat-option value="MODIFICATION">Modification</mat-option>
+              <mat-option value="SUPPRESSION">Suppression</mat-option>
+              <mat-option value="SOUMISSION">Soumission</mat-option>
+              <mat-option value="VALIDATION">Validation</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Module</mat-label>
+            <mat-select [(ngModel)]="selectedModule" (selectionChange)="applyFilters()">
+              <mat-option value="">Tous les modules</mat-option>
+              <mat-option value="FICHE_QUALITE">Fiche Qualité</mat-option>
+              <mat-option value="FICHE_SUIVI">Fiche Suivi</mat-option>
+              <mat-option value="UTILISATEUR">Utilisateur</mat-option>
+              <mat-option value="FORMULAIRE_OBLIGATOIRE">Formulaire Obligatoire</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Utilisateur</mat-label>
+            <mat-select [(ngModel)]="selectedUser" (selectionChange)="applyFilters()">
+              <mat-option value="">Tous les utilisateurs</mat-option>
+              <mat-option *ngFor="let user of users" [value]="user.id">
+                {{user.nom}} {{user.prenom}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Période</mat-label>
+            <mat-select [(ngModel)]="selectedPeriod" (selectionChange)="applyFilters()">
+              <mat-option value="">Toute période</mat-option>
+              <mat-option value="TODAY">Aujourd'hui</mat-option>
+              <mat-option value="WEEK">Cette semaine</mat-option>
+              <mat-option value="MONTH">Ce mois</mat-option>
+              <mat-option value="QUARTER">Ce trimestre</mat-option>
+              <mat-option value="YEAR">Cette année</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="date-range">
+          <mat-form-field appearance="outline">
+            <mat-label>Date de début</mat-label>
+            <input matInput [matDatepicker]="startPicker" [(ngModel)]="startDate" (dateChange)="applyFilters()">
+            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+            <mat-datepicker #startPicker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Date de fin</mat-label>
+            <input matInput [matDatepicker]="endPicker" [(ngModel)]="endDate" (dateChange)="applyFilters()">
+            <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+            <mat-datepicker #endPicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <div class="actions">
+          <button mat-raised-button color="primary" (click)="applyFilters()">
+            <mat-icon>filter_list</mat-icon>
+            Appliquer les filtres
+          </button>
+          <button mat-stroked-button (click)="clearFilters()">
+            <mat-icon>clear</mat-icon>
+            Effacer
+          </button>
+          <button mat-stroked-button (click)="exportHistorique()">
+            <mat-icon>download</mat-icon>
+            Exporter
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Statistiques -->
+  <div class="stats-section">
+    <div class="stats-grid">
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-value">{{totalActions}}</div>
+          <div class="stat-label">Total Actions</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-value">{{actionsToday}}</div>
+          <div class="stat-label">Actions Aujourd'hui</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-value">{{actionsThisWeek}}</div>
+          <div class="stat-label">Actions Cette Semaine</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-value">{{actionsThisMonth}}</div>
+          <div class="stat-label">Actions Ce Mois</div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Liste de l'historique -->
+  <div class="historique-list">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Historique des Actions</mat-card-title>
+        <mat-card-subtitle>
+          {{filteredHistorique.length}} action(s) trouvée(s)
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="loading-container" *ngIf="loading">
+          <mat-spinner></mat-spinner>
+          <p>Chargement de l'historique...</p>
+        </div>
+
+        <div class="no-data" *ngIf="!loading && filteredHistorique.length === 0">
+          <mat-icon>history</mat-icon>
+          <p>Aucune action trouvée pour les critères sélectionnés</p>
+        </div>
+
+        <div class="historique-items" *ngIf="!loading && filteredHistorique.length > 0">
+          <div class="historique-item" *ngFor="let action of paginatedHistorique">
+            <div class="action-header">
+              <div class="action-type" [ngClass]="getActionTypeClass(action.typeAction)">
+                <mat-icon>{{getActionIcon(action.typeAction)}}</mat-icon>
+                {{action.typeAction}}
+              </div>
+              <div class="action-date">
+                {{action.dateAction | date:'dd/MM/yyyy HH:mm'}}
+              </div>
+            </div>
+
+            <div class="action-content">
+              <div class="action-description">
+                <strong>{{action.utilisateur.nom}} {{action.utilisateur.prenom}}</strong>
+                {{getActionDescription(action)}}
+              </div>
+
+              <div class="action-details">
+                <div class="detail-item">
+                  <span class="label">Module:</span>
+                  <span class="value">{{action.module}}</span>
+                </div>
+                <div class="detail-item" *ngIf="action.entiteId">
+                  <span class="label">ID Entité:</span>
+                  <span class="value">{{action.entiteId}}</span>
+                </div>
+                <div class="detail-item" *ngIf="action.details">
+                  <span class="label">Détails:</span>
+                  <span class="value">{{action.details}}</span>
+                </div>
+              </div>
+
+              <div class="action-ip" *ngIf="action.adresseIp">
+                <mat-icon>computer</mat-icon>
+                {{action.adresseIp}}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <mat-paginator 
+          [length]="filteredHistorique.length"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="[10, 25, 50, 100]"
+          (page)="onPageChange($event)"
+          showFirstLastButtons>
+        </mat-paginator>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div> 

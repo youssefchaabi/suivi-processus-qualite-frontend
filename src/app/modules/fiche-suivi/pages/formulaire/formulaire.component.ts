@@ -8,6 +8,7 @@ import { FicheQualiteService } from 'src/app/services/fiche-qualite.service';
 import { FicheQualite } from 'src/app/models/fiche-qualite';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from 'src/app/services/authentification.service';
+import { UtilisateurService, Utilisateur } from 'src/app/services/utilisateur.service';
 
 @Component({
   selector: 'app-formulaire',
@@ -23,7 +24,8 @@ export class FormulaireComponent implements OnInit {
   // Nomenclatures dynamiques
   etats: Nomenclature[] = [];
   kpis: Nomenclature[] = [];
-  responsables: Nomenclature[] = [];
+  // Liste des utilisateurs pour le champ responsable
+  utilisateurs: Utilisateur[] = [];
   fichesQualite: FicheQualite[] = [];
   selectedFicheQualite: FicheQualite | null = null;
   fichesSuiviExistantes: FicheSuivi[] = [];
@@ -34,6 +36,7 @@ export class FormulaireComponent implements OnInit {
     private ficheSuiviService: FicheSuiviService,
     private nomenclatureService: NomenclatureService,
     private ficheQualiteService: FicheQualiteService,
+    private utilisateurService: UtilisateurService,
     private route: ActivatedRoute,
     private router: Router,
     private snackBar: MatSnackBar,
@@ -46,20 +49,23 @@ export class FormulaireComponent implements OnInit {
       problemes: [''],
       decisions: [''],
       indicateursKpi: [''],
+      tauxConformite: [null, [Validators.min(0), Validators.max(100)]],
+      delaiTraitementJours: [null, [Validators.min(0)]],
       ajoutePar: ['', Validators.required]
     });
   }
 
   ngOnInit(): void {
-    this.chargerNomenclatures();
-    this.chargerFichesQualite();
-    // Charger toutes les fiches de suivi pour vérifier les doublons
-    this.ficheSuiviService.getAll().subscribe(data => { this.fichesSuiviExistantes = data; });
     this.ficheSuiviId = this.route.snapshot.paramMap.get('id');
     if (this.ficheSuiviId) {
       this.modeEdition = true;
       this.chargerFicheSuivi();
     }
+    this.chargerNomenclatures();
+    this.chargerUtilisateurs();
+    this.chargerFichesQualite();
+    // Charger toutes les fiches de suivi pour vérifier les doublons
+    this.ficheSuiviService.getAll().subscribe(data => { this.fichesSuiviExistantes = data; });
   }
 
   chargerNomenclatures(): void {
@@ -82,18 +88,20 @@ export class FormulaireComponent implements OnInit {
         ];
       }
     });
-    this.nomenclatureService.getNomenclaturesByType('RESPONSABLE').subscribe({
-      next: (data) => {
-        this.responsables = data && data.length > 0 ? data : [
-          { type: 'RESPONSABLE', valeur: 'Chef Projet A' },
-          { type: 'RESPONSABLE', valeur: 'Pilote Qualité' }
-        ];
+  }
+
+  chargerUtilisateurs(): void {
+    // Charger la liste des utilisateurs pour le champ responsable
+    this.utilisateurService.getUtilisateurs().subscribe({
+      next: (users) => {
+        this.utilisateurs = users;
+        if (users.length > 0 && !this.modeEdition) {
+          this.form.patchValue({ ajoutePar: users[0].nom });
+        }
       },
-      error: () => {
-        this.responsables = [
-          { type: 'RESPONSABLE', valeur: 'Chef Projet A' },
-          { type: 'RESPONSABLE', valeur: 'Pilote Qualité' }
-        ];
+      error: (error) => {
+        console.error('Erreur lors du chargement des utilisateurs:', error);
+        this.utilisateurs = [];
       }
     });
   }
@@ -127,6 +135,8 @@ export class FormulaireComponent implements OnInit {
           problemes: fiche.problemes,
           decisions: fiche.decisions,
           indicateursKpi: fiche.indicateursKpi,
+          tauxConformite: (fiche as any).tauxConformite ?? null,
+          delaiTraitementJours: (fiche as any).delaiTraitementJours ?? null,
           ajoutePar: fiche.ajoutePar
         });
         this.loading = false;

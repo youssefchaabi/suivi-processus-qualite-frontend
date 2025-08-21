@@ -63,6 +63,16 @@
         </mat-chip>
       </td>
     </ng-container>
+    <!-- Délai traitement -->
+    <ng-container matColumnDef="delai">
+      <th mat-header-cell *matHeaderCellDef> Délai (j) </th>
+      <td mat-cell *matCellDef="let fiche">
+        <mat-chip color="accent" selected *ngIf="fiche.delaiTraitementJours != null">
+          {{ fiche.delaiTraitementJours }} j
+        </mat-chip>
+        <span *ngIf="fiche.delaiTraitementJours == null">-</span>
+      </td>
+    </ng-container>
     <!-- Problèmes -->
     <ng-container matColumnDef="problemes">
       <th mat-header-cell *matHeaderCellDef> Problèmes </th>

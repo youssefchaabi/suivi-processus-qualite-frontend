@@ -15,6 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { MatCardModule } from '@angular/material/card';
 import { SuccessSnackbarComponent } from 'src/app/shared/success-snackbar/success-snackbar.component';
@@ -40,6 +41,7 @@ import { SuccessSnackbarComponent } from 'src/app/shared/success-snackbar/succes
     MatInputModule,
     MatSelectModule,
     MatCheckboxModule,
+    MatTooltipModule,
     OverlayModule,
     MatCardModule,
   

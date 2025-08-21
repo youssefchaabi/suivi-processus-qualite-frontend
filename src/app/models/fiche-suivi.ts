@@ -6,5 +6,7 @@ export interface FicheSuivi {
   problemes: string;
   decisions: string;
   indicateursKpi: string;
+  tauxConformite?: number; // 0-100
+  delaiTraitementJours?: number; // >= 0
   ajoutePar: string;
 }

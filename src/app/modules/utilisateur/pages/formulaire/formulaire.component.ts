@@ -24,7 +24,7 @@ export class FormulaireComponent implements OnInit {
     private utilisateurService: UtilisateurService,
     private route: ActivatedRoute,
     private router: Router,
-    private snackBar: MatSnackBar  // ✅ ajout ici
+    private snackBar: MatSnackBar
 
   ) {
     this.form = this.fb.group({
@@ -44,7 +44,7 @@ export class FormulaireComponent implements OnInit {
     if (this.modeEdition && this.utilisateurId) {
       this.utilisateurService.getUtilisateurById(this.utilisateurId).subscribe(data => {
         this.form.patchValue(data);
-        // En édition, le mot de passe n'est pas requis
+        // En édition, le mot de passe n'est pas affiché ni géré
         this.form.get('password')?.clearValidators();
         this.form.get('password')?.updateValueAndValidity();
       });
@@ -78,23 +78,26 @@ export class FormulaireComponent implements OnInit {
   const utilisateur: Utilisateur = this.form.value;
 
   if (this.modeEdition && this.utilisateurId) {
-  this.utilisateurService.updateUtilisateur(this.utilisateurId, utilisateur).subscribe(() => {
-    this.snackBar.openFromComponent(SuccessSnackbarComponent, {
-      data: { message: '✅ Utilisateur mis à jour avec succès' },
-      duration: 3000,
-      panelClass: ['mat-snack-bar-success']
+    // En édition, on ne modifie pas le mot de passe
+    delete utilisateur.password;
+    
+    this.utilisateurService.updateUtilisateur(this.utilisateurId, utilisateur).subscribe(() => {
+      this.snackBar.openFromComponent(SuccessSnackbarComponent, {
+        data: { message: '✅ Utilisateur mis à jour avec succès' },
+        duration: 3000,
+        panelClass: ['mat-snack-bar-success']
+      });
+      this.router.navigate(['/utilisateurs']);
     });
-    this.router.navigate(['/utilisateurs']);
-  });
-} else {
-  this.utilisateurService.createUtilisateur(utilisateur).subscribe(() => {
-    this.snackBar.openFromComponent(SuccessSnackbarComponent, {
-      data: { message: '✅ Utilisateur ajouté avec succès' },
-      duration: 3000,
-      panelClass: ['mat-snack-bar-success']
+  } else {
+    this.utilisateurService.createUtilisateur(utilisateur).subscribe(() => {
+      this.snackBar.openFromComponent(SuccessSnackbarComponent, {
+        data: { message: '✅ Utilisateur ajouté avec succès' },
+        duration: 3000,
+        panelClass: ['mat-snack-bar-success']
+      });
+      this.router.navigate(['/utilisateurs']);
     });
-    this.router.navigate(['/utilisateurs']);
-  });
     }
   }
 

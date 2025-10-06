@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 import { jwtDecode } from 'jwt-decode';
 
 export interface JwtPayload {
@@ -11,7 +12,7 @@ export interface JwtPayload {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/api/auth/login';
+  private apiUrl = `${environment.apiUrl}/auth/login`;
 
   constructor(private http: HttpClient) {}
 
@@ -28,7 +29,13 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    return !!localStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    if (!token) return false;
+    if (this.isTokenExpired(token)) {
+      localStorage.removeItem('token');
+      return false;
+    }
+    return true;
   }
 
   // ✅ Méthode pour extraire le rôle depuis le token JWT
@@ -64,5 +71,16 @@ export class AuthService {
   }
   isPiloteQualite(): boolean {
     return this.getRole() === 'PILOTE_QUALITE';
+  }
+
+  private isTokenExpired(token: string): boolean {
+    try {
+      const decoded: any = jwtDecode(token);
+      if (!decoded || !decoded.exp) return true;
+      const nowSeconds = Math.floor(Date.now() / 1000);
+      return decoded.exp < nowSeconds;
+    } catch {
+      return true;
+    }
   }
 }

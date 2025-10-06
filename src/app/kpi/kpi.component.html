@@ -104,7 +104,7 @@
         <mat-card-header>
           <mat-card-title>
             <mat-icon>trending_up</mat-icon>
-            Évolution des Fiches Qualité
+            Évolution des Fiches de Suivi
           </mat-card-title>
         </mat-card-header>
         <mat-card-content>
@@ -132,34 +132,44 @@
     <!-- Tableaux de données -->
     <div class="tables-section">
       <div class="table-row">
-        <!-- Fiches récentes -->
+        <!-- Fiches bloquées -->
         <mat-card class="table-card">
           <mat-card-header>
             <mat-card-title>
-              <mat-icon>schedule</mat-icon>
-              Fiches Qualité Récentes
+              <mat-icon>block</mat-icon>
+              Fiches Bloquées ({{ getFichesBloquees().length }})
             </mat-card-title>
           </mat-card-header>
           <mat-card-content>
-            <table mat-table [dataSource]="getFichesRecentes()" class="data-table">
+            <div *ngIf="getFichesBloquees().length === 0" class="empty-state">
+              <mat-icon>check_circle</mat-icon>
+              <p>Aucune fiche bloquée. Tout est fluide.</p>
+            </div>
+            <table mat-table [dataSource]="getFichesBloquees()" class="data-table">
               <ng-container matColumnDef="titre">
                 <th mat-header-cell *matHeaderCellDef>Titre</th>
                 <td mat-cell *matCellDef="let fiche">{{ fiche.titre }}</td>
               </ng-container>
-              <ng-container matColumnDef="type">
-                <th mat-header-cell *matHeaderCellDef>Type</th>
-                <td mat-cell *matCellDef="let fiche">{{ fiche.typeFiche }}</td>
+              <ng-container matColumnDef="responsable">
+                <th mat-header-cell *matHeaderCellDef>Responsable</th>
+                <td mat-cell *matCellDef="let fiche">{{ fiche.responsable }}</td>
               </ng-container>
-              <ng-container matColumnDef="statut">
-                <th mat-header-cell *matHeaderCellDef>Statut</th>
+              <ng-container matColumnDef="delai">
+                <th mat-header-cell *matHeaderCellDef>Délai max (j)</th>
                 <td mat-cell *matCellDef="let fiche">
-                  <mat-chip [color]="fiche.statut === 'TERMINE' ? 'accent' : 'primary'" selected>
-                    {{ fiche.statut }}
+                  <mat-chip [color]="getDelayChipColor(getDelaiMaxPublic(fiche))" selected matTooltip="Délai maximal parmi les suivis">
+                    {{ getDelaiMaxPublic(fiche) }} j
                   </mat-chip>
                 </td>
               </ng-container>
-              <tr mat-header-row *matHeaderRowDef="['titre', 'type', 'statut']"></tr>
-              <tr mat-row *matRowDef="let row; columns: ['titre', 'type', 'statut'];"></tr>
+              <ng-container matColumnDef="raison">
+                <th mat-header-cell *matHeaderCellDef>Raison</th>
+                <td mat-cell *matCellDef="let fiche">
+                  <mat-chip color="warn" selected>{{ fiche.raisonRetard || 'Statut bloqué' }}</mat-chip>
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="['titre', 'responsable', 'delai', 'raison']"></tr>
+              <tr mat-row *matRowDef="let row; columns: ['titre', 'responsable', 'delai', 'raison'];"></tr>
             </table>
           </mat-card-content>
         </mat-card>
@@ -169,10 +179,14 @@
           <mat-card-header>
             <mat-card-title>
               <mat-icon>warning</mat-icon>
-              Fiches en Retard
+              Fiches en Retard ({{ getFichesEnRetard().length }})
             </mat-card-title>
           </mat-card-header>
           <mat-card-content>
+            <div *ngIf="getFichesEnRetard().length === 0" class="empty-state">
+              <mat-icon>thumb_up</mat-icon>
+              <p>Aucune fiche en retard au-delà de {{ retardThresholdDays }} jours.</p>
+            </div>
             <table mat-table [dataSource]="getFichesEnRetard()" class="data-table">
               <ng-container matColumnDef="titre">
                 <th mat-header-cell *matHeaderCellDef>Titre</th>
@@ -182,14 +196,22 @@
                 <th mat-header-cell *matHeaderCellDef>Responsable</th>
                 <td mat-cell *matCellDef="let fiche">{{ fiche.responsable }}</td>
               </ng-container>
+              <ng-container matColumnDef="delai">
+                <th mat-header-cell *matHeaderCellDef>Délai max (j)</th>
+                <td mat-cell *matCellDef="let fiche">
+                  <mat-chip [color]="getDelayChipColor(getDelaiMaxPublic(fiche))" selected matTooltip="Délai maximal parmi les suivis">
+                    {{ getDelaiMaxPublic(fiche) }} j
+                  </mat-chip>
+                </td>
+              </ng-container>
               <ng-container matColumnDef="priorite">
                 <th mat-header-cell *matHeaderCellDef>Raison du Retard</th>
                 <td mat-cell *matCellDef="let fiche">
                   <mat-chip color="warn" selected>{{ fiche.raisonRetard || 'Élevée' }}</mat-chip>
                 </td>
               </ng-container>
-              <tr mat-header-row *matHeaderRowDef="['titre', 'responsable', 'priorite']"></tr>
-              <tr mat-row *matRowDef="let row; columns: ['titre', 'responsable', 'priorite'];"></tr>
+              <tr mat-header-row *matHeaderRowDef="['titre', 'responsable', 'delai', 'priorite']"></tr>
+              <tr mat-row *matRowDef="let row; columns: ['titre', 'responsable', 'delai', 'priorite'];"></tr>
             </table>
           </mat-card-content>
         </mat-card>
@@ -209,6 +231,10 @@
           <div class="action-item" *ngIf="tauxConformite < 80">
             <mat-icon color="warn">priority_high</mat-icon>
             <span>Le taux de conformité est faible ({{ tauxConformite | number:'1.0-0' }}%). Actions correctives recommandées.</span>
+          </div>
+          <div class="action-item" *ngIf="getFichesBloquees().length > 0">
+            <mat-icon color="warn">block</mat-icon>
+            <span>{{ getFichesBloquees().length }} fiches bloquées à débloquer en priorité.</span>
           </div>
           <div class="action-item" *ngIf="getFichesEnRetard().length > 0">
             <mat-icon color="warn">schedule</mat-icon>

@@ -1,4 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from '../../services/authentification.service';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HistoriqueService, ActionHistorique, FiltresHistorique } from '../../services/historique.service';
@@ -42,10 +44,17 @@ export class HistoriqueComponent implements OnInit {
   constructor(
     private historiqueService: HistoriqueService,
     private utilisateurService: UtilisateurService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private router: Router,
+    private auth: AuthService
   ) { }
 
   ngOnInit(): void {
+    // Défensif: si pas de token, ne pas déclencher d'appels (le guard redirigera)
+    // Ne pas initialiser si non connecté ou token expiré
+    if (!this.auth.isLoggedIn()) {
+      return;
+    }
     this.loadHistorique();
     this.loadUsers();
     this.loadStats();

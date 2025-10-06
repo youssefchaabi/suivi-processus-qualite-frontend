@@ -1,0 +1,52 @@
+<mat-card>
+  <mat-card-title>Notifications</mat-card-title>
+  <div class="table-wrapper">
+    <table mat-table [dataSource]="data" class="mat-elevation-z1 full-width">
+
+      <ng-container matColumnDef="message">
+        <th mat-header-cell *matHeaderCellDef> Message </th>
+        <td mat-cell *matCellDef="let row"> {{ row.message }} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef> Type </th>
+        <td mat-cell *matCellDef="let row">
+          <mat-chip color="primary">{{ row.type || 'INFO' }}</mat-chip>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="dateCreation">
+        <th mat-header-cell *matHeaderCellDef> Date </th>
+        <td mat-cell *matCellDef="let row"> {{ row.dateCreation | date:'short' }} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="etat">
+        <th mat-header-cell *matHeaderCellDef> État </th>
+        <td mat-cell *matCellDef="let row">
+          <mat-chip [color]="row.lu ? 'accent' : 'warn'"> {{ row.lu ? 'Lue' : 'Non lue' }} </mat-chip>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef> Actions </th>
+        <td mat-cell *matCellDef="let row">
+          <button mat-icon-button (click)="markAsRead(row)" [disabled]="row.lu" matTooltip="Marquer comme lue">
+            <mat-icon>done</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="delete(row)" matTooltip="Supprimer">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    <div *ngIf="data.length === 0" class="empty-state">
+      Aucune notification.
+    </div>
+  </div>
+</mat-card>
+
+

@@ -26,6 +26,9 @@ import { HistoriqueComponent } from './historique.component';
 import { HistoriqueService } from '../../services/historique.service';
 import { UtilisateurService } from '../../services/utilisateur.service';
 
+// Guards
+import { AuthGuard } from '../../guards/auth.guard';
+
 @NgModule({
   declarations: [
     HistoriqueComponent
@@ -35,7 +38,12 @@ import { UtilisateurService } from '../../services/utilisateur.service';
     FormsModule,
     ReactiveFormsModule,
     RouterModule.forChild([
-      { path: '', component: HistoriqueComponent }
+      { 
+        path: '', 
+        component: HistoriqueComponent,
+        canActivate: [AuthGuard],
+        data: { role: ['ADMIN', 'PILOTE_QUALITE'] }
+      }
     ]),
     MatCardModule,
     MatButtonModule,

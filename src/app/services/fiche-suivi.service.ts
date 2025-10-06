@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { FicheSuivi } from '../models/fiche-suivi';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FicheSuiviService {
-  private apiUrl = 'http://localhost:8080/api/suivis';
+  private apiUrl = `${environment.apiUrl}/suivis`;
 
   constructor(private http: HttpClient) {}
 

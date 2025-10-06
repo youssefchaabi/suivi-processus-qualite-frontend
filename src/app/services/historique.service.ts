@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { AuthService } from './authentification.service';
 import { environment } from '../../environments/environment';
 
 export interface ActionHistorique {
@@ -36,118 +37,126 @@ export class HistoriqueService {
 
   private apiUrl = `${environment.apiUrl}/historique`;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private auth: AuthService) { }
+
+  private guardCall<T>(factory: () => Observable<T>): Observable<T> {
+    // Ne fait aucun appel si non authentifié (évite 401 sur /auth/login)
+    if (!this.auth.isLoggedIn()) {
+      return of(<any>[]);
+    }
+    return factory();
+  }
 
   /**
    * Récupérer tout l'historique
    */
   getAllHistorique(): Observable<ActionHistorique[]> {
-    return this.http.get<ActionHistorique[]>(this.apiUrl);
+    return this.guardCall(() => this.http.get<ActionHistorique[]>(this.apiUrl));
   }
 
   /**
    * Récupérer l'historique avec filtres
    */
   getHistoriqueWithFilters(filtres: FiltresHistorique): Observable<ActionHistorique[]> {
-    return this.http.post<ActionHistorique[]>(`${this.apiUrl}/filtres`, filtres);
+    return this.guardCall(() => this.http.post<ActionHistorique[]>(`${this.apiUrl}/filtres`, filtres));
   }
 
   /**
    * Récupérer l'historique d'un utilisateur
    */
   getHistoriqueByUser(userId: string): Observable<ActionHistorique[]> {
-    return this.http.get<ActionHistorique[]>(`${this.apiUrl}/utilisateur/${userId}`);
+    return this.guardCall(() => this.http.get<ActionHistorique[]>(`${this.apiUrl}/utilisateur/${userId}`));
   }
 
   /**
    * Récupérer l'historique d'une entité
    */
   getHistoriqueByEntity(entityId: string): Observable<ActionHistorique[]> {
-    return this.http.get<ActionHistorique[]>(`${this.apiUrl}/entite/${entityId}`);
+    return this.guardCall(() => this.http.get<ActionHistorique[]>(`${this.apiUrl}/entite/${entityId}`));
   }
 
   /**
    * Récupérer l'historique par module
    */
   getHistoriqueByModule(module: string): Observable<ActionHistorique[]> {
-    return this.http.get<ActionHistorique[]>(`${this.apiUrl}/module/${module}`);
+    return this.guardCall(() => this.http.get<ActionHistorique[]>(`${this.apiUrl}/module/${module}`));
   }
 
   /**
    * Récupérer l'historique par type d'action
    */
   getHistoriqueByActionType(typeAction: string): Observable<ActionHistorique[]> {
-    return this.http.get<ActionHistorique[]>(`${this.apiUrl}/action/${typeAction}`);
+    return this.guardCall(() => this.http.get<ActionHistorique[]>(`${this.apiUrl}/action/${typeAction}`));
   }
 
   /**
    * Récupérer l'historique par période
    */
   getHistoriqueByPeriod(periode: string): Observable<ActionHistorique[]> {
-    return this.http.get<ActionHistorique[]>(`${this.apiUrl}/periode/${periode}`);
+    return this.guardCall(() => this.http.get<ActionHistorique[]>(`${this.apiUrl}/periode/${periode}`));
   }
 
   /**
    * Récupérer l'historique par date
    */
   getHistoriqueByDate(dateDebut: Date, dateFin: Date): Observable<ActionHistorique[]> {
-    return this.http.post<ActionHistorique[]>(`${this.apiUrl}/date`, { dateDebut, dateFin });
+    return this.guardCall(() => this.http.post<ActionHistorique[]>(`${this.apiUrl}/date`, { dateDebut, dateFin }));
   }
 
   /**
    * Obtenir les statistiques de l'historique
    */
   getHistoriqueStats(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/stats`);
+    return this.guardCall(() => this.http.get<any>(`${this.apiUrl}/stats`));
   }
 
   /**
    * Obtenir le nombre total d'actions
    */
   getTotalActions(): Observable<number> {
-    return this.http.get<number>(`${this.apiUrl}/stats/total`);
+    return this.guardCall(() => this.http.get<number>(`${this.apiUrl}/stats/total`));
   }
 
   /**
    * Obtenir le nombre d'actions aujourd'hui
    */
   getActionsToday(): Observable<number> {
-    return this.http.get<number>(`${this.apiUrl}/stats/aujourd-hui`);
+    return this.guardCall(() => this.http.get<number>(`${this.apiUrl}/stats/aujourd-hui`));
   }
 
   /**
    * Obtenir le nombre d'actions cette semaine
    */
   getActionsThisWeek(): Observable<number> {
-    return this.http.get<number>(`${this.apiUrl}/stats/semaine`);
+    return this.guardCall(() => this.http.get<number>(`${this.apiUrl}/stats/semaine`));
   }
 
   /**
    * Obtenir le nombre d'actions ce mois
    */
   getActionsThisMonth(): Observable<number> {
-    return this.http.get<number>(`${this.apiUrl}/stats/mois`);
+    return this.guardCall(() => this.http.get<number>(`${this.apiUrl}/stats/mois`));
   }
 
   /**
    * Obtenir les actions par type
    */
   getActionsByType(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/stats/par-type`);
+    return this.guardCall(() => this.http.get<any>(`${this.apiUrl}/stats/par-type`));
   }
 
   /**
    * Obtenir les actions par module
    */
   getActionsByModule(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/stats/par-module`);
+    return this.guardCall(() => this.http.get<any>(`${this.apiUrl}/stats/par-module`));
   }
 
   /**
    * Obtenir les actions par utilisateur
    */
   getActionsByUser(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/stats/par-utilisateur`);
+    return this.guardCall(() => this.http.get<any>(`${this.apiUrl}/stats/par-utilisateur`));
   }
 
   /**
@@ -156,29 +165,29 @@ export class HistoriqueService {
   exportHistorique(filtres?: FiltresHistorique): Observable<Blob> {
     const options = { responseType: 'blob' as 'json' };
     if (filtres) {
-      return this.http.post<Blob>(`${this.apiUrl}/export`, filtres, options);
+      return this.guardCall(() => this.http.post<Blob>(`${this.apiUrl}/export`, filtres, options));
     }
-    return this.http.get<Blob>(`${this.apiUrl}/export`, options);
+    return this.guardCall(() => this.http.get<Blob>(`${this.apiUrl}/export`, options));
   }
 
   /**
    * Nettoyer l'historique ancien
    */
   cleanOldHistorique(daysToKeep: number): Observable<string> {
-    return this.http.post<string>(`${this.apiUrl}/nettoyer`, { daysToKeep });
+    return this.guardCall(() => this.http.post<string>(`${this.apiUrl}/nettoyer`, { daysToKeep }));
   }
 
   /**
    * Supprimer l'historique d'un utilisateur
    */
   deleteUserHistorique(userId: string): Observable<string> {
-    return this.http.delete<string>(`${this.apiUrl}/utilisateur/${userId}`);
+    return this.guardCall(() => this.http.delete<string>(`${this.apiUrl}/utilisateur/${userId}`));
   }
 
   /**
    * Supprimer l'historique d'une entité
    */
   deleteEntityHistorique(entityId: string): Observable<string> {
-    return this.http.delete<string>(`${this.apiUrl}/entite/${entityId}`);
+    return this.guardCall(() => this.http.delete<string>(`${this.apiUrl}/entite/${entityId}`));
   }
 } 

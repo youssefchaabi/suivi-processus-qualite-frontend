@@ -2,11 +2,12 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable, tap } from "rxjs";
 import { FicheQualite } from '../models/fiche-qualite';
+import { environment } from '../../environments/environment';
 // 
 //  Assurez-vous que le chemin est correct
 @Injectable({ providedIn: 'root' })
 export class FicheQualiteService {
-  private apiUrl = 'http://localhost:8080/api/fiches';
+  private apiUrl = `${environment.apiUrl}/fiches`;
 
   constructor(private http: HttpClient) {}
 

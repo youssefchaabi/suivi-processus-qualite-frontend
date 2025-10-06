@@ -1,22 +1,29 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/authentification.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { NotificationService } from 'src/app/services/notification.service';
 
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss']
 })
-export class NavbarComponent {
-  notificationCount = 0; // À brancher plus tard sur le service de notifications
+export class NavbarComponent implements OnInit {
+  notificationCount = 0;
 
-  constructor(public authService: AuthService, private router: Router, private snackBar: MatSnackBar) {}
+  constructor(public authService: AuthService, private router: Router, private snackBar: MatSnackBar, private notifService: NotificationService) {}
+
+  ngOnInit(): void {
+    const userId = this.authService.getUserId();
+    if (!userId) return;
+    this.notifService.getNonLues(userId).subscribe(list => this.notificationCount = list.length);
+  }
 
   logout() {
     this.authService.logout();
     this.snackBar.open('Déconnexion réussie.', 'Fermer', { duration: 2000, panelClass: ['mat-snack-bar-success'] });
-    this.router.navigate(['/login']);
+    this.router.navigate(['/auth/login']);
   }
 
   goToDashboard() {

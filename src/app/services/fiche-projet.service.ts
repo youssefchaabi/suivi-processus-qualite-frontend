@@ -2,10 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { FicheProjet } from '../models/fiche-projet';
+import { environment } from 'src/environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class FicheProjetService {
-  private apiUrl = 'http://localhost:8080/api/projets';
+  private apiUrl = `${environment.apiUrl}/projets`;
 
   constructor(private http: HttpClient) {}
 

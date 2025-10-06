@@ -1,27 +1,33 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { NotificationsComponent } from './notifications.component';
 import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
+import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { NotificationsRoutingModule } from './notifications.routing';
+import { NotificationsComponent } from './notifications.component';
+import { NotificationsListComponent } from './pages/liste/notifications-list.component';
 
 @NgModule({
   declarations: [
-    NotificationsComponent
+    NotificationsComponent,
+    NotificationsListComponent
   ],
   imports: [
     CommonModule,
-    RouterModule.forChild([
-      { path: '', component: NotificationsComponent }
-    ]),
+    RouterModule,
+    NotificationsRoutingModule,
     MatCardModule,
-    MatIconModule,
+    MatTableModule,
     MatButtonModule,
-    MatProgressSpinnerModule,
-    MatChipsModule
+    MatIconModule,
+    MatChipsModule,
+    MatTooltipModule,
+    MatProgressSpinnerModule
   ]
 })
 export class NotificationsModule { } 

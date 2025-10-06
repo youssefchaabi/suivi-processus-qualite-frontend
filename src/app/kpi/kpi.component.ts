@@ -48,6 +48,7 @@ export class KpiComponent implements OnInit {
   tauxConformite = 0;
   tauxAvancement = 0;
   delaiMoyen = 0;
+  retardThresholdDays = 15;
 
   constructor(
     private ficheQualiteService: FicheQualiteService,
@@ -290,6 +291,29 @@ export class KpiComponent implements OnInit {
     return null;
   }
 
+  private extraireDelaiTraitement(text: string): number | null {
+    const t = (text || '').toLowerCase();
+    // a) "délai de traitement: 15 jours" ou "delai ... 15 j"
+    let m = t.match(/delai[^\d]{0,20}(\d{1,3}(?:[.,]\d+)?)\s*(j|jours|jour)?/);
+    if (m) {
+      const v = Number(m[1].replace(',', '.'));
+      if (!isNaN(v)) return v;
+    }
+    // b) "traitement ... 12 jours"
+    m = t.match(/traitement[^\d]{0,20}(\d{1,3}(?:[.,]\d+)?)\s*(j|jours|jour)?/);
+    if (m) {
+      const v = Number(m[1].replace(',', '.'));
+      if (!isNaN(v)) return v;
+    }
+    // c) nombres isolés suivis de j/jours quand le contexte est court
+    m = t.match(/(\d{1,3}(?:[.,]\d+)?)\s*(j|jours|jour)\b/);
+    if (m) {
+      const v = Number(m[1].replace(',', '.'));
+      if (!isNaN(v)) return v;
+    }
+    return null;
+  }
+
   private calculerDelaiMoyen(): number {
     // Délai moyen basé sur FicheSuivi.delaiTraitementJours
     const delais: number[] = [];
@@ -316,80 +340,48 @@ export class KpiComponent implements OnInit {
     return s;
   }
 
+  private isFicheBloquee(fiche: FicheQualite): boolean {
+    const statutFiche = this.normaliserStatut(fiche.statut);
+    if (statutFiche === 'BLOQUE') return true;
+    const suivisAssocies = this.fichesSuivi.filter(s => ((s as any).ficheId || '').toString().trim() === (fiche.id || '').toString().trim());
+    for (const s of suivisAssocies) {
+      const etat = this.normaliserStatut((s as any).etatAvancement as string | undefined);
+      if (etat === 'BLOQUE') return true;
+    }
+    return false;
+  }
+
   getFichesRecentes(): FicheQualite[] {
     // Retourne les 5 premières fiches (sans tri par date car dateCreation n'existe plus)
     return this.fichesQualite.slice(0, 5);
   }
 
+  getFichesBloquees(): FicheQualite[] {
+    const bloquees = this.fichesQualite.filter(f => this.isFicheBloquee(f));
+    for (const fiche of bloquees) {
+      (fiche as any).raisonRetard = 'Statut bloqué';
+    }
+    return bloquees;
+  }
+
   getFichesEnRetard(): FicheQualite[] {
-    // Logique intelligente pour identifier les fiches en retard
-    const fichesEnRetard: FicheQualite[] = [];
-    
+    // Retourner toutes les fiches dont le délai max dépasse le seuil (hors BLOQUE)
+    const candidats: FicheQualite[] = [];
     for (const fiche of this.fichesQualite) {
-      let estEnRetard = false;
-      let raison = '';
-      
-      // 1. Vérifier le statut (BLOQUE = retard immédiat)
-      const statutNormalise = this.normaliserStatut(fiche.statut);
-      if (statutNormalise === 'BLOQUE') {
-        estEnRetard = true;
-        raison = 'Statut bloqué';
-      }
-      
-      // 2. Vérifier les délais de traitement via les fiches de suivi associées
-      if (!estEnRetard) {
-        const suivisAssocies = this.fichesSuivi.filter(s => s.ficheId === fiche.id);
-        if (suivisAssocies.length > 0) {
-          // Prendre le délai le plus récent ou le plus élevé
-          const delais = suivisAssocies
-            .map(s => (s as any).delaiTraitementJours)
-            .filter(d => typeof d === 'number' && d > 0);
-          
-          if (delais.length > 0) {
-            const delaiMax = Math.max(...delais);
-            // Seuil de retard: 15 jours (ajustable selon vos besoins)
-            if (delaiMax > 15) {
-              estEnRetard = true;
-              raison = `Délai élevé (${delaiMax} jours)`;
-            }
-          }
-        }
-      }
-      
-      // 3. Vérifier si la fiche est "EN_COURS" depuis trop longtemps (logique métier)
-      if (!estEnRetard && statutNormalise === 'EN_COURS') {
-        // Si pas de délai spécifique mais statut EN_COURS, considérer comme potentiellement en retard
-        const suivisAssocies = this.fichesSuivi.filter(s => s.ficheId === fiche.id);
-        if (suivisAssocies.length === 0) {
-          // Pas de suivi = potentiellement en retard
-          estEnRetard = true;
-          raison = 'Aucun suivi récent';
-        }
-      }
-      
-      if (estEnRetard) {
-        // Ajouter la raison au fiche pour l'affichage
-        (fiche as any).raisonRetard = raison;
-        fichesEnRetard.push(fiche);
+      const statut = this.normaliserStatut(fiche.statut);
+      if (this.isFicheBloquee(fiche)) continue; // gérées dans "Fiches Bloquées"
+      const delaiMax = fiche.id ? this.getDelaiMax(fiche.id) : 0;
+      if (delaiMax > this.retardThresholdDays) {
+        (fiche as any).raisonRetard = `Délai élevé (${delaiMax} jours)`;
+        candidats.push(fiche);
       }
     }
-    
-    // Retourner les 5 fiches les plus critiques (priorité aux BLOQUE, puis délais élevés)
-    return fichesEnRetard
+    return candidats
       .sort((a, b) => {
-        const statutA = this.normaliserStatut(a.statut);
-        const statutB = this.normaliserStatut(b.statut);
-        
-        // Priorité 1: BLOQUE
-        if (statutA === 'BLOQUE' && statutB !== 'BLOQUE') return -1;
-        if (statutB === 'BLOQUE' && statutA !== 'BLOQUE') return 1;
-        
-        // Priorité 2: délai le plus élevé
-        const delaiA = a.id ? this.getDelaiMax(a.id) : 0;
-        const delaiB = b.id ? this.getDelaiMax(b.id) : 0;
-        return delaiB - delaiA;
-      })
-      .slice(0, 5);
+        const da = a.id ? this.getDelaiMax(a.id) : 0;
+        const db = b.id ? this.getDelaiMax(b.id) : 0;
+        return db - da;
+      });
   }
 
   private startOfMonth(date: Date): Date {
@@ -419,11 +411,39 @@ export class KpiComponent implements OnInit {
   }
 
   private getDelaiMax(ficheId: string): number {
-    const suivis = this.fichesSuivi.filter(s => s.ficheId === ficheId);
-    const delais = suivis
-      .map(s => (s as any).delaiTraitementJours)
-      .filter(d => typeof d === 'number' && d > 0);
-    
+    const idRef = (ficheId || '').toString().trim();
+    const suivis = this.fichesSuivi.filter(s => ((s as any).ficheId || '').toString().trim() === idRef);
+    const delais: number[] = [];
+    for (const s of suivis) {
+      const brut = (s as any).delaiTraitementJours as unknown;
+      let valeur: number | null = null;
+      if (brut !== undefined && brut !== null) {
+        if (typeof brut === 'number') {
+          valeur = brut;
+        } else {
+          const parsed = Number(brut.toString().replace(',', '.'));
+          if (!isNaN(parsed)) valeur = parsed;
+        }
+      }
+      if (valeur === null) {
+        const ind = (s as any).indicateursKpi as string | undefined;
+        if (ind) {
+          const parsedDelay = this.extraireDelaiTraitement(ind);
+          if (parsedDelay !== null) valeur = parsedDelay;
+        }
+      }
+      if (typeof valeur === 'number' && valeur > 0) delais.push(valeur);
+    }
     return delais.length > 0 ? Math.max(...delais) : 0;
+  }
+
+  getDelaiMaxPublic(fiche: FicheQualite): number {
+    return fiche?.id ? this.getDelaiMax(fiche.id) : 0;
+  }
+
+  getDelayChipColor(days: number): 'primary' | 'accent' | 'warn' {
+    if (days >= this.retardThresholdDays * 2) return 'warn';
+    if (days >= this.retardThresholdDays) return 'accent';
+    return 'primary';
   }
 } 

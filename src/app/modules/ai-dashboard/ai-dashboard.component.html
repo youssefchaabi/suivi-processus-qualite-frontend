@@ -1,11 +1,31 @@
 <div class="ai-dashboard">
   <!-- Header -->
   <div class="dashboard-header">
-    <h1>
-      <mat-icon>psychology</mat-icon>
-      Dashboard IA - Pilote Qualité
-    </h1>
-    <p class="subtitle">Analyses prédictives et recommandations intelligentes pour optimiser la qualité</p>
+    <div class="header-content">
+      <div class="title-section">
+        <h1>
+          <mat-icon>psychology</mat-icon>
+          Dashboard IA - Pilote Qualité
+        </h1>
+        <p class="subtitle">Analyses prédictives et recommandations intelligentes pour optimiser la qualité</p>
+      </div>
+      <div class="header-actions">
+        <button mat-raised-button color="primary" (click)="exportDashboardPDF()" class="export-btn">
+          <mat-icon>picture_as_pdf</mat-icon>
+          Export PDF
+        </button>
+        <button mat-raised-button color="accent" (click)="exportDashboardExcel()" class="export-btn">
+          <mat-icon>table_chart</mat-icon>
+          Export Excel
+        </button>
+        <button mat-icon-button color="accent" (click)="actualiserDonnees()" matTooltip="Actualiser maintenant">
+          <mat-icon>refresh</mat-icon>
+        </button>
+        <button mat-icon-button [color]="autoRefresh ? 'primary' : 'default'" (click)="toggleAutoRefresh()" matTooltip="Auto-refresh">
+          <mat-icon>{{ autoRefresh ? 'sync' : 'sync_disabled' }}</mat-icon>
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Loading -->
@@ -17,6 +37,51 @@
   <!-- Dashboard Content -->
   <div *ngIf="!loading" class="dashboard-content">
     
+    <!-- Filtres interactifs -->
+    <div class="filters-section">
+      <mat-card class="filters-card">
+        <mat-card-content>
+          <div class="filters-grid">
+            <div class="filter-group">
+              <label>Période d'analyse:</label>
+              <mat-form-field appearance="outline">
+                <mat-select [(ngModel)]="selectedPeriod" (selectionChange)="onPeriodChange($event.value)">
+                  <mat-option [value]="6">6 derniers mois</mat-option>
+                  <mat-option [value]="8">8 derniers mois</mat-option>
+                  <mat-option [value]="12">12 derniers mois</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            
+            <div class="filter-group">
+              <label>Niveau de risque:</label>
+              <mat-form-field appearance="outline">
+                <mat-select [(ngModel)]="selectedRiskLevel">
+                  <mat-option value="ALL">Tous les niveaux</mat-option>
+                  <mat-option value="CRITIQUE">Critique</mat-option>
+                  <mat-option value="ÉLEVÉ">Élevé</mat-option>
+                  <mat-option value="MOYEN">Moyen</mat-option>
+                  <mat-option value="FAIBLE">Faible</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            
+            <div class="filter-group">
+              <label>Type de recommandation:</label>
+              <mat-form-field appearance="outline">
+                <mat-select [(ngModel)]="selectedRecommendationType">
+                  <mat-option value="ALL">Tous les types</mat-option>
+                  <mat-option value="URGENT">Urgent</mat-option>
+                  <mat-option value="IMPORTANT">Important</mat-option>
+                  <mat-option value="SUGGESTION">Suggestion</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
     <!-- Métriques IA -->
     <div class="ai-metrics-grid">
       <mat-card class="ai-metric-card">
@@ -44,6 +109,36 @@
               <h3 class="metric-value">{{ niveauConfiance | number:'1.0-0' }}%</h3>
               <p class="metric-title">Confiance IA</p>
               <p class="metric-description">Fiabilité des prédictions</p>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="ai-metric-card">
+        <mat-card-content>
+          <div class="metric-content">
+            <div class="metric-icon" [style.background-color]="getTauxConformiteColor()">
+              <mat-icon>check_circle</mat-icon>
+            </div>
+            <div class="metric-info">
+              <h3 class="metric-value">{{ tauxConformiteGlobal | number:'1.0-0' }}%</h3>
+              <p class="metric-title">Taux de Conformité</p>
+              <p class="metric-description">Conformité globale des fiches</p>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="ai-metric-card">
+        <mat-card-content>
+          <div class="metric-content">
+            <div class="metric-icon" [style.background-color]="getEfficaciteColor()">
+              <mat-icon>speed</mat-icon>
+            </div>
+            <div class="metric-info">
+              <h3 class="metric-value">{{ efficaciteProcessus | number:'1.0-0' }}%</h3>
+              <p class="metric-title">Efficacité Processus</p>
+              <p class="metric-description">Performance des processus</p>
             </div>
           </div>
         </mat-card-content>
@@ -93,8 +188,8 @@
             </mat-card-title>
           </mat-card-header>
           <mat-card-content>
-            <div class="predictions-list" *ngIf="predictionsRisques.length > 0; else noPredictions">
-              <div *ngFor="let prediction of predictionsRisques" class="prediction-item">
+            <div class="predictions-list" *ngIf="getFiltredPredictions().length > 0; else noPredictions">
+              <div *ngFor="let prediction of getFiltredPredictions()" class="prediction-item">
                 <div class="prediction-header">
                   <div class="risk-level" [style.background-color]="getNiveauRisqueColor(prediction.niveau)">
                     {{ prediction.niveau }}
@@ -126,8 +221,8 @@
             </mat-card-title>
           </mat-card-header>
           <mat-card-content>
-            <div class="recommendations-list" *ngIf="recommandations.length > 0; else noRecommendations">
-              <div *ngFor="let rec of recommandations" class="recommendation-item">
+            <div class="recommendations-list" *ngIf="getFiltredRecommendations().length > 0; else noRecommendations">
+              <div *ngFor="let rec of getFiltredRecommendations()" class="recommendation-item">
                 <div class="rec-header">
                   <div class="rec-type" [style.background-color]="getTypeRecommandationColor(rec.type)">
                     {{ rec.type }}

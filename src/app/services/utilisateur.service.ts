@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 export interface Utilisateur {
   id: string;
@@ -15,8 +16,8 @@ export interface Utilisateur {
   providedIn: 'root'
 })
 export class UtilisateurService {
-  private apiUrl = 'http://localhost:8080/api/utilisateurs';  // ✅ à adapter selon ton backend
-  private adminApiUrl = 'http://localhost:8080/api/admin';
+  private apiUrl = `${environment.apiUrl}/utilisateurs`;
+  private adminApiUrl = `${environment.apiUrl}/admin`;
 
   constructor(private http: HttpClient) { }
 

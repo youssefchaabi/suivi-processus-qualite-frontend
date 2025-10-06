@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 export interface Nomenclature {
   id?: string;
@@ -10,7 +11,7 @@ export interface Nomenclature {
 
 @Injectable({ providedIn: 'root' })
 export class NomenclatureService {
-  private apiUrl = 'http://localhost:8080/api/nomenclatures';
+  private apiUrl = `${environment.apiUrl}/nomenclatures`;
 
   constructor(private http: HttpClient) {}
 

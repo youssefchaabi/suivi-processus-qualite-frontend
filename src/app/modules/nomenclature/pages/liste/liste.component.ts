@@ -1,3 +1,5 @@
+// duplicate component removed; using ListeComponent below
+
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';

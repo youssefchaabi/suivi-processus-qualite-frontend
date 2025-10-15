@@ -66,6 +66,12 @@ export class FormulaireComponent implements OnInit {
     this.chargerFichesQualite();
     // Charger toutes les fiches de suivi pour vérifier les doublons
     this.ficheSuiviService.getAll().subscribe(data => { this.fichesSuiviExistantes = data; });
+
+    // Saisir automatiquement l'ID de l'utilisateur connecté pour ajouterPar (utilisé par les notifications backend)
+    const currentUserId = this.authService.getUserId();
+    if (currentUserId && !this.modeEdition) {
+      this.form.patchValue({ ajoutePar: currentUserId });
+    }
   }
 
   chargerNomenclatures(): void {
@@ -95,9 +101,6 @@ export class FormulaireComponent implements OnInit {
     this.utilisateurService.getUtilisateurs().subscribe({
       next: (users) => {
         this.utilisateurs = users;
-        if (users.length > 0 && !this.modeEdition) {
-          this.form.patchValue({ ajoutePar: users[0].nom });
-        }
       },
       error: (error) => {
         console.error('Erreur lors du chargement des utilisateurs:', error);
@@ -152,6 +155,11 @@ export class FormulaireComponent implements OnInit {
       ...this.form.value,
       dateSuivi: this.form.value.dateSuivi ? new Date(this.form.value.dateSuivi).toISOString() : ''
     };
+    // Forcer ajoutePar = ID utilisateur connecté (évite d'envoyer un nom au backend)
+    const currentUserId = this.authService.getUserId();
+    if (currentUserId) {
+      (ficheData as any).ajoutePar = currentUserId;
+    }
     const doublon = this.fichesSuiviExistantes.some(f =>
       f.ficheId === ficheData.ficheId &&
       new Date(f.dateSuivi).toISOString().slice(0,10) === new Date(ficheData.dateSuivi).toISOString().slice(0,10) &&

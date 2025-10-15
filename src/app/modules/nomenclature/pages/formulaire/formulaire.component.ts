@@ -1,95 +1,55 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NomenclatureService, Nomenclature } from 'src/app/services/nomenclature.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { AuthService } from 'src/app/services/authentification.service';
+import { NomenclatureService, Nomenclature } from 'src/app/services/nomenclature.service';
 
 @Component({
-  selector: 'app-formulaire',
-  templateUrl: './formulaire.component.html',
-  styleUrls: ['./formulaire.component.scss']
+  selector: 'app-nomenclature-formulaire',
+  template: `
+    <mat-card>
+      <mat-card-title>{{ id ? 'Modifier' : 'Créer' }} une nomenclature</mat-card-title>
+      <form [formGroup]="form" (ngSubmit)="save()" style="display:grid; gap:16px; margin-top:12px;">
+        <mat-form-field appearance="outline">
+          <mat-label>Nom</mat-label>
+          <input matInput formControlName="nom" required />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Valeur</mat-label>
+          <input matInput formControlName="valeur" required />
+        </mat-form-field>
+        <div style="display:flex; gap:12px;">
+          <button mat-raised-button color="primary" [disabled]="form.invalid">Enregistrer</button>
+          <button mat-stroked-button type="button" (click)="cancel()">Annuler</button>
+        </div>
+      </form>
+    </mat-card>
+  `
 })
 export class FormulaireComponent implements OnInit {
-  form: FormGroup;
-  modeEdition = false;
-  nomenclatureId: string | null = null;
-  typesDisponibles = ['STATUT', 'TYPE_FICHE', 'RESPONSABLE', 'KPI'];
-  nomenclaturesExistantes: Nomenclature[] = [];
-  erreurDoublon = false;
-  loading = false;
+  id: string | null = null;
+  form = this.fb.group({
+    nom: ['', Validators.required],
+    valeur: ['', Validators.required]
+  });
 
-  constructor(
-    private fb: FormBuilder,
-    private nomenclatureService: NomenclatureService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private snackBar: MatSnackBar,
-    public authService: AuthService
-  ) {
-    this.form = this.fb.group({
-      type: ['', Validators.required],
-      valeur: ['', Validators.required]
-    });
-  }
+  constructor(private fb: FormBuilder, private route: ActivatedRoute, private router: Router, private service: NomenclatureService, private snack: MatSnackBar) {}
 
   ngOnInit(): void {
-    this.nomenclatureId = this.route.snapshot.paramMap.get('id');
-    this.modeEdition = !!this.nomenclatureId;
+    this.id = this.route.snapshot.paramMap.get('id');
+    if (this.id) {
+      this.service.getById(this.id).subscribe(n => this.form.patchValue(n));
+    }
+  }
 
-    // Charger toutes les nomenclatures pour vérifier les doublons
-    this.nomenclatureService.getNomenclatures().subscribe(data => {
-      this.nomenclaturesExistantes = data;
-      if (this.modeEdition && this.nomenclatureId) {
-        const nomenclature = data.find(n => n.id === this.nomenclatureId);
-        if (nomenclature) {
-          this.form.patchValue(nomenclature);
-        }
-      }
+  save() {
+    const payload: Nomenclature = { id: this.id || undefined, ...this.form.value } as any;
+    const obs = this.id ? this.service.updateNomenclature(this.id!, payload) : this.service.createNomenclature(payload);
+    obs.subscribe({
+      next: () => { this.snack.open('Enregistré','Fermer',{ duration: 1500 }); this.router.navigate(['/nomenclatures']); },
+      error: () => this.snack.open('Erreur lors de la sauvegarde','Fermer',{ duration: 2000 })
     });
   }
 
-  onSubmit(): void {
-    if (this.form.invalid) return;
-    this.loading = true;
-    const nomenclature: Nomenclature = this.form.value;
-
-    // Vérification doublon (hors édition sur soi-même)
-    const doublon = this.nomenclaturesExistantes.some(n =>
-      n.type === nomenclature.type &&
-      n.valeur.trim().toLowerCase() === nomenclature.valeur.trim().toLowerCase() &&
-      (!this.modeEdition || n.id !== this.nomenclatureId)
-    );
-    if (doublon) {
-      this.erreurDoublon = true;
-      this.loading = false;
-      this.snackBar.open('❌ Doublon : cette valeur existe déjà pour ce type', 'Fermer', {
-        duration: 3500,
-        panelClass: ['snackbar-error']
-      });
-      return;
-    } else {
-      this.erreurDoublon = false;
-    }
-
-    if (this.modeEdition && this.nomenclatureId) {
-      this.nomenclatureService.updateNomenclature(this.nomenclatureId, nomenclature).subscribe(() => {
-        this.snackBar.open('✅ Nomenclature mise à jour avec succès', 'Fermer', {
-          duration: 3000,
-          panelClass: ['success-snackbar']
-        });
-        this.loading = false;
-        this.router.navigate(['/nomenclatures']);
-      }, () => { this.loading = false; });
-    } else {
-      this.nomenclatureService.createNomenclature(nomenclature).subscribe(() => {
-        this.snackBar.open('✅ Nomenclature ajoutée avec succès', 'Fermer', {
-          duration: 3000,
-          panelClass: ['success-snackbar']
-        });
-        this.loading = false;
-        this.router.navigate(['/nomenclatures']);
-      }, () => { this.loading = false; });
-    }
-  }
-} 
+  cancel() { this.router.navigate(['/nomenclatures']); }
+}

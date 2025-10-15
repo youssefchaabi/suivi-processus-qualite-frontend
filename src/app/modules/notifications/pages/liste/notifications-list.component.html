@@ -1,5 +1,28 @@
 <mat-card>
   <mat-card-title>Notifications</mat-card-title>
+  <div class="filters" style="display:flex; gap:12px; margin: 8px 0 16px; flex-wrap: wrap; align-items:center;">
+    <mat-slide-toggle [(ngModel)]="showAll" (change)="reload()" *ngIf="auth.getRole() === 'ADMIN' || auth.getRole() === 'PILOTE_QUALITE'">
+      Voir toutes les notifications
+    </mat-slide-toggle>
+    <mat-form-field appearance="outline">
+      <mat-label>Type</mat-label>
+      <mat-select [(ngModel)]="filterType" (selectionChange)="reload()">
+        <mat-option value="">Tous</mat-option>
+        <mat-option value="FICHE_QUALITE">Fiche Qualité</mat-option>
+        <mat-option value="FICHE_SUIVI">Fiche Suivi</mat-option>
+        <mat-option value="RETARD">Retard</mat-option>
+        <mat-option value="ALERTE">Alerte</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>État</mat-label>
+      <mat-select [(ngModel)]="filterEtat" (selectionChange)="reload()">
+        <mat-option value="">Tous</mat-option>
+        <mat-option value="NLU">Non lue</mat-option>
+        <mat-option value="LU">Lue</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
   <div class="table-wrapper">
     <table mat-table [dataSource]="data" class="mat-elevation-z1 full-width">
 
@@ -11,7 +34,7 @@
       <ng-container matColumnDef="type">
         <th mat-header-cell *matHeaderCellDef> Type </th>
         <td mat-cell *matCellDef="let row">
-          <mat-chip color="primary">{{ row.type || 'INFO' }}</mat-chip>
+          <mat-chip color="primary">{{ getTypeLabel(row.type) }}</mat-chip>
         </td>
       </ng-container>
 
@@ -32,6 +55,9 @@
         <td mat-cell *matCellDef="let row">
           <button mat-icon-button (click)="markAsRead(row)" [disabled]="row.lu" matTooltip="Marquer comme lue">
             <mat-icon>done</mat-icon>
+          </button>
+          <button mat-icon-button (click)="relancer(row)" [disabled]="row.lu" matTooltip="Relancer par e-mail">
+            <mat-icon>send</mat-icon>
           </button>
           <button mat-icon-button color="warn" (click)="delete(row)" matTooltip="Supprimer">
             <mat-icon>delete</mat-icon>

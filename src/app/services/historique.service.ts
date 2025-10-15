@@ -6,18 +6,14 @@ import { environment } from '../../environments/environment';
 
 export interface ActionHistorique {
   id?: string;
-  typeAction: 'CREATION' | 'MODIFICATION' | 'SUPPRESSION' | 'SOUMISSION' | 'VALIDATION' | 'CONNEXION' | 'DECONNEXION';
-  module: 'FICHE_QUALITE' | 'FICHE_SUIVI' | 'UTILISATEUR' | 'FORMULAIRE_OBLIGATOIRE' | 'AUTHENTIFICATION';
+  action: 'CREATION' | 'MODIFICATION' | 'SUPPRESSION' | 'SOUMISSION' | 'VALIDATION' | 'CONNEXION' | 'DECONNEXION';
+  entite: 'FICHE_QUALITE' | 'FICHE_SUIVI' | 'FICHE_PROJET' | 'UTILISATEUR' | 'NOMENCLATURE' | string;
   entiteId?: string;
   details?: string;
-  dateAction: Date;
-  utilisateur: {
-    id: string;
-    nom: string;
-    prenom: string;
-    email: string;
-  };
-  adresseIp?: string;
+  dateAction: Date | string;
+  utilisateurId?: string;
+  utilisateurNom?: string;
+  ipAdresse?: string;
   userAgent?: string;
 }
 
@@ -71,44 +67,37 @@ export class HistoriqueService {
   /**
    * Récupérer l'historique d'une entité
    */
-  getHistoriqueByEntity(entityId: string): Observable<ActionHistorique[]> {
-    return this.guardCall(() => this.http.get<ActionHistorique[]>(`${this.apiUrl}/entite/${entityId}`));
+  getHistoriqueByEntity(entite: string, entityId: string): Observable<ActionHistorique[]> {
+    return this.guardCall(() => this.http.get<ActionHistorique[]>(`${this.apiUrl}/entite/${entite}/${entityId}`));
   }
 
   /**
    * Récupérer l'historique par module
    */
-  getHistoriqueByModule(module: string): Observable<ActionHistorique[]> {
-    return this.guardCall(() => this.http.get<ActionHistorique[]>(`${this.apiUrl}/module/${module}`));
-  }
+  // module endpoint dedicated not present; use filtres instead
 
   /**
    * Récupérer l'historique par type d'action
    */
-  getHistoriqueByActionType(typeAction: string): Observable<ActionHistorique[]> {
-    return this.guardCall(() => this.http.get<ActionHistorique[]>(`${this.apiUrl}/action/${typeAction}`));
-  }
+  // type endpoint dedicated not present; use filtres instead
 
   /**
    * Récupérer l'historique par période
    */
-  getHistoriqueByPeriod(periode: string): Observable<ActionHistorique[]> {
-    return this.guardCall(() => this.http.get<ActionHistorique[]>(`${this.apiUrl}/periode/${periode}`));
-  }
+  // use filtres with periode
 
   /**
    * Récupérer l'historique par date
    */
   getHistoriqueByDate(dateDebut: Date, dateFin: Date): Observable<ActionHistorique[]> {
-    return this.guardCall(() => this.http.post<ActionHistorique[]>(`${this.apiUrl}/date`, { dateDebut, dateFin }));
+    const params = { dateDebut: this.toIsoDate(dateDebut), dateFin: this.toIsoDate(dateFin) } as any;
+    return this.guardCall(() => this.http.get<ActionHistorique[]>(`${this.apiUrl}/periode`, { params }));
   }
 
   /**
    * Obtenir les statistiques de l'historique
    */
-  getHistoriqueStats(): Observable<any> {
-    return this.guardCall(() => this.http.get<any>(`${this.apiUrl}/stats`));
-  }
+  // stats fine-grained endpoints used below
 
   /**
    * Obtenir le nombre total d'actions
@@ -141,23 +130,7 @@ export class HistoriqueService {
   /**
    * Obtenir les actions par type
    */
-  getActionsByType(): Observable<any> {
-    return this.guardCall(() => this.http.get<any>(`${this.apiUrl}/stats/par-type`));
-  }
-
-  /**
-   * Obtenir les actions par module
-   */
-  getActionsByModule(): Observable<any> {
-    return this.guardCall(() => this.http.get<any>(`${this.apiUrl}/stats/par-module`));
-  }
-
-  /**
-   * Obtenir les actions par utilisateur
-   */
-  getActionsByUser(): Observable<any> {
-    return this.guardCall(() => this.http.get<any>(`${this.apiUrl}/stats/par-utilisateur`));
-  }
+  // additional stats not available server-side; skip for now
 
   /**
    * Exporter l'historique
@@ -167,7 +140,12 @@ export class HistoriqueService {
     if (filtres) {
       return this.guardCall(() => this.http.post<Blob>(`${this.apiUrl}/export`, filtres, options));
     }
-    return this.guardCall(() => this.http.get<Blob>(`${this.apiUrl}/export`, options));
+    return this.guardCall(() => this.http.post<Blob>(`${this.apiUrl}/export`, {}, options));
+  }
+
+  private toIsoDate(d: Date): string {
+    const pad = (n: number) => n.toString().padStart(2,'0');
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
   }
 
   /**

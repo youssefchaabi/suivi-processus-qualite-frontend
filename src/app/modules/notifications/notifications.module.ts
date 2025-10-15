@@ -8,6 +8,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { FormsModule } from '@angular/forms';
 import { NotificationsRoutingModule } from './notifications.routing';
 import { NotificationsComponent } from './notifications.component';
 import { NotificationsListComponent } from './pages/liste/notifications-list.component';
@@ -19,6 +23,7 @@ import { NotificationsListComponent } from './pages/liste/notifications-list.com
   ],
   imports: [
     CommonModule,
+    FormsModule,
     RouterModule,
     NotificationsRoutingModule,
     MatCardModule,
@@ -27,7 +32,10 @@ import { NotificationsListComponent } from './pages/liste/notifications-list.com
     MatIconModule,
     MatChipsModule,
     MatTooltipModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatSlideToggleModule
   ]
 })
 export class NotificationsModule { } 

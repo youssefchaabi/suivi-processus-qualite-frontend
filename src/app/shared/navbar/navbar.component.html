@@ -24,7 +24,7 @@
   </ng-container>
 
   <!-- Notifications -->
-  <button mat-icon-button class="notif-btn" *ngIf="authService.isLoggedIn()" matTooltip="Notifications" aria-label="Notifications">
+  <button mat-icon-button class="notif-btn" *ngIf="authService.isLoggedIn()" matTooltip="Notifications" aria-label="Notifications" (click)="goToNotifications()">
     <mat-icon>notifications</mat-icon>
     <span class="notification-badge" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
   </button>

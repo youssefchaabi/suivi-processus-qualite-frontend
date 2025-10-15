@@ -38,6 +38,15 @@ export class NotificationService {
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  relancerEmail(utilisateurId: string, item: NotificationItem): Observable<string> {
+    return this.http.post<string>(`${this.apiUrl}/relancer`, {
+      utilisateurId,
+      notificationId: item.id,
+      type: item.type,
+      message: item.message
+    }, { responseType: 'text' as 'json' });
+  }
 }
 
 

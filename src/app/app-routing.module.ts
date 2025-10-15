@@ -36,7 +36,7 @@ const routes: Routes = [{ path: 'utilisateurs', loadChildren: () => import('./mo
 },
 { path: 'kpi', component: KpiComponent, canActivate: [AuthGuard], data: { role: 'PILOTE_QUALITE' } },
 { path: 'ai-dashboard', canActivate: [AuthGuard], loadChildren: () => import('./modules/ai-dashboard/ai-dashboard.module').then(m => m.AiDashboardModule), data: { role: 'PILOTE_QUALITE' } },
-{ path: 'notifications', canActivate: [AuthGuard], loadChildren: () => import('./modules/notifications/notifications.module').then(m => m.NotificationsModule), data: { role: 'PILOTE_QUALITE' } },
+{ path: 'notifications', canActivate: [AuthGuard], loadChildren: () => import('./modules/notifications/notifications.module').then(m => m.NotificationsModule), data: { role: ['ADMIN', 'PILOTE_QUALITE', 'CHEF_PROJET'] } },
 { path: 'rapports', canActivate: [AuthGuard], loadChildren: () => import('./modules/rapports/rapports.module').then(m => m.RapportsModule), data: { role: 'PILOTE_QUALITE' } },
 { path: 'historique', canActivate: [AuthGuard], loadChildren: () => import('./modules/historique/historique.module').then(m => m.HistoriqueModule), data: { role: ['ADMIN', 'PILOTE_QUALITE'] } },
 { path: 'formulaires-obligatoires', canActivate: [AuthGuard], loadChildren: () => import('./modules/formulaires-obligatoires/formulaires-obligatoires.module').then(m => m.FormulairesObligatoiresModule), data: { role: ['ADMIN', 'PILOTE_QUALITE'] } },

@@ -146,9 +146,9 @@
         <div class="historique-items" *ngIf="!loading && filteredHistorique.length > 0">
           <div class="historique-item" *ngFor="let action of paginatedHistorique">
             <div class="action-header">
-              <div class="action-type" [ngClass]="getActionTypeClass(action.typeAction)">
-                <mat-icon>{{getActionIcon(action.typeAction)}}</mat-icon>
-                {{action.typeAction}}
+              <div class="action-type" [ngClass]="getActionTypeClass(action.action)">
+                <mat-icon>{{getActionIcon(action.action)}}</mat-icon>
+                {{action.action}}
               </div>
               <div class="action-date">
                 {{action.dateAction | date:'dd/MM/yyyy HH:mm'}}
@@ -157,14 +157,14 @@
 
             <div class="action-content">
               <div class="action-description">
-                <strong>{{action.utilisateur.nom}} {{action.utilisateur.prenom}}</strong>
+                <strong>{{action.utilisateurNom || 'Utilisateur'}}</strong>
                 {{getActionDescription(action)}}
               </div>
 
               <div class="action-details">
                 <div class="detail-item">
                   <span class="label">Module:</span>
-                  <span class="value">{{action.module}}</span>
+                  <span class="value">{{action.entite}}</span>
                 </div>
                 <div class="detail-item" *ngIf="action.entiteId">
                   <span class="label">ID Entité:</span>
@@ -176,9 +176,9 @@
                 </div>
               </div>
 
-              <div class="action-ip" *ngIf="action.adresseIp">
+              <div class="action-ip" *ngIf="action.ipAdresse">
                 <mat-icon>computer</mat-icon>
-                {{action.adresseIp}}
+                {{action.ipAdresse}}
               </div>
             </div>
           </div>

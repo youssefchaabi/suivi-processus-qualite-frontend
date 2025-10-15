@@ -11,13 +11,24 @@ import { NotificationService } from 'src/app/services/notification.service';
 })
 export class NavbarComponent implements OnInit {
   notificationCount = 0;
+  private pollingHandle: any;
 
   constructor(public authService: AuthService, private router: Router, private snackBar: MatSnackBar, private notifService: NotificationService) {}
 
   ngOnInit(): void {
     const userId = this.authService.getUserId();
     if (!userId) return;
-    this.notifService.getNonLues(userId).subscribe(list => this.notificationCount = list.length);
+    const fetch = () => this.notifService.getNonLues(userId).subscribe(list => this.notificationCount = list.length);
+    fetch();
+    this.pollingHandle = setInterval(fetch, 5000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.pollingHandle) clearInterval(this.pollingHandle);
+  }
+
+  goToNotifications(): void {
+    this.router.navigate(['/notifications']);
   }
 
   logout() {

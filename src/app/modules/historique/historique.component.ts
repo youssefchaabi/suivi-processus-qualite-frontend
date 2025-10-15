@@ -156,7 +156,7 @@ export class HistoriqueComponent implements OnInit {
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `historique_${new Date().toISOString().split('T')[0]}.xlsx`;
+        link.download = `historique_${new Date().toISOString().split('T')[0]}.csv`;
         link.click();
         window.URL.revokeObjectURL(url);
         this.snackBar.open('Export réussi', 'Fermer', { duration: 3000 });
@@ -207,25 +207,24 @@ export class HistoriqueComponent implements OnInit {
   }
 
   getActionDescription(action: ActionHistorique): string {
-    const userName = `${action.utilisateur.nom} ${action.utilisateur.prenom}`;
-    
-    switch (action.typeAction) {
+    const userName = action.utilisateurNom || 'Utilisateur';
+    switch (action.action) {
       case 'CREATION':
-        return `a créé un nouvel élément dans le module ${action.module}`;
+        return `a créé un nouvel élément dans le module ${action.entite}`;
       case 'MODIFICATION':
-        return `a modifié un élément dans le module ${action.module}`;
+        return `a modifié un élément dans le module ${action.entite}`;
       case 'SUPPRESSION':
-        return `a supprimé un élément dans le module ${action.module}`;
+        return `a supprimé un élément dans le module ${action.entite}`;
       case 'SOUMISSION':
-        return `a soumis un formulaire dans le module ${action.module}`;
+        return `a soumis un formulaire dans le module ${action.entite}`;
       case 'VALIDATION':
-        return `a validé un élément dans le module ${action.module}`;
+        return `a validé un élément dans le module ${action.entite}`;
       case 'CONNEXION':
         return `s'est connecté au système`;
       case 'DECONNEXION':
         return `s'est déconnecté du système`;
       default:
-        return `a effectué une action dans le module ${action.module}`;
+        return `a effectué une action dans le module ${action.entite}`;
     }
   }
 } 

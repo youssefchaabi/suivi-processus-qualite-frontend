@@ -1,27 +1,21 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { RapportsComponent } from './rapports.component';
 import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatChipsModule } from '@angular/material/chips';
+import { AuthGuard } from '../../guards/auth.guard';
+import { RapportsComponent } from './rapports.component';
 
 @NgModule({
-  declarations: [
-    RapportsComponent
-  ],
+  declarations: [RapportsComponent],
   imports: [
     CommonModule,
     RouterModule.forChild([
-      { path: '', component: RapportsComponent }
+      { path: '', component: RapportsComponent, canActivate: [AuthGuard], data: { role: 'PILOTE_QUALITE' } }
     ]),
     MatCardModule,
-    MatIconModule,
-    MatButtonModule,
-    MatProgressSpinnerModule,
-    MatChipsModule
+    MatButtonModule
   ]
 })
-export class RapportsModule { } 
+export class RapportsModule {}
+// Duplicate legacy module block removed to avoid double declaration

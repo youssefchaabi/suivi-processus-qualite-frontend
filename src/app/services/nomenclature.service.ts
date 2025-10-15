@@ -15,6 +15,10 @@ export class NomenclatureService {
 
   constructor(private http: HttpClient) {}
 
+  getById(id: string): Observable<Nomenclature> {
+    return this.http.get<Nomenclature>(`${this.apiUrl}/${id}`);
+  }
+
   getNomenclatures(): Observable<Nomenclature[]> {
     return this.http.get<Nomenclature[]>(this.apiUrl);
   }

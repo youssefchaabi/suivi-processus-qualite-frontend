@@ -1,0 +1,105 @@
+<div class="nomenclatures-container">
+  <!-- Header -->
+  <div class="header">
+    <h1><mat-icon>label</mat-icon> Gestion des Nomenclatures</h1>
+    
+    <div class="header-actions">
+      <div class="total-count">
+        <mat-icon>inventory</mat-icon>
+        <span><strong>{{ totalCount }}</strong> nomenclatures au total</span>
+      </div>
+      <button mat-raised-button color="accent" (click)="initializeDefaults()">
+        <mat-icon>settings_backup_restore</mat-icon>
+        Initialiser par défaut
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <mat-card class="tabs-card">
+    <mat-tab-group [(selectedIndex)]="selectedType" (selectedIndexChange)="selectedType = types[$event].value" animationDuration="300ms">
+      <mat-tab *ngFor="let type of types">
+        <ng-template mat-tab-label>
+          <mat-icon [style.color]="type.color">{{ type.icon }}</mat-icon>
+          <span>{{ type.label }}</span>
+          <mat-chip class="count-chip">
+            {{ getGroupCount(type.value) }}
+          </mat-chip>
+        </ng-template>
+
+        <div class="tab-content">
+          <!-- Toolbar -->
+          <div class="toolbar">
+            <div class="type-info">
+              <mat-icon [style.color]="type.color">{{ type.icon }}</mat-icon>
+              <div>
+                <h3>{{ type.label }}</h3>
+                <p>Gérez les {{ type.label.toLowerCase() }} de votre système</p>
+              </div>
+            </div>
+            
+            <button mat-raised-button color="primary" (click)="openCreateDialog()">
+              <mat-icon>add</mat-icon>
+              Ajouter
+            </button>
+          </div>
+
+          <!-- Liste -->
+          <div class="nomenclatures-list" *ngIf="!isLoading">
+            <div class="nomenclature-card" *ngFor="let nom of getSelectedGroup()?.items" 
+                 [class.inactive]="!nom.actif">
+              <div class="nomenclature-header">
+                <div class="nomenclature-info">
+                  <div class="nomenclature-code">
+                    <mat-icon>tag</mat-icon>
+                    <span class="code">{{ nom.code }}</span>
+                  </div>
+                  <h4>{{ nom.libelle }}</h4>
+                  <p *ngIf="nom.description" class="description">{{ nom.description }}</p>
+                </div>
+                
+                <div class="nomenclature-meta">
+                  <mat-chip [class.active-chip]="nom.actif" [class.inactive-chip]="!nom.actif">
+                    <mat-icon>{{ nom.actif ? 'check_circle' : 'cancel' }}</mat-icon>
+                    {{ nom.actif ? 'Actif' : 'Inactif' }}
+                  </mat-chip>
+                  
+                  <div class="ordre" *ngIf="nom.ordre !== null && nom.ordre !== undefined">
+                    <mat-icon>sort</mat-icon>
+                    <span>Ordre: {{ nom.ordre }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="nomenclature-actions">
+                <button mat-icon-button (click)="openEditDialog(nom)" matTooltip="Modifier">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button (click)="deleteNomenclature(nom)" matTooltip="Supprimer" class="delete-btn">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <!-- Message si vide -->
+            <div class="empty-state" *ngIf="!getSelectedGroup()?.items?.length">
+              <mat-icon>inbox</mat-icon>
+              <h3>Aucune nomenclature</h3>
+              <p>Commencez par ajouter une nouvelle nomenclature</p>
+              <button mat-raised-button color="primary" (click)="openCreateDialog()">
+                <mat-icon>add</mat-icon>
+                Ajouter la première
+              </button>
+            </div>
+          </div>
+
+          <!-- Loading -->
+          <div class="loading-container" *ngIf="isLoading">
+            <mat-spinner diameter="50"></mat-spinner>
+            <p>Chargement...</p>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-card>
+</div>

@@ -57,17 +57,20 @@ export class ListeComponent implements OnInit, AfterViewInit {
     this.nomenclatureService.getNomenclaturesByType('STATUT').subscribe({
       next: (data) => { this.etats = data; },
       error: () => { this.etats = [
-        { type: 'STATUT', valeur: 'EN_COURS' },
-        { type: 'STATUT', valeur: 'TERMINE' },
-        { type: 'STATUT', valeur: 'BLOQUE' }
+        { type: 'STATUT', code: 'EN_COURS', libelle: 'En cours', actif: true },
+        { type: 'STATUT', code: 'TERMINE', libelle: 'Terminé', actif: true },
+        { type: 'STATUT', code: 'BLOQUE', libelle: 'Bloqué', actif: true }
       ]; }
     });
-    this.nomenclatureService.getNomenclaturesByType('RESPONSABLE').subscribe({
+    // RESPONSABLE n'est pas un type valide, utiliser TYPE_FICHE temporairement
+    this.nomenclatureService.getNomenclaturesByType('TYPE_FICHE').subscribe({
       next: (data) => { this.responsables = data; },
-      error: () => { this.responsables = [
-        { type: 'RESPONSABLE', valeur: 'Chef Projet A' },
-        { type: 'RESPONSABLE', valeur: 'Pilote Qualité' }
-      ]; }
+      error: () => {
+        this.responsables = [
+          { type: 'TYPE_FICHE', code: 'CHEF_PROJET_A', libelle: 'Chef Projet A', actif: true },
+          { type: 'TYPE_FICHE', code: 'PILOTE_QUALITE', libelle: 'Pilote Qualité', actif: true }
+        ];
+      }
     });
     this.ficheQualiteService.getAll().subscribe({
       next: (data) => { this.ficheQualites = data; },

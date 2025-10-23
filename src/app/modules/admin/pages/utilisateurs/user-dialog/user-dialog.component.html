@@ -1,0 +1,98 @@
+<div class="user-dialog">
+  <h2 mat-dialog-title>
+    <mat-icon>{{ isEditMode ? 'edit' : 'person_add' }}</mat-icon>
+    {{ isEditMode ? 'Modifier l\'utilisateur' : 'Nouvel utilisateur' }}
+  </h2>
+
+  <mat-dialog-content>
+    <form [formGroup]="userForm" class="user-form">
+      
+      <!-- Nom -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nom complet</mat-label>
+        <input matInput formControlName="nom" placeholder="Ex: Jean Dupont">
+        <mat-icon matPrefix>person</mat-icon>
+        <mat-error *ngIf="userForm.get('nom')?.invalid">
+          {{ getErrorMessage('nom') }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Email -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" placeholder="Ex: jean.dupont@entreprise.com">
+        <mat-icon matPrefix>email</mat-icon>
+        <mat-error *ngIf="userForm.get('email')?.invalid">
+          {{ getErrorMessage('email') }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Mot de passe (seulement en création) -->
+      <mat-form-field appearance="outline" class="full-width" *ngIf="!isEditMode">
+        <mat-label>Mot de passe temporaire</mat-label>
+        <input matInput 
+               [type]="hidePassword ? 'password' : 'text'" 
+               formControlName="password"
+               placeholder="Minimum 8 caractères">
+        <mat-icon matPrefix>lock</mat-icon>
+        <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-hint>Le mot de passe sera envoyé par email</mat-hint>
+        <mat-error *ngIf="userForm.get('password')?.invalid">
+          {{ getErrorMessage('password') }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Rôle -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Rôle</mat-label>
+        <mat-select formControlName="role">
+          <mat-option *ngFor="let role of roles" [value]="role.value">
+            <div class="role-option">
+              <mat-icon [color]="role.color">{{ role.icon }}</mat-icon>
+              <span>{{ role.label }}</span>
+            </div>
+          </mat-option>
+        </mat-select>
+        <mat-icon matPrefix>badge</mat-icon>
+        <mat-error *ngIf="userForm.get('role')?.invalid">
+          {{ getErrorMessage('role') }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Téléphone -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Téléphone</mat-label>
+        <input matInput formControlName="telephone" placeholder="Ex: 0612345678">
+        <mat-icon matPrefix>phone</mat-icon>
+        <mat-hint>Format: 10 chiffres</mat-hint>
+        <mat-error *ngIf="userForm.get('telephone')?.invalid">
+          {{ getErrorMessage('telephone') }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Statut actif (seulement en édition) -->
+      <div class="status-field" *ngIf="isEditMode">
+        <mat-slide-toggle formControlName="actif" color="primary">
+          <span class="toggle-label">
+            <mat-icon>{{ userForm.get('actif')?.value ? 'check_circle' : 'cancel' }}</mat-icon>
+            {{ userForm.get('actif')?.value ? 'Utilisateur actif' : 'Utilisateur inactif' }}
+          </span>
+        </mat-slide-toggle>
+      </div>
+
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()" type="button">
+      <mat-icon>close</mat-icon>
+      Annuler
+    </button>
+    <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="userForm.invalid">
+      <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+      {{ isEditMode ? 'Enregistrer' : 'Créer' }}
+    </button>
+  </mat-dialog-actions>
+</div>

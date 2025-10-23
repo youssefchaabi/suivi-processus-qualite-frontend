@@ -1,60 +1,241 @@
+@import '../../../admin/shared-admin-styles.scss';
+
+// ==================== NOMENCLATURE FORMULAIRE - ULTRA-PROFESSIONNEL ====================
+
 .formulaire-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 70vh;
-  background: linear-gradient(120deg, #e3f2fd 0%, #fff 100%);
-}
-
-.form-card {
-  padding: 40px 32px;
-  border-radius: 20px;
-  box-shadow: 0 4px 24px rgba(25, 118, 210, 0.12);
-  max-width: 500px;
-  width: 100%;
-  background: #fff;
-}
-
-.full-width {
-  width: 100%;
-  margin-bottom: 16px;
-}
-
-.actions {
-  display: flex;
-  gap: 16px;
-  margin-top: 24px;
-  flex-wrap: wrap;
-}
-
-.actions button {
-  flex: 1;
-  min-width: 120px;
-  border-radius: 10px;
-  font-weight: 500;
-  font-size: 1.05em;
-  letter-spacing: 0.5px;
-  box-shadow: 0 1px 4px rgba(25, 118, 210, 0.08);
-}
-
-.mat-spinner {
-  margin-left: 8px;
-  vertical-align: middle;
-}
-
-mat-error {
-  color: #d32f2f;
-  font-weight: bold;
-  font-size: 1em;
-}
-
-@media (max-width: 600px) {
+  @include admin-container;
+  @include responsive-admin;
+  
+  // Header
+  .page-header {
+    @include admin-header;
+    
+    .btn-back {
+      @include btn-premium;
+      border: 2px solid $primary;
+      color: $primary;
+      
+      &:hover {
+        background: $primary;
+        color: white;
+      }
+    }
+  }
+  
+  // Loading
+  .loading-container {
+    @include loading-premium;
+  }
+  
+  // Form Card
   .form-card {
-    padding: 18px 4px;
-    max-width: 98vw;
+    @include card-premium;
+    padding: 2.5rem;
+    max-width: 900px;
+    margin: 0 auto 2rem auto;
+    animation-delay: 0.2s;
+    
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      
+      @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+      }
+      
+      .full-width {
+        grid-column: 1 / -1;
+      }
+    }
+    
+    mat-form-field {
+      width: 100%;
+      
+      &.mat-form-field-appearance-outline {
+        .mat-form-field-outline {
+          border-radius: 12px;
+          transition: all 0.3s ease;
+        }
+        
+        &.mat-focused {
+          .mat-form-field-outline-thick {
+            color: $primary;
+            border-width: 2px;
+          }
+          
+          .mat-form-field-label {
+            color: $primary;
+          }
+        }
+      }
+      
+      mat-icon[matPrefix] {
+        margin-right: 0.75rem;
+        color: $primary-light;
+      }
+      
+      mat-hint {
+        color: #94a3b8;
+        font-size: 0.75rem;
+      }
+      
+      mat-error {
+        color: $danger;
+        font-weight: 600;
+        font-size: 0.75rem;
+      }
+    }
+    
+    // Checkbox Field
+    .checkbox-field {
+      grid-column: 1 / -1;
+      padding: 1.5rem;
+      background: rgba(99, 102, 241, 0.05);
+      border-radius: 12px;
+      border: 2px dashed rgba(99, 102, 241, 0.2);
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background: rgba(99, 102, 241, 0.08);
+        border-color: rgba(99, 102, 241, 0.3);
+      }
+      
+      mat-checkbox {
+        .checkbox-label {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-weight: 600;
+          font-size: 1rem;
+          color: #1e293b;
+          
+          mat-icon {
+            font-size: 1.25rem;
+            width: 1.25rem;
+            height: 1.25rem;
+          }
+        }
+      }
+      
+      .checkbox-hint {
+        margin: 0.75rem 0 0 2rem;
+        color: #64748b;
+        font-size: 0.875rem;
+      }
+    }
+    
+    // Form Actions
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 2px solid #f1f5f9;
+      flex-wrap: wrap;
+      
+      button {
+        @include btn-premium;
+        flex: 1;
+        min-width: 200px;
+        padding: 1rem 2rem;
+        font-size: 1rem;
+        
+        mat-icon {
+          margin-right: 0.5rem;
+        }
+        
+        mat-spinner {
+          margin-left: 0.5rem;
+        }
+      }
+      
+      .btn-submit {
+        background: $gradient-primary;
+        color: white;
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        
+        &:hover:not(:disabled) {
+          box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        }
+        
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      }
+      
+      .btn-cancel {
+        border: 2px solid #94a3b8;
+        color: #64748b;
+        
+        &:hover:not(:disabled) {
+          background: #f8fafc;
+          border-color: #64748b;
+          color: #475569;
+        }
+      }
+    }
   }
-  .actions {
-    flex-direction: column;
-    gap: 8px;
+  
+  // Info Card
+  .info-card {
+    @include card-premium;
+    padding: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    gap: 1.5rem;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(236, 72, 153, 0.05) 100%);
+    border-left: 4px solid $primary;
+    animation-delay: 0.4s;
+    
+    > mat-icon {
+      font-size: 3rem;
+      width: 3rem;
+      height: 3rem;
+      color: $primary;
+      flex-shrink: 0;
+    }
+    
+    .info-content {
+      flex: 1;
+      
+      h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0 0 0.75rem 0;
+      }
+      
+      p {
+        color: #64748b;
+        margin: 0 0 1rem 0;
+        line-height: 1.6;
+      }
+      
+      ul {
+        margin: 0;
+        padding-left: 1.5rem;
+        
+        li {
+          color: #475569;
+          margin-bottom: 0.5rem;
+          line-height: 1.6;
+          
+          strong {
+            color: #1e293b;
+            font-weight: 700;
+          }
+        }
+      }
+    }
   }
-} 
+}

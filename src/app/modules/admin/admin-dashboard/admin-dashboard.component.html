@@ -1,0 +1,147 @@
+<div class="admin-dashboard-container">
+  <!-- Header Premium -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <div class="welcome-section">
+        <h1 class="dashboard-title">
+          <mat-icon class="title-icon">admin_panel_settings</mat-icon>
+          Dashboard Administrateur
+        </h1>
+        <p class="dashboard-subtitle">
+          Gérez les utilisateurs et les nomenclatures de votre organisation
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Cards Premium -->
+  <div class="stats-grid">
+    <!-- Card 1: Total Utilisateurs -->
+    <mat-card class="stat-card card-primary" (click)="navigateToUsers()">
+      <mat-card-content>
+        <div class="stat-icon-wrapper primary-gradient">
+          <mat-icon class="stat-icon">group</mat-icon>
+        </div>
+        <div class="stat-details">
+          <h3 class="stat-value">{{ stats.totalUsers }}</h3>
+          <p class="stat-label">Utilisateurs</p>
+          <span class="stat-trend positive">
+            <mat-icon>trending_up</mat-icon>
+            Total
+          </span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Card 2: Utilisateurs Actifs -->
+    <mat-card class="stat-card card-success" (click)="navigateToUsers()">
+      <mat-card-content>
+        <div class="stat-icon-wrapper success-gradient">
+          <mat-icon class="stat-icon">verified_user</mat-icon>
+        </div>
+        <div class="stat-details">
+          <h3 class="stat-value">{{ stats.activeUsers }}</h3>
+          <p class="stat-label">Actifs</p>
+          <span class="stat-trend positive">
+            <mat-icon>check_circle</mat-icon>
+            En ligne
+          </span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Card 3: Nomenclatures -->
+    <mat-card class="stat-card card-info" (click)="navigateToNomenclatures()">
+      <mat-card-content>
+        <div class="stat-icon-wrapper info-gradient">
+          <mat-icon class="stat-icon">category</mat-icon>
+        </div>
+        <div class="stat-details">
+          <h3 class="stat-value">{{ stats.nomenclatures }}</h3>
+          <p class="stat-label">Nomenclatures</p>
+          <span class="stat-trend neutral">
+            <mat-icon>list</mat-icon>
+            Configurées
+          </span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Card 4: Activité Récente -->
+    <mat-card class="stat-card card-warning">
+      <mat-card-content>
+        <div class="stat-icon-wrapper warning-gradient">
+          <mat-icon class="stat-icon">history</mat-icon>
+        </div>
+        <div class="stat-details">
+          <h3 class="stat-value">{{ stats.recentActivity }}</h3>
+          <p class="stat-label">Activités</p>
+          <span class="stat-trend positive">
+            <mat-icon>update</mat-icon>
+            Récentes
+          </span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Actions Rapides et Activités -->
+  <div class="bottom-grid">
+    <!-- Actions Rapides -->
+    <mat-card class="quick-actions-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>flash_on</mat-icon>
+          Actions Rapides
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="quick-actions-grid">
+          <button mat-raised-button class="quick-action-btn primary-action" (click)="navigateToUsers()">
+            <mat-icon>person_add</mat-icon>
+            <span>Créer Utilisateur</span>
+          </button>
+          <button mat-raised-button class="quick-action-btn secondary-action" (click)="navigateToUsers()">
+            <mat-icon>group</mat-icon>
+            <span>Gérer Utilisateurs</span>
+          </button>
+          <button mat-raised-button class="quick-action-btn tertiary-action" (click)="navigateToNomenclatures()">
+            <mat-icon>add_circle</mat-icon>
+            <span>Créer Nomenclature</span>
+          </button>
+          <button mat-raised-button class="quick-action-btn quaternary-action" (click)="navigateToNomenclatures()">
+            <mat-icon>category</mat-icon>
+            <span>Gérer Nomenclatures</span>
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Activités Récentes -->
+    <mat-card class="activities-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>history</mat-icon>
+          Activités Récentes
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="activities-list">
+          <div *ngFor="let activity of recentActivities" class="activity-item">
+            <div class="activity-icon" [ngClass]="'icon-' + activity.color">
+              <mat-icon>{{ activity.icon }}</mat-icon>
+            </div>
+            <div class="activity-content">
+              <h4 class="activity-title">{{ activity.title }}</h4>
+              <p class="activity-description">{{ activity.description }}</p>
+              <span class="activity-meta">
+                <mat-icon class="meta-icon">schedule</mat-icon>
+                {{ activity.time }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

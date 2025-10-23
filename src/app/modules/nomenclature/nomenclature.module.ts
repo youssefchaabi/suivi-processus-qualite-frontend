@@ -2,7 +2,7 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -17,10 +17,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { ListeComponent } from './pages/liste/liste.component';
 import { FormulaireComponent } from './pages/formulaire/formulaire.component';
 import { NomenclatureRoutingModule } from './nomenclature-routing.module';
+import { SharedModule } from '../../shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -30,6 +32,8 @@ import { NomenclatureRoutingModule } from './nomenclature-routing.module';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
+    SharedModule,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
@@ -44,6 +48,7 @@ import { NomenclatureRoutingModule } from './nomenclature-routing.module';
     MatDialogModule,
     MatChipsModule,
     MatProgressSpinnerModule,
+    MatCheckboxModule,
     NomenclatureRoutingModule
   ]
 })

@@ -1,57 +1,170 @@
-<div class="container nomenclature-list-container">
-  <h2><mat-icon style="vertical-align: middle; color: #1976d2;">category</mat-icon> Gestion des Nomenclatures</h2>
-
-  <div class="actions">
-    <button mat-raised-button color="primary" routerLink="/nomenclatures/nouveau" *ngIf="authService.isAdmin()" matTooltip="Ajouter une nomenclature">
-      <mat-icon>add</mat-icon>
-      Ajouter une nomenclature
-    </button>
-    <button mat-raised-button color="accent" routerLink="/admin/dashboard" style="margin-left: 16px;" matTooltip="Retour Dashboard Admin">
-      <mat-icon>arrow_back</mat-icon>
-      Retour Dashboard Admin
-    </button>
+<div class="nomenclature-container">
+  <!-- Header Premium -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <mat-icon>category</mat-icon>
+        Gestion des Nomenclatures
+      </h1>
+      <div class="header-actions">
+        <button mat-raised-button color="primary" (click)="creerNomenclature()" *ngIf="authService.isAdmin()" class="btn-create">
+          <mat-icon>add_circle</mat-icon>
+          Nouvelle Nomenclature
+        </button>
+        <button mat-stroked-button routerLink="/admin/dashboard" class="btn-back">
+          <mat-icon>arrow_back</mat-icon>
+          Retour Dashboard
+        </button>
+      </div>
+    </div>
   </div>
 
-  <mat-spinner *ngIf="loading"></mat-spinner>
-  <span *ngIf="loading" class="loading-message">Chargement...</span>
+  <!-- Filtres Premium -->
+  <div class="filters-container" *ngIf="!loading">
+    <div class="filters-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Recherche</mat-label>
+        <input matInput [(ngModel)]="recherche" (ngModelChange)="appliquerFiltres()" placeholder="Code, libellé, type...">
+        <mat-icon matPrefix>search</mat-icon>
+        <button mat-icon-button matSuffix *ngIf="recherche" (click)="recherche=''; appliquerFiltres()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
 
-  <div *ngIf="!loading && dataSource.data.length == 0">
-    <p>Aucune nomenclature trouvée.</p>
+      <mat-form-field appearance="outline">
+        <mat-label>Type</mat-label>
+        <mat-select [(ngModel)]="filtreType" (selectionChange)="appliquerFiltres()">
+          <mat-option value="">Tous</mat-option>
+          <mat-option value="TYPE_FICHE">Type de Fiche</mat-option>
+          <mat-option value="STATUT">Statut</mat-option>
+          <mat-option value="CATEGORIE_PROJET">Catégorie Projet</mat-option>
+          <mat-option value="PRIORITE">Priorité</mat-option>
+        </mat-select>
+        <mat-icon matPrefix>filter_list</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Statut</mat-label>
+        <mat-select [(ngModel)]="filtreActif" (selectionChange)="appliquerFiltres()">
+          <mat-option value="">Tous</mat-option>
+          <mat-option value="true">Actif</mat-option>
+          <mat-option value="false">Inactif</mat-option>
+        </mat-select>
+        <mat-icon matPrefix>toggle_on</mat-icon>
+      </mat-form-field>
+
+      <div class="filter-actions">
+        <button mat-raised-button color="accent" (click)="resetFiltres()">
+          <mat-icon>refresh</mat-icon>
+          Réinitialiser
+        </button>
+      </div>
+    </div>
   </div>
 
-  <div class="table-responsive">
-    <mat-table [dataSource]="dataSource" class="mat-elevation-z8 nomenclature-table">
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Chargement des nomenclatures...</p>
+  </div>
+
+  <!-- Table Premium -->
+  <div *ngIf="!loading && dataSource.data.length > 0" class="table-container">
+    <table mat-table [dataSource]="dataSource" matSort class="nomenclature-table">
+      
+      <!-- Colonne Type -->
       <ng-container matColumnDef="type">
-        <mat-header-cell *matHeaderCellDef> <mat-icon>label</mat-icon> Type </mat-header-cell>
-        <mat-cell *matCellDef="let nom">
-          <span class="type-badge" [style.background-color]="getTypeColor(nom.type)" matTooltip="{{ nom.type }}">
-            <mat-icon>{{ getTypeIcon(nom.type) }}</mat-icon>
-            {{ nom.type }}
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <mat-icon>label</mat-icon>
+          Type
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <span class="badge badge-type" [style.background-color]="getTypeColor(element.type)">
+            <mat-icon>{{ getTypeIcon(element.type) }}</mat-icon>
+            {{ element.type }}
           </span>
-        </mat-cell>
+        </td>
       </ng-container>
 
-      <ng-container matColumnDef="valeur">
-        <mat-header-cell *matHeaderCellDef> <mat-icon>text_fields</mat-icon> Valeur </mat-header-cell>
-        <mat-cell *matCellDef="let nom"> {{ nom.valeur }} </mat-cell>
+      <!-- Colonne Code -->
+      <ng-container matColumnDef="code">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <mat-icon>code</mat-icon>
+          Code
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <span class="code-text">{{ element.code }}</span>
+        </td>
       </ng-container>
 
+      <!-- Colonne Libellé -->
+      <ng-container matColumnDef="libelle">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <mat-icon>text_fields</mat-icon>
+          Libellé
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <span class="libelle-text">{{ element.libelle }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Colonne Actif -->
+      <ng-container matColumnDef="actif">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <mat-icon>toggle_on</mat-icon>
+          Statut
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <span class="badge" [ngClass]="element.actif ? 'badge-success' : 'badge-danger'">
+            <mat-icon>{{ element.actif ? 'check_circle' : 'cancel' }}</mat-icon>
+            {{ element.actif ? 'Actif' : 'Inactif' }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Colonne Actions -->
       <ng-container matColumnDef="actions">
-        <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
-        <mat-cell *matCellDef="let nom">
-          <button mat-mini-fab color="primary" (click)="modifierNomenclature(nom.id!)" matTooltip="Modifier la nomenclature" aria-label="Modifier nomenclature" *ngIf="authService.isAdmin()">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button mat-mini-fab color="warn" (click)="supprimerNomenclature(nom.id!)" matTooltip="Supprimer la nomenclature" aria-label="Supprimer nomenclature" style="margin-left: 8px;" *ngIf="authService.isAdmin()">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </mat-cell>
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-icon>settings</mat-icon>
+          Actions
+        </th>
+        <td mat-cell *matCellDef="let element">
+          <div class="action-buttons" *ngIf="authService.isAdmin()">
+            <button mat-icon-button class="btn-edit" (click)="modifierNomenclature(element.id!)" matTooltip="Modifier">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button class="btn-delete" (click)="supprimerNomenclature(element.id!)" matTooltip="Supprimer">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </td>
       </ng-container>
 
-      <mat-header-row *matHeaderRowDef="displayedColumns" sticky></mat-header-row>
-      <mat-row *matRowDef="let row; columns: displayedColumns;" class="nomenclature-row"></mat-row>
-    </mat-table>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+    </table>
+
+    <mat-paginator 
+      [pageSizeOptions]="[5, 10, 25, 50]" 
+      [pageSize]="10"
+      showFirstLastButtons>
+    </mat-paginator>
   </div>
 
-  <mat-paginator [pageSize]="5" showFirstLastButtons></mat-paginator>
-</div> 
+  <!-- Empty State -->
+  <div *ngIf="!loading && dataSource.data.length === 0" class="empty-state">
+    <mat-icon>inbox</mat-icon>
+    <h3>Aucune nomenclature trouvée</h3>
+    <p>Commencez par créer votre première nomenclature</p>
+    <button mat-raised-button color="primary" (click)="creerNomenclature()" *ngIf="authService.isAdmin()">
+      <mat-icon>add_circle</mat-icon>
+      Créer une Nomenclature
+    </button>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="error-message">
+    <mat-icon>error</mat-icon>
+    {{ errorMessage }}
+  </div>
+</div>

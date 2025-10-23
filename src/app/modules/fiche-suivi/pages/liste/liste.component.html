@@ -19,14 +19,14 @@
       <mat-label>État</mat-label>
       <mat-select [(ngModel)]="filtreEtat" (selectionChange)="appliquerFiltres()">
         <mat-option value="">Tous</mat-option>
-        <mat-option *ngFor="let etat of etats" [value]="etat.valeur">{{ etat.valeur }}</mat-option>
+        <mat-option *ngFor="let etat of etats" [value]="etat.code">{{ etat.libelle }}</mat-option>
       </mat-select>
     </mat-form-field>
     <mat-form-field appearance="outline" class="filter-field" style="min-width: 180px;">
       <mat-label>Responsable</mat-label>
       <mat-select [(ngModel)]="filtreResponsable" (selectionChange)="appliquerFiltres()">
         <mat-option value="">Tous</mat-option>
-        <mat-option *ngFor="let resp of responsables" [value]="resp.valeur">{{ resp.valeur }}</mat-option>
+        <mat-option *ngFor="let resp of responsables" [value]="resp.code">{{ resp.libelle }}</mat-option>
       </mat-select>
     </mat-form-field>
     <button mat-stroked-button color="primary" (click)="resetFiltres()" class="reset-btn" style="height: 56px; align-self: flex-end;">

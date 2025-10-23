@@ -1,21 +1,36 @@
-<div class="form-container">
-  <mat-card class="form-card mat-elevation-z4">
-    <mat-card-header>
-      <mat-card-title>
-        <mat-icon style="vertical-align: middle; color: #1976d2;">
-          {{ modeEdition ? 'edit' : 'add' }}
-        </mat-icon>
-        {{ modeEdition ? 'Modifier' : 'Créer' }} une fiche qualité
-      </mat-card-title>
-    </mat-card-header>
+<div class="formulaire-container">
+  <!-- Header Premium -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <mat-icon>{{ modeEdition ? 'edit' : 'add_circle' }}</mat-icon>
+        {{ modeEdition ? 'Modifier' : 'Créer' }} une Fiche Qualité
+      </h1>
+      <div class="header-actions">
+        <button mat-stroked-button routerLink="/fiche-qualite" class="btn-back">
+          <mat-icon>arrow_back</mat-icon>
+          Retour à la liste
+        </button>
+      </div>
+    </div>
+  </div>
 
-    <mat-card-content>
-      <form [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off">
-        
+  <!-- Loading Premium -->
+  <div *ngIf="loading && modeEdition" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Chargement de la fiche qualité...</p>
+  </div>
+
+  <!-- Formulaire Premium -->
+  <div *ngIf="!loading || !modeEdition" class="form-card">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off">
+      <div class="form-grid">
         <!-- Titre -->
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Titre de la fiche</mat-label>
           <input matInput formControlName="titre" placeholder="Ex: Audit qualité projet X" required autocomplete="off">
+          <mat-icon matPrefix>title</mat-icon>
+          <mat-hint>Titre descriptif de la fiche qualité</mat-hint>
           <mat-error *ngIf="form.get('titre')?.hasError('required')">
             Le titre est requis
           </mat-error>
@@ -28,7 +43,9 @@
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Description</mat-label>
           <textarea matInput formControlName="description" rows="4" 
-                    placeholder="Décrivez en détail l'objectif et le contexte de cette fiche qualité..." required></textarea>
+                    placeholder="Décrivez en détail l'objectif et le contexte..." required></textarea>
+          <mat-icon matPrefix>description</mat-icon>
+          <mat-hint>Description détaillée de la fiche</mat-hint>
           <mat-error *ngIf="form.get('description')?.hasError('required')">
             La description est requise
           </mat-error>
@@ -38,26 +55,32 @@
         </mat-form-field>
 
         <!-- Type de fiche -->
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline">
           <mat-label>Type de fiche</mat-label>
           <mat-select formControlName="typeFiche" required>
-            <mat-option *ngFor="let type of typesFiche" [value]="type.valeur">
-              {{ type.valeur }}
+            <mat-option value="">-- Sélectionnez un type --</mat-option>
+            <mat-option *ngFor="let type of typesFiche" [value]="type.code">
+              {{ type.libelle }}
             </mat-option>
           </mat-select>
+          <mat-icon matPrefix>category</mat-icon>
+          <mat-hint>Sélectionnez le type de fiche</mat-hint>
           <mat-error *ngIf="form.get('typeFiche')?.hasError('required')">
-            Le type de fiche est requis
+            Le type est requis
           </mat-error>
         </mat-form-field>
 
         <!-- Statut -->
-        <mat-form-field appearance="outline" class="full-width">
+        <mat-form-field appearance="outline">
           <mat-label>Statut</mat-label>
           <mat-select formControlName="statut" required>
-            <mat-option *ngFor="let statut of statuts" [value]="statut.valeur">
-              {{ statut.valeur.replace('_', ' ') }}
+            <mat-option value="">-- Sélectionnez un statut --</mat-option>
+            <mat-option *ngFor="let statut of statuts" [value]="statut.code">
+              {{ statut.libelle }}
             </mat-option>
           </mat-select>
+          <mat-icon matPrefix>flag</mat-icon>
+          <mat-hint>État actuel de la fiche</mat-hint>
           <mat-error *ngIf="form.get('statut')?.hasError('required')">
             Le statut est requis
           </mat-error>
@@ -67,10 +90,13 @@
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Responsable</mat-label>
           <mat-select formControlName="responsable" required>
-            <mat-option *ngFor="let user of utilisateurs" [value]="user.nom">
-              {{ user.nom }} ({{ user.role }})
+            <mat-option *ngFor="let user of utilisateurs" [value]="user.email">
+              <mat-icon>person</mat-icon>
+              {{ user.nom }}{{ user.role ? ' (' + user.role + ')' : '' }}
             </mat-option>
           </mat-select>
+          <mat-icon matPrefix>account_circle</mat-icon>
+          <mat-hint>Personne responsable de cette fiche</mat-hint>
           <mat-error *ngIf="form.get('responsable')?.hasError('required')">
             Le responsable est requis
           </mat-error>
@@ -81,29 +107,42 @@
           <mat-label>Commentaire (optionnel)</mat-label>
           <textarea matInput formControlName="commentaire" rows="3" 
                     placeholder="Ajoutez des commentaires ou notes supplémentaires..."></textarea>
+          <mat-icon matPrefix>comment</mat-icon>
+          <mat-hint>Informations complémentaires</mat-hint>
         </mat-form-field>
+      </div>
 
-        <!-- Boutons d'action -->
-        <div class="form-actions">
-          <button mat-raised-button color="primary" type="submit" 
-                  [disabled]="form.invalid || loading">
-            <mat-icon>{{ modeEdition ? 'save' : 'add' }}</mat-icon>
-            {{ modeEdition ? 'Mettre à jour' : 'Créer' }}
-          </button>
-          
-          <button mat-stroked-button color="accent" type="button" 
-                  (click)="annuler()" [disabled]="loading" matTooltip="Annuler et revenir à la liste">
-            <mat-icon>arrow_back</mat-icon>
-            Annuler
-          </button>
-        </div>
+      <!-- Actions -->
+      <div class="form-actions">
+        <button mat-raised-button color="primary" type="submit" 
+                [disabled]="form.invalid || loading" class="btn-submit">
+          <mat-icon>{{ modeEdition ? 'save' : 'add_circle' }}</mat-icon>
+          <span *ngIf="!loading">{{ modeEdition ? 'Enregistrer les modifications' : 'Créer la fiche' }}</span>
+          <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+        </button>
+        
+        <button mat-stroked-button type="button" 
+                (click)="annuler()" [disabled]="loading" class="btn-cancel">
+          <mat-icon>close</mat-icon>
+          Annuler
+        </button>
+      </div>
+    </form>
+  </div>
 
-        <!-- Indicateur de chargement -->
-        <div *ngIf="loading" class="loading-container">
-          <mat-spinner diameter="30"></mat-spinner>
-          <span>Chargement en cours...</span>
-        </div>
-      </form>
-    </mat-card-content>
-  </mat-card>
+  <!-- Info Card -->
+  <div class="info-card">
+    <mat-icon>info</mat-icon>
+    <div class="info-content">
+      <h3>À propos des fiches qualité</h3>
+      <p>Les fiches qualité permettent de documenter et suivre les processus qualité de votre organisation.</p>
+      <ul>
+        <li><strong>Titre :</strong> Nom court et descriptif</li>
+        <li><strong>Description :</strong> Contexte et objectifs détaillés</li>
+        <li><strong>Type :</strong> Catégorie de la fiche</li>
+        <li><strong>Statut :</strong> État d'avancement actuel</li>
+        <li><strong>Responsable :</strong> Personne en charge</li>
+      </ul>
+    </div>
+  </div>
 </div>

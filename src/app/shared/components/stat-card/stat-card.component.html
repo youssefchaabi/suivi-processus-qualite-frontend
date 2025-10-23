@@ -1,0 +1,19 @@
+<mat-card 
+  class="stat-card" 
+  [class.clickable]="clickable"
+  [ngClass]="'card-' + color"
+  (click)="onCardClick()">
+  <mat-card-content>
+    <div class="stat-icon-wrapper" [ngClass]="getGradientClass()">
+      <mat-icon class="stat-icon">{{ icon }}</mat-icon>
+    </div>
+    <div class="stat-details">
+      <h3 class="stat-value">{{ value }}</h3>
+      <p class="stat-label">{{ title }}</p>
+      <span *ngIf="trendValue" [ngClass]="getTrendClass()">
+        <mat-icon>{{ getTrendIcon() }}</mat-icon>
+        {{ trendValue }}
+      </span>
+    </div>
+  </mat-card-content>
+</mat-card>

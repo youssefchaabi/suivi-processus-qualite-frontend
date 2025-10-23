@@ -1,0 +1,138 @@
+<div class="main-layout">
+  <!-- Top Navbar -->
+  <mat-toolbar class="top-navbar" color="primary">
+    <button mat-icon-button (click)="toggleSidenav()" class="menu-toggle">
+      <mat-icon>menu</mat-icon>
+    </button>
+    
+    <div class="navbar-brand">
+      <mat-icon class="brand-icon">verified</mat-icon>
+      <span class="brand-text">Qualité Pro</span>
+    </div>
+
+    <span class="spacer"></span>
+
+    <!-- Search Bar (Desktop) -->
+    <div class="search-bar hide-mobile">
+      <mat-icon>search</mat-icon>
+      <input type="text" placeholder="Rechercher..." />
+    </div>
+
+    <!-- Notifications -->
+    <button mat-icon-button [matMenuTriggerFor]="notificationMenu" class="notification-btn">
+      <mat-icon [matBadge]="notificationCount" matBadgeColor="warn" [matBadgeHidden]="notificationCount === 0">
+        notifications
+      </mat-icon>
+    </button>
+
+    <mat-menu #notificationMenu="matMenu" class="notification-menu">
+      <div class="notification-header">
+        <h3>Notifications</h3>
+        <button mat-button color="primary">Tout marquer lu</button>
+      </div>
+      <mat-divider></mat-divider>
+      <div class="notification-list">
+        <button mat-menu-item class="notification-item">
+          <mat-icon class="notif-icon primary">add_circle</mat-icon>
+          <div class="notif-content">
+            <p class="notif-title">Nouvelle fiche créée</p>
+            <span class="notif-time">Il y a 2h</span>
+          </div>
+        </button>
+        <button mat-menu-item class="notification-item">
+          <mat-icon class="notif-icon success">check_circle</mat-icon>
+          <div class="notif-content">
+            <p class="notif-title">Fiche validée</p>
+            <span class="notif-time">Il y a 4h</span>
+          </div>
+        </button>
+        <button mat-menu-item class="notification-item">
+          <mat-icon class="notif-icon warning">warning</mat-icon>
+          <div class="notif-content">
+            <p class="notif-title">Fiche en retard</p>
+            <span class="notif-time">Il y a 1j</span>
+          </div>
+        </button>
+      </div>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="navigateToNotifications()" class="view-all-btn">
+        <mat-icon>visibility</mat-icon>
+        Voir toutes les notifications
+      </button>
+    </mat-menu>
+
+    <!-- User Menu -->
+    <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-menu-btn">
+      <mat-icon>account_circle</mat-icon>
+    </button>
+
+    <mat-menu #userMenu="matMenu" class="user-menu">
+      <div class="user-info">
+        <div class="user-avatar">
+          <mat-icon>account_circle</mat-icon>
+        </div>
+        <div class="user-details">
+          <p class="user-name">{{ currentUser?.nom || 'Utilisateur' }}</p>
+          <p class="user-role">{{ userRole }}</p>
+        </div>
+      </div>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="navigateToProfile()">
+        <mat-icon>person</mat-icon>
+        Mon Profil
+      </button>
+      <button mat-menu-item>
+        <mat-icon>settings</mat-icon>
+        Paramètres
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="logout()" class="logout-btn">
+        <mat-icon>logout</mat-icon>
+        Déconnexion
+      </button>
+    </mat-menu>
+  </mat-toolbar>
+
+  <!-- Sidenav Container -->
+  <mat-sidenav-container class="sidenav-container">
+    <!-- Sidenav -->
+    <mat-sidenav
+      #sidenav
+      [opened]="isSidenavOpen"
+      [mode]="'side'"
+      class="sidenav"
+      [class.sidenav-collapsed]="!isSidenavOpen">
+      
+      <div class="sidenav-content">
+        <nav class="nav-menu">
+          <a
+            *ngFor="let item of getVisibleMenuItems()"
+            mat-list-item
+            [routerLink]="item.route"
+            routerLinkActive="active"
+            class="nav-item"
+            [class.active]="isActiveRoute(item.route)">
+            <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+            <span class="nav-label" *ngIf="isSidenavOpen">{{ item.label }}</span>
+          </a>
+        </nav>
+
+        <!-- Sidenav Footer -->
+        <div class="sidenav-footer" *ngIf="isSidenavOpen">
+          <mat-divider></mat-divider>
+          <div class="footer-content">
+            <p class="app-version">Version 1.0.0</p>
+            <p class="copyright">© 2025 Qualité Pro</p>
+          </div>
+        </div>
+      </div>
+    </mat-sidenav>
+
+    <!-- Main Content -->
+    <mat-sidenav-content class="main-content">
+      <div class="content-wrapper">
+        <router-outlet></router-outlet>
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

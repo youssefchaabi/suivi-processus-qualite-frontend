@@ -4,10 +4,12 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { MatDialog } from '@angular/material/dialog';
 import { Nomenclature, NomenclatureService } from 'src/app/services/nomenclature.service';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from 'src/app/services/authentification.service';
+import { ConfirmDialogComponent } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-liste',
@@ -16,7 +18,10 @@ import { AuthService } from 'src/app/services/authentification.service';
 })
 export class ListeComponent implements OnInit {
   dataSource = new MatTableDataSource<Nomenclature>();
-  displayedColumns = ['type', 'valeur', 'actions'];
+  displayedColumns = ['type', 'code', 'libelle', 'actif', 'actions'];
+  filtreType: string = '';
+  filtreActif: string = '';
+  recherche: string = '';
   loading: boolean = false;
   errorMessage: string = '';
 
@@ -27,7 +32,8 @@ export class ListeComponent implements OnInit {
     private nomenclatureService: NomenclatureService,
     private router: Router,
     private snackBar: MatSnackBar,
-    public authService: AuthService // injection pour le template
+    public authService: AuthService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -51,15 +57,35 @@ export class ListeComponent implements OnInit {
   }
 
   supprimerNomenclature(id: string): void {
-    if (confirm("Supprimer cette nomenclature ?")) {
-      this.nomenclatureService.deleteNomenclature(id).subscribe(() => {
-        this.chargerNomenclatures();
-        this.snackBar.open('Nomenclature supprimée avec succès ✅', 'Fermer', {
-          duration: 3000,
-          panelClass: ['success-snackbar']
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Confirmer la suppression',
+        message: 'Êtes-vous sûr de vouloir supprimer cette nomenclature ? Cette action est irréversible.',
+        confirmText: 'Supprimer',
+        cancelText: 'Annuler'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.nomenclatureService.deleteNomenclature(id).subscribe({
+          next: () => {
+            this.dataSource.data = this.dataSource.data.filter(n => n.id !== id);
+            this.snackBar.open('Nomenclature supprimée avec succès ✅', 'Fermer', {
+              duration: 3000,
+              panelClass: ['success-snackbar']
+            });
+          },
+          error: (err) => {
+            console.error('Erreur suppression:', err);
+            this.snackBar.open('Erreur lors de la suppression', 'Fermer', {
+              duration: 3000
+            });
+          }
         });
-      });
-    }
+      }
+    });
   }
 
   modifierNomenclature(id: string): void {
@@ -82,5 +108,40 @@ export class ListeComponent implements OnInit {
       case 'CATEGORIE': return '#f57c00';
       default: return '#757575';
     }
+  }
+
+  appliquerFiltres(): void {
+    let data = this.dataSource.data;
+    
+    if (this.filtreType) {
+      data = data.filter(n => n.type === this.filtreType);
+    }
+    
+    if (this.filtreActif) {
+      const actif = this.filtreActif === 'true';
+      data = data.filter(n => n.actif === actif);
+    }
+    
+    if (this.recherche) {
+      const search = this.recherche.toLowerCase();
+      data = data.filter(n => 
+        n.code?.toLowerCase().includes(search) ||
+        n.libelle?.toLowerCase().includes(search) ||
+        n.type?.toLowerCase().includes(search)
+      );
+    }
+    
+    this.dataSource.data = data;
+  }
+
+  resetFiltres(): void {
+    this.filtreType = '';
+    this.filtreActif = '';
+    this.recherche = '';
+    this.chargerNomenclatures();
+  }
+
+  creerNomenclature(): void {
+    this.router.navigate(['/nomenclatures/nouveau']);
   }
 } 

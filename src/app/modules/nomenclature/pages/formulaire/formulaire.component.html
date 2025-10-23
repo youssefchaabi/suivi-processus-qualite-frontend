@@ -1,42 +1,123 @@
-<div class="container formulaire-container">
-  <mat-card class="form-card mat-elevation-z4">
-    <h2>
-      <mat-icon style="vertical-align: middle; color: #1976d2;">{{ modeEdition ? 'edit' : 'add' }}</mat-icon>
-      {{ modeEdition ? 'Modifier' : 'Ajouter' }} une nomenclature
-    </h2>
+<div class="formulaire-container">
+  <!-- Header Premium -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <mat-icon>{{ modeEdition ? 'edit' : 'add_circle' }}</mat-icon>
+        {{ modeEdition ? 'Modifier' : 'Créer' }} une Nomenclature
+      </h1>
+      <div class="header-actions">
+        <button mat-stroked-button routerLink="/nomenclatures" class="btn-back">
+          <mat-icon>arrow_back</mat-icon>
+          Retour à la liste
+        </button>
+      </div>
+    </div>
+  </div>
 
-    <form [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off">
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Type</mat-label>
-        <mat-select formControlName="type" required autofocus>
-          <mat-option *ngFor="let type of typesDisponibles" [value]="type">
-            {{ type }}
-          </mat-option>
-        </mat-select>
-        <mat-error *ngIf="form.get('type')?.hasError('required')">
-          Le type est requis
-        </mat-error>
-      </mat-form-field>
+  <!-- Loading -->
+  <div *ngIf="loading && modeEdition" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Chargement de la nomenclature...</p>
+  </div>
 
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Valeur</mat-label>
-        <input matInput formControlName="valeur" required autocomplete="off">
-        <mat-error *ngIf="form.get('valeur')?.hasError('required')">
-          La valeur est requise
-        </mat-error>
-      </mat-form-field>
+  <!-- Formulaire Premium -->
+  <div *ngIf="!loading || !modeEdition" class="form-card">
+    <form [formGroup]="form" (ngSubmit)="save()" autocomplete="off">
+      <div class="form-grid">
+        <!-- Type -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Type de Nomenclature</mat-label>
+          <mat-select formControlName="type" required>
+            <mat-option *ngFor="let type of typesDisponibles" [value]="type.value">
+              <mat-icon>{{ type.icon }}</mat-icon>
+              {{ type.label }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>category</mat-icon>
+          <mat-hint>Sélectionnez le type de nomenclature</mat-hint>
+          <mat-error *ngIf="form.get('type')?.hasError('required')">
+            Le type est obligatoire
+          </mat-error>
+        </mat-form-field>
 
-      <div class="actions">
-        <button *ngIf="authService.isAdmin()" mat-raised-button color="primary" type="submit" [disabled]="form.invalid || loading" aria-label="Soumettre nomenclature">
-          <mat-icon>{{ modeEdition ? 'save' : 'add' }}</mat-icon>
-          <span *ngIf="!loading">{{ modeEdition ? 'Mettre à jour' : 'Ajouter' }}</span>
+        <!-- Code -->
+        <mat-form-field appearance="outline">
+          <mat-label>Code</mat-label>
+          <input matInput formControlName="code" required autocomplete="off" placeholder="Ex: AUDIT">
+          <mat-icon matPrefix>code</mat-icon>
+          <mat-hint>Code unique (majuscules recommandées)</mat-hint>
+          <mat-error *ngIf="form.get('code')?.hasError('required')">
+            Le code est obligatoire
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Libellé -->
+        <mat-form-field appearance="outline">
+          <mat-label>Libellé</mat-label>
+          <input matInput formControlName="libelle" required autocomplete="off" placeholder="Ex: Audit Qualité">
+          <mat-icon matPrefix>text_fields</mat-icon>
+          <mat-hint>Libellé descriptif</mat-hint>
+          <mat-error *ngIf="form.get('libelle')?.hasError('required')">
+            Le libellé est obligatoire
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Description -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput formControlName="description" rows="3" placeholder="Description détaillée (optionnelle)"></textarea>
+          <mat-icon matPrefix>description</mat-icon>
+          <mat-hint>Description optionnelle</mat-hint>
+        </mat-form-field>
+
+        <!-- Actif -->
+        <div class="checkbox-field">
+          <mat-checkbox formControlName="actif" color="primary">
+            <span class="checkbox-label">
+              <mat-icon>{{ form.get('actif')?.value ? 'check_circle' : 'cancel' }}</mat-icon>
+              Nomenclature active
+            </span>
+          </mat-checkbox>
+          <p class="checkbox-hint">Les nomenclatures inactives ne seront pas disponibles dans les formulaires</p>
+        </div>
+
+        <!-- Ordre -->
+        <mat-form-field appearance="outline">
+          <mat-label>Ordre d'affichage</mat-label>
+          <input matInput type="number" formControlName="ordre" placeholder="0">
+          <mat-icon matPrefix>sort</mat-icon>
+          <mat-hint>Ordre de tri (0 par défaut)</mat-hint>
+        </mat-form-field>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || loading" class="btn-submit">
+          <mat-icon>{{ modeEdition ? 'save' : 'add_circle' }}</mat-icon>
+          <span *ngIf="!loading">{{ modeEdition ? 'Enregistrer les modifications' : 'Créer la nomenclature' }}</span>
           <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
         </button>
-        <button mat-stroked-button color="accent" type="button" routerLink="/nomenclatures" aria-label="Retour nomenclatures">
-          <mat-icon>arrow_back</mat-icon>
-          Retour
+        <button mat-stroked-button type="button" (click)="cancel()" [disabled]="loading" class="btn-cancel">
+          <mat-icon>close</mat-icon>
+          Annuler
         </button>
       </div>
     </form>
-  </mat-card>
-</div> 
+  </div>
+
+  <!-- Info Card -->
+  <div class="info-card">
+    <mat-icon>info</mat-icon>
+    <div class="info-content">
+      <h3>À propos des nomenclatures</h3>
+      <p>Les nomenclatures permettent de standardiser les valeurs utilisées dans l'application (types de fiches, statuts, catégories, etc.).</p>
+      <ul>
+        <li><strong>Code :</strong> Identifiant unique en majuscules</li>
+        <li><strong>Libellé :</strong> Nom affiché dans l'interface</li>
+        <li><strong>Type :</strong> Catégorie de la nomenclature</li>
+        <li><strong>Actif :</strong> Disponibilité dans les formulaires</li>
+      </ul>
+    </div>
+  </div>
+</div>

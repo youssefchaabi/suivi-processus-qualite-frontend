@@ -1,57 +1,137 @@
-<div class="container">
-  <h2><mat-icon style="vertical-align: middle; color: #1976d2;">assignment</mat-icon> Liste des Fiches Qualité</h2>
+<div class="fiche-qualite-container">
+  <!-- Header Premium -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <mat-icon>assignment</mat-icon>
+        Gestion des Fiches Qualité
+      </h1>
+      <div class="header-stats">
+        <div class="stat-card">
+          <mat-icon>description</mat-icon>
+          <div class="stat-info">
+            <span class="stat-value">{{ fiches.length }}</span>
+            <span class="stat-label">Fiches</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="addFiche()" *ngIf="authService.isAdmin() || authService.isChefProjet()" class="btn-create">
+        <mat-icon>add_circle</mat-icon>
+        Nouvelle Fiche
+      </button>
+      <button mat-stroked-button routerLink="/admin/dashboard" class="btn-back">
+        <mat-icon>arrow_back</mat-icon>
+        Retour Dashboard
+      </button>
+    </div>
+  </div>
 
-  <div class="actions">
-    <button mat-raised-button color="primary" (click)="addFiche()" *ngIf="authService.isAdmin() || authService.isChefProjet()" matTooltip="Ajouter une fiche qualité">
-      <mat-icon>add</mat-icon>
-      Ajouter une fiche
+  <!-- Loading Premium -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Chargement des fiches qualité...</p>
+  </div>
+
+  <!-- Empty State Premium -->
+  <div *ngIf="!loading && fiches.length === 0" class="empty-state">
+    <mat-icon>assignment_late</mat-icon>
+    <h3>Aucune fiche qualité</h3>
+    <p>Commencez par créer votre première fiche qualité</p>
+    <button mat-raised-button color="primary" (click)="addFiche()" *ngIf="authService.isAdmin() || authService.isChefProjet()">
+      <mat-icon>add_circle</mat-icon>
+      Créer une fiche
     </button>
   </div>
 
-  <mat-spinner *ngIf="loading"></mat-spinner>
+  <!-- Table Premium -->
+  <div *ngIf="!loading && fiches.length > 0" class="table-container">
+    <table mat-table [dataSource]="dataSource" matSort class="fiche-qualite-table">
+      
+      <!-- Titre -->
+      <ng-container matColumnDef="titre">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <mat-icon>title</mat-icon>
+          Titre
+        </th>
+        <td mat-cell *matCellDef="let f">
+          <div class="cell-content">
+            <mat-icon class="cell-icon">description</mat-icon>
+            <span class="cell-text">{{ f.titre }}</span>
+          </div>
+        </td>
+      </ng-container>
 
-  <div *ngIf="!loading && fiches.length === 0">
-    <p>Aucune fiche qualité trouvée.</p>
+      <!-- Type -->
+      <ng-container matColumnDef="typeFiche">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <mat-icon>category</mat-icon>
+          Type
+        </th>
+        <td mat-cell *matCellDef="let f">
+          <span class="badge badge-type">
+            <mat-icon>label</mat-icon>
+            {{ f.typeFiche || 'Non défini' }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Statut -->
+      <ng-container matColumnDef="statut">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <mat-icon>flag</mat-icon>
+          Statut
+        </th>
+        <td mat-cell *matCellDef="let f">
+          <span class="badge badge-statut" [ngClass]="getStatutClass(f.statut)">
+            <mat-icon>{{ getStatutIcon(f.statut) }}</mat-icon>
+            {{ f.statut || 'Non défini' }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Responsable -->
+      <ng-container matColumnDef="responsable">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <mat-icon>person</mat-icon>
+          Responsable
+        </th>
+        <td mat-cell *matCellDef="let f">
+          <div class="responsable-cell">
+            <mat-icon>account_circle</mat-icon>
+            <span>{{ f.responsable || 'Non assigné' }}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- Actions -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-icon>settings</mat-icon>
+          Actions
+        </th>
+        <td mat-cell *matCellDef="let f">
+          <div class="action-buttons" *ngIf="authService.isAdmin() || authService.isChefProjet()">
+            <button mat-icon-button class="btn-edit" (click)="editFiche(f)" matTooltip="Modifier">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button class="btn-delete" (click)="deleteFiche(f)" matTooltip="Supprimer">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="colonnes; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: colonnes;" class="table-row"></tr>
+    </table>
+
+    <mat-paginator 
+      [pageSizeOptions]="[5, 10, 25, 50]" 
+      [pageSize]="10"
+      showFirstLastButtons
+      class="paginator-premium">
+    </mat-paginator>
   </div>
-
-  <mat-table [dataSource]="dataSource" class="mat-elevation-z8 fiche-qualite-table" *ngIf="!loading && fiches.length > 0" matSort>
-
-    <!-- Titre -->
-    <ng-container matColumnDef="titre">
-      <mat-header-cell *matHeaderCellDef mat-sort-header> Titre </mat-header-cell>
-      <mat-cell *matCellDef="let f"> {{ f.titre }} </mat-cell>
-    </ng-container>
-
-    <!-- Type -->
-    <ng-container matColumnDef="typeFiche">
-      <mat-header-cell *matHeaderCellDef mat-sort-header> Type </mat-header-cell>
-      <mat-cell *matCellDef="let f"> {{ f.typeFiche || 'Non défini' }} </mat-cell>
-    </ng-container>
-
-    <!-- Statut -->
-    <ng-container matColumnDef="statut">
-      <mat-header-cell *matHeaderCellDef mat-sort-header> Statut </mat-header-cell>
-      <mat-cell *matCellDef="let f">
-        <mat-chip [color]="getChipColor(f.statut)" selected>{{ f.statut || 'Non défini' }}</mat-chip>
-      </mat-cell>
-    </ng-container>
-
-    <!-- Actions -->
-    <ng-container matColumnDef="actions">
-      <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
-      <mat-cell *matCellDef="let f">
-        <button mat-icon-button color="accent" (click)="editFiche(f)" *ngIf="authService.isAdmin() || authService.isChefProjet()" matTooltip="Modifier la fiche qualité">
-          <mat-icon>edit</mat-icon>
-        </button>
-        <button mat-icon-button color="warn" (click)="deleteFiche(f)" *ngIf="authService.isAdmin() || authService.isChefProjet()" matTooltip="Supprimer la fiche qualité">
-          <mat-icon>delete</mat-icon>
-        </button>
-      </mat-cell>
-    </ng-container>
-
-    <mat-header-row *matHeaderRowDef="colonnes"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: colonnes;" class="fiche-qualite-row"></mat-row>
-  </mat-table>
-
-  <mat-paginator [pageSize]="5" showFirstLastButtons></mat-paginator>
 </div>

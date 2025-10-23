@@ -79,18 +79,19 @@ export class FormulaireComponent implements OnInit {
       next: (data) => { this.etats = data; },
       error: () => {
         this.etats = [
-          { type: 'STATUT', valeur: 'EN_COURS' },
-          { type: 'STATUT', valeur: 'TERMINE' },
-          { type: 'STATUT', valeur: 'BLOQUE' }
+          { type: 'STATUT', code: 'EN_COURS', libelle: 'En cours', actif: true },
+          { type: 'STATUT', code: 'TERMINE', libelle: 'Terminé', actif: true },
+          { type: 'STATUT', code: 'BLOQUE', libelle: 'Bloqué', actif: true }
         ];
       }
     });
-    this.nomenclatureService.getNomenclaturesByType('KPI').subscribe({
+    // KPI n'est pas un type valide, utiliser TYPE_FICHE temporairement
+    this.nomenclatureService.getNomenclaturesByType('TYPE_FICHE').subscribe({
       next: (data) => { this.kpis = data; },
       error: () => {
         this.kpis = [
-          { type: 'KPI', valeur: 'Taux conformité' },
-          { type: 'KPI', valeur: 'Délai traitement' }
+          { type: 'TYPE_FICHE', code: 'TAUX_CONFORMITE', libelle: 'Taux conformité', actif: true },
+          { type: 'TYPE_FICHE', code: 'DELAI_TRAITEMENT', libelle: 'Délai traitement', actif: true }
         ];
       }
     });

@@ -1,54 +1,139 @@
-<div class="container fiche-projet-list-container">
-  <h2><mat-icon style="vertical-align: middle; color: #1976d2;">assignment</mat-icon> Gestion des Fiches Projet</h2>
-  <div class="actions">
-    <button mat-raised-button color="primary" (click)="ajouterProjet()" *ngIf="authService.isAdmin() || authService.isChefProjet()">
-      <mat-icon>add</mat-icon> Ajouter un projet
+<div class="projet-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="header-content">
+      <div class="title-wrapper">
+        <mat-icon class="header-icon">folder_special</mat-icon>
+        <h1 class="page-title">Gestion des Projets</h1>
+      </div>
+      <p class="page-subtitle">Gérez et suivez tous vos projets en un seul endroit</p>
+    </div>
+    <button 
+      mat-raised-button 
+      color="primary" 
+      class="add-button"
+      (click)="ajouterProjet()" 
+      *ngIf="authService.isAdmin() || authService.isChefProjet()">
+      <mat-icon>add_circle</mat-icon>
+      <span>Nouveau Projet</span>
     </button>
   </div>
-  <mat-spinner *ngIf="loading"></mat-spinner>
-  <span *ngIf="loading" class="loading-message">Chargement...</span>
-  <mat-table [dataSource]="dataSource" matSort *ngIf="!loading">
-    <ng-container matColumnDef="nom">
-      <mat-header-cell *matHeaderCellDef mat-sort-header>Nom</mat-header-cell>
-      <mat-cell *matCellDef="let projet">{{ projet.nom }}</mat-cell>
-    </ng-container>
-    <ng-container matColumnDef="description">
-      <mat-header-cell *matHeaderCellDef>Description</mat-header-cell>
-      <mat-cell *matCellDef="let projet">{{ projet.description }}</mat-cell>
-    </ng-container>
-    <ng-container matColumnDef="objectifs">
-      <mat-header-cell *matHeaderCellDef>Objectifs</mat-header-cell>
-      <mat-cell *matCellDef="let projet">{{ projet.objectifs }}</mat-cell>
-    </ng-container>
-    <ng-container matColumnDef="responsable">
-      <mat-header-cell *matHeaderCellDef>Responsable</mat-header-cell>
-      <mat-cell *matCellDef="let projet">{{ projet.responsable }}</mat-cell>
-    </ng-container>
-    <ng-container matColumnDef="echeance">
-      <mat-header-cell *matHeaderCellDef>Echéance</mat-header-cell>
-      <mat-cell *matCellDef="let projet">
-        <span *ngIf="projet.echeance">{{ projet.echeance | date:'dd/MM/yyyy' }}</span>
-        <span *ngIf="!projet.echeance">-</span>
-      </mat-cell>
-    </ng-container>
-    <ng-container matColumnDef="statut">
-      <mat-header-cell *matHeaderCellDef>Statut</mat-header-cell>
-      <mat-cell *matCellDef="let projet">{{ projet.statut }}</mat-cell>
-    </ng-container>
-    <ng-container matColumnDef="actions">
-      <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
-      <mat-cell *matCellDef="let projet">
-        <button mat-mini-fab color="accent" aria-label="Modifier" (click)="modifierProjet(projet.id)" *ngIf="authService.isAdmin() || authService.isChefProjet()" matTooltip="Modifier le projet">
+
+  <!-- Skeleton Loading State -->
+  <div class="projects-grid" *ngIf="loading">
+    <mat-card class="project-card skeleton-card" *ngFor="let item of [1,2,3,4,5,6]">
+      <mat-card-header>
+        <div mat-card-avatar class="skeleton-avatar skeleton-pulse"></div>
+        <div class="skeleton-text-container">
+          <div class="skeleton-title skeleton-pulse"></div>
+          <div class="skeleton-subtitle skeleton-pulse"></div>
+        </div>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="skeleton-line skeleton-pulse"></div>
+        <div class="skeleton-line skeleton-pulse"></div>
+        <div class="skeleton-line short skeleton-pulse"></div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Projects Grid -->
+  <div class="projects-grid" *ngIf="!loading && dataSource.data.length > 0">
+    <mat-card class="project-card" *ngFor="let projet of dataSource.data" (click)="voirDetails(projet)">
+      <!-- Card Header -->
+      <mat-card-header>
+        <div mat-card-avatar class="project-avatar">
+          <mat-icon>assignment</mat-icon>
+        </div>
+        <mat-card-title>{{ projet.nom }}</mat-card-title>
+        <mat-card-subtitle>
+          <mat-icon class="small-icon">person</mat-icon>
+          {{ projet.responsable }}
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <!-- Card Content -->
+      <mat-card-content>
+        <div class="project-info">
+          <div class="info-item">
+            <mat-icon class="info-icon">description</mat-icon>
+            <div class="info-content">
+              <span class="info-label">Description</span>
+              <p class="info-text truncate-2-lines">{{ projet.description }}</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <mat-icon class="info-icon">flag</mat-icon>
+            <div class="info-content">
+              <span class="info-label">Objectifs</span>
+              <p class="info-text truncate-2-lines">{{ projet.objectifs }}</p>
+            </div>
+          </div>
+
+          <div class="meta-info">
+            <div class="meta-item">
+              <mat-icon class="meta-icon">event</mat-icon>
+              <span class="meta-text">
+                {{ projet.echeance ? (projet.echeance | date:'dd/MM/yyyy') : 'Pas d\'échéance' }}
+              </span>
+            </div>
+            <mat-chip class="status-chip" [ngClass]="getStatutClass(projet.statut)">
+              <mat-icon class="chip-icon">{{ getStatutIcon(projet.statut) }}</mat-icon>
+              {{ projet.statut }}
+            </mat-chip>
+          </div>
+        </div>
+      </mat-card-content>
+
+      <!-- Card Actions -->
+      <mat-card-actions class="card-actions" *ngIf="authService.isAdmin() || authService.isChefProjet()">
+        <button 
+          mat-icon-button 
+          color="accent"
+          (click)="voirDetails(projet); $event.stopPropagation()" 
+          matTooltip="Voir les détails"
+          class="action-btn">
+          <mat-icon>visibility</mat-icon>
+        </button>
+        <button 
+          mat-icon-button 
+          color="primary"
+          (click)="modifierProjet(projet.id!); $event.stopPropagation()" 
+          matTooltip="Modifier le projet"
+          class="action-btn">
           <mat-icon>edit</mat-icon>
         </button>
-        <button mat-mini-fab color="warn" aria-label="Supprimer" (click)="supprimerProjet(projet.id)" *ngIf="authService.isAdmin() || authService.isChefProjet()" matTooltip="Supprimer le projet">
+        <button 
+          mat-icon-button 
+          color="warn"
+          (click)="supprimerProjet(projet.id!); $event.stopPropagation()" 
+          matTooltip="Supprimer le projet"
+          class="action-btn">
           <mat-icon>delete</mat-icon>
         </button>
-      </mat-cell>
-    </ng-container>
-    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-  </mat-table>
-  <mat-paginator [pageSize]="5" showFirstLastButtons></mat-paginator>
-  <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!loading && dataSource.data.length === 0">
+    <mat-icon class="empty-icon">folder_open</mat-icon>
+    <h2>Aucun projet</h2>
+    <p>Commencez par créer votre premier projet</p>
+    <button 
+      mat-raised-button 
+      color="primary" 
+      (click)="ajouterProjet()" 
+      *ngIf="authService.isAdmin() || authService.isChefProjet()">
+      <mat-icon>add</mat-icon>
+      Créer un projet
+    </button>
+  </div>
+
+  <!-- Error Message -->
+  <div class="error-container" *ngIf="errorMessage">
+    <mat-icon class="error-icon">error_outline</mat-icon>
+    <p>{{ errorMessage }}</p>
+  </div>
 </div> 

@@ -1,0 +1,90 @@
+<div class="nomenclature-dialog">
+  <h2 mat-dialog-title>
+    <mat-icon>{{ isEditMode ? 'edit' : 'add_circle' }}</mat-icon>
+    {{ isEditMode ? 'Modifier la nomenclature' : 'Nouvelle nomenclature' }}
+  </h2>
+
+  <mat-dialog-content>
+    <form [formGroup]="nomenclatureForm" class="nomenclature-form">
+      
+      <!-- Type -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Type</mat-label>
+        <mat-select formControlName="type">
+          <mat-option *ngFor="let type of types" [value]="type.value">
+            {{ type.label }}
+          </mat-option>
+        </mat-select>
+        <mat-icon matPrefix>category</mat-icon>
+        <mat-error *ngIf="nomenclatureForm.get('type')?.invalid">
+          {{ getErrorMessage('type') }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Code -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Code</mat-label>
+        <input matInput formControlName="code" placeholder="Ex: EN_COURS" style="text-transform: uppercase;">
+        <mat-icon matPrefix>tag</mat-icon>
+        <mat-hint>Majuscules, chiffres et underscores uniquement</mat-hint>
+        <mat-error *ngIf="nomenclatureForm.get('code')?.invalid">
+          {{ getErrorMessage('code') }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Libellé -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Libellé</mat-label>
+        <input matInput formControlName="libelle" placeholder="Ex: En cours">
+        <mat-icon matPrefix>label</mat-icon>
+        <mat-error *ngIf="nomenclatureForm.get('libelle')?.invalid">
+          {{ getErrorMessage('libelle') }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Description -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Description (optionnel)</mat-label>
+        <textarea matInput formControlName="description" rows="3" placeholder="Description de la nomenclature"></textarea>
+        <mat-icon matPrefix>description</mat-icon>
+        <mat-hint>Maximum 500 caractères</mat-hint>
+        <mat-error *ngIf="nomenclatureForm.get('description')?.invalid">
+          {{ getErrorMessage('description') }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Ordre -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Ordre d'affichage</mat-label>
+        <input matInput type="number" formControlName="ordre" placeholder="0">
+        <mat-icon matPrefix>sort</mat-icon>
+        <mat-hint>Ordre de tri (0-999)</mat-hint>
+        <mat-error *ngIf="nomenclatureForm.get('ordre')?.invalid">
+          {{ getErrorMessage('ordre') }}
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Actif -->
+      <div class="status-field">
+        <mat-slide-toggle formControlName="actif" color="primary">
+          <span class="toggle-label">
+            <mat-icon>{{ nomenclatureForm.get('actif')?.value ? 'check_circle' : 'cancel' }}</mat-icon>
+            {{ nomenclatureForm.get('actif')?.value ? 'Nomenclature active' : 'Nomenclature inactive' }}
+          </span>
+        </mat-slide-toggle>
+      </div>
+
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()" type="button">
+      <mat-icon>close</mat-icon>
+      Annuler
+    </button>
+    <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="nomenclatureForm.invalid">
+      <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+      {{ isEditMode ? 'Enregistrer' : 'Créer' }}
+    </button>
+  </mat-dialog-actions>
+</div>

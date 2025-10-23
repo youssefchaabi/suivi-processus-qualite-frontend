@@ -44,8 +44,8 @@
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Etat d'avancement</mat-label>
           <mat-select formControlName="etatAvancement" required>
-            <mat-option *ngFor="let etat of etats" [value]="etat.valeur">
-              {{ etat.valeur }}
+            <mat-option *ngFor="let etat of etats" [value]="etat.code">
+              {{ etat.libelle }}
             </mat-option>
           </mat-select>
           <mat-error *ngIf="form.get('etatAvancement')?.hasError('required')">
@@ -69,8 +69,8 @@
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Indicateur KPI</mat-label>
           <mat-select formControlName="indicateursKpi">
-            <mat-option *ngFor="let kpi of kpis" [value]="kpi.valeur">
-              {{ kpi.valeur }}
+            <mat-option *ngFor="let kpi of kpis" [value]="kpi.code">
+              {{ kpi.libelle }}
             </mat-option>
           </mat-select>
         </mat-form-field>

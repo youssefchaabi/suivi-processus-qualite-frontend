@@ -21,7 +21,9 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSortModule } from '@angular/material/sort';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialogModule } from '@angular/material/dialog';
 import { DashboardChefComponent } from './dashboard-chef/dashboard-chef.component';
+import { SharedModule } from '../../shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -33,6 +35,7 @@ import { DashboardChefComponent } from './dashboard-chef/dashboard-chef.componen
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    SharedModule,
     FicheQualiteRoutingModule,
     MatPaginatorModule,
     MatIconModule,
@@ -48,7 +51,8 @@ import { DashboardChefComponent } from './dashboard-chef/dashboard-chef.componen
     MatSnackBarModule,
     MatSortModule,
     MatMenuModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatDialogModule
   ]
 })
 export class FicheQualiteModule { }

@@ -21,9 +21,23 @@ export class FormulaireComponent implements OnInit {
   fichesExistantes: FicheQualite[] = [];
   erreurDoublon = false;
 
-  // Nomenclatures dynamiques
-  typesFiche: Nomenclature[] = [];
-  statuts: Nomenclature[] = [];
+  // Nomenclatures dynamiques avec valeurs par défaut (CORRESPONDANT AU BACKEND)
+  typesFiche: Nomenclature[] = [
+    { type: 'TYPE_FICHE', code: 'AUDIT', libelle: 'Audit', actif: true },
+    { type: 'TYPE_FICHE', code: 'CONTROLE', libelle: 'Contrôle', actif: true },
+    { type: 'TYPE_FICHE', code: 'AMELIORATION', libelle: 'Amélioration', actif: true },
+    { type: 'TYPE_FICHE', code: 'FORMATION', libelle: 'Formation', actif: true },
+    { type: 'TYPE_FICHE', code: 'MAINTENANCE', libelle: 'Maintenance', actif: true },
+    { type: 'TYPE_FICHE', code: 'AUTRE', libelle: 'Autre', actif: true }
+  ];
+  statuts: Nomenclature[] = [
+    { type: 'STATUT', code: 'EN_COURS', libelle: 'En cours', actif: true },
+    { type: 'STATUT', code: 'TERMINEE', libelle: 'Terminée', actif: true },
+    { type: 'STATUT', code: 'VALIDEE', libelle: 'Validée', actif: true },
+    { type: 'STATUT', code: 'REJETEE', libelle: 'Rejetée', actif: true },
+    { type: 'STATUT', code: 'EN_ATTENTE', libelle: 'En attente', actif: true },
+    { type: 'STATUT', code: 'BLOQUEE', libelle: 'Bloquée', actif: true }
+  ];
   // Liste des utilisateurs pour le champ responsable
   utilisateurs: Utilisateur[] = [];
 
@@ -47,6 +61,10 @@ export class FormulaireComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log('🚀 INIT FORMULAIRE FICHE QUALITÉ');
+    console.log('📋 Types de fiches AVANT chargement:', this.typesFiche);
+    console.log('📋 Statuts AVANT chargement:', this.statuts);
+    
     this.ficheId = this.route.snapshot.paramMap.get('id');
     if (this.ficheId) {
       this.modeEdition = true;
@@ -54,61 +72,79 @@ export class FormulaireComponent implements OnInit {
     }
     this.chargerNomenclatures();
     this.chargerUtilisateurs();
+    
+    console.log('📋 Types de fiches APRÈS init:', this.typesFiche);
+    console.log('📋 Statuts APRÈS init:', this.statuts);
   }
 
   chargerNomenclatures(): void {
-    // Charger les types de fiches
+    console.log('🔄 Chargement des nomenclatures depuis l\'API...');
+    
+    // Charger les types de fiches depuis l'API
     this.nomenclatureService.getNomenclaturesByType('TYPE_FICHE').subscribe({
       next: (data) => {
-        this.typesFiche = data;
-        if (data.length > 0 && !this.modeEdition) {
-          this.form.patchValue({ typeFiche: data[0].valeur });
+        console.log('✅ Types de fiches reçus:', data);
+        if (data && data.length > 0) {
+          // Filtrer uniquement les actifs
+          const typesActifs = data.filter(t => t.actif === true);
+          if (typesActifs.length > 0) {
+            this.typesFiche = typesActifs;
+            console.log('✅ Types de fiches chargés:', this.typesFiche);
+          } else {
+            console.warn('⚠️ Aucun type actif, conservation des valeurs par défaut');
+          }
+        } else {
+          console.warn('⚠️ Aucune donnée reçue, conservation des valeurs par défaut');
         }
       },
       error: (error) => {
-        console.error('Erreur lors du chargement des types de fiches:', error);
-        // Fallback vers des valeurs par défaut
-        this.typesFiche = [
-          { type: 'TYPE_FICHE', valeur: 'AUDIT' },
-          { type: 'TYPE_FICHE', valeur: 'CONTROLE' },
-          { type: 'TYPE_FICHE', valeur: 'VERIFICATION' },
-          { type: 'TYPE_FICHE', valeur: 'INSPECTION' }
-        ];
+        console.error('❌ Erreur chargement types:', error);
+        console.log('✅ Conservation des valeurs par défaut');
       }
     });
 
-    // Charger les statuts
+    // Charger les statuts depuis l'API
     this.nomenclatureService.getNomenclaturesByType('STATUT').subscribe({
       next: (data) => {
-        this.statuts = data;
-        if (data.length > 0 && !this.modeEdition) {
-          this.form.patchValue({ statut: data[0].valeur });
+        console.log('✅ Statuts reçus:', data);
+        if (data && data.length > 0) {
+          // Filtrer uniquement les actifs
+          const statutsActifs = data.filter(s => s.actif === true);
+          if (statutsActifs.length > 0) {
+            this.statuts = statutsActifs;
+            console.log('✅ Statuts chargés:', this.statuts);
+          } else {
+            console.warn('⚠️ Aucun statut actif, conservation des valeurs par défaut');
+          }
+        } else {
+          console.warn('⚠️ Aucune donnée reçue, conservation des valeurs par défaut');
         }
       },
       error: (error) => {
-        console.error('Erreur lors du chargement des statuts:', error);
-        // Fallback vers des valeurs par défaut
-        this.statuts = [
-          { type: 'STATUT', valeur: 'EN_COURS' },
-          { type: 'STATUT', valeur: 'VALIDEE' },
-          { type: 'STATUT', valeur: 'REFUSEE' },
-          { type: 'STATUT', valeur: 'EN_ATTENTE' }
-        ];
+        console.error('❌ Erreur chargement statuts:', error);
+        console.log('✅ Conservation des valeurs par défaut');
       }
     });
   }
 
   chargerUtilisateurs(): void {
-    // Charger la liste des utilisateurs pour le champ responsable
+    console.log('🔄 Chargement des utilisateurs...');
     this.utilisateurService.getUtilisateurs().subscribe({
       next: (users) => {
-        this.utilisateurs = users;
-        if (users.length > 0 && !this.modeEdition) {
-          this.form.patchValue({ responsable: users[0].nom });
+        console.log('✅ Utilisateurs reçus:', users);
+        if (users && users.length > 0) {
+          this.utilisateurs = users;
+          if (!this.modeEdition) {
+            // Utiliser l'email au lieu du nom
+            this.form.patchValue({ responsable: users[0].email });
+          }
+        } else {
+          console.warn('⚠️ Aucun utilisateur reçu');
+          this.utilisateurs = [];
         }
       },
       error: (error) => {
-        console.error('Erreur lors du chargement des utilisateurs:', error);
+        console.error('❌ Erreur chargement utilisateurs:', error);
         this.utilisateurs = [];
       }
     });
@@ -139,17 +175,39 @@ export class FormulaireComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      console.error('❌ Formulaire invalide:', this.form.errors);
+      Object.keys(this.form.controls).forEach(key => {
+        const control = this.form.get(key);
+        if (control?.invalid) {
+          console.error(`  - ${key}:`, control.errors);
+        }
+      });
+      return;
+    }
+
+    // Construire les données de la fiche
+    const formValue = this.form.value;
+    console.log('📋 Valeurs du formulaire:', formValue);
+
+    const ficheData: FicheQualite = {
+      titre: formValue.titre?.trim() || '',
+      description: formValue.description?.trim() || '',
+      typeFiche: formValue.typeFiche || '',
+      statut: formValue.statut || '',
+      responsable: formValue.responsable || '',  // Email maintenant
+      commentaire: formValue.commentaire?.trim() || ''
+    };
+
+    console.log('📤 Données à envoyer:', ficheData);
 
     // Vérification doublon (hors édition sur soi-même)
-    const ficheData: FicheQualite = {
-      ...this.form.value
-    };
     const doublon = this.fichesExistantes.some(f =>
       ((f.titre || '').trim().toLowerCase() === (ficheData.titre || '').trim().toLowerCase()) &&
       (f.typeFiche === ficheData.typeFiche) &&
       (!this.modeEdition || f.id !== this.ficheId)
     );
+    
     if (doublon) {
       this.erreurDoublon = true;
       this.loading = false;
@@ -163,33 +221,64 @@ export class FormulaireComponent implements OnInit {
     }
 
     this.loading = true;
+    
     if (this.modeEdition && this.ficheId) {
+      console.log('🔄 Mise à jour de la fiche:', this.ficheId);
       this.ficheService.update(this.ficheId, ficheData).subscribe({
-        next: () => {
+        next: (response) => {
+          console.log('✅ Fiche mise à jour:', response);
+          this.loading = false;
           this.snackBar.openFromComponent(SuccessSnackbarComponent, {
             data: { message: 'Fiche qualité mise à jour avec succès!' },
             duration: 3000
           });
+          // Redirection vers la liste
           this.router.navigate(['/fiche-qualite']);
         },
         error: (error) => {
-          console.error('Erreur lors de la mise à jour:', error);
-          this.snackBar.open('Erreur lors de la mise à jour', 'Fermer', { duration: 3000 });
+          console.error('❌ Erreur mise à jour:', error);
+          console.error('Status:', error.status);
+          console.error('Message:', error.message);
+          console.error('Error body:', error.error);
+          
+          let errorMessage = 'Erreur lors de la mise à jour';
+          if (error.error?.message) {
+            errorMessage = error.error.message;
+          } else if (error.status === 400) {
+            errorMessage = 'Données invalides. Vérifiez les champs.';
+          }
+          
+          this.snackBar.open(errorMessage, 'Fermer', { duration: 5000 });
           this.loading = false;
         }
       });
     } else {
+      console.log('➕ Création d\'une nouvelle fiche');
       this.ficheService.create(ficheData).subscribe({
-        next: () => {
+        next: (response) => {
+          console.log('✅ Fiche créée:', response);
+          this.loading = false;
           this.snackBar.openFromComponent(SuccessSnackbarComponent, {
             data: { message: 'Fiche qualité créée avec succès!' },
             duration: 3000
           });
+          // Redirection vers la liste
           this.router.navigate(['/fiche-qualite']);
         },
         error: (error) => {
-          console.error('Erreur lors de la création:', error);
-          this.snackBar.open('Erreur lors de la création', 'Fermer', { duration: 3000 });
+          console.error('❌ Erreur création:', error);
+          console.error('Status:', error.status);
+          console.error('Message:', error.message);
+          console.error('Error body:', error.error);
+          
+          let errorMessage = 'Erreur lors de la création';
+          if (error.error?.message) {
+            errorMessage = error.error.message;
+          } else if (error.status === 400) {
+            errorMessage = 'Données invalides. Vérifiez les champs.';
+          }
+          
+          this.snackBar.open(errorMessage, 'Fermer', { duration: 5000 });
           this.loading = false;
         }
       });
@@ -198,5 +287,37 @@ export class FormulaireComponent implements OnInit {
 
   annuler(): void {
     this.router.navigate(['/fiche-qualite']);
+  }
+
+  getTypeIcon(typeCode: string): string {
+    switch (typeCode?.toUpperCase()) {
+      case 'AUDIT':
+        return 'fact_check';
+      case 'CONTROLE':
+        return 'verified';
+      case 'VERIFICATION':
+        return 'check_circle';
+      case 'INSPECTION':
+        return 'search';
+      default:
+        return 'description';
+    }
+  }
+
+  getStatutIcon(statutCode: string): string {
+    switch (statutCode?.toUpperCase()) {
+      case 'VALIDEE':
+      case 'TERMINE':
+        return 'check_circle';
+      case 'REFUSEE':
+      case 'BLOQUE':
+        return 'cancel';
+      case 'EN_COURS':
+        return 'pending';
+      case 'EN_ATTENTE':
+        return 'schedule';
+      default:
+        return 'flag';
+    }
   }
 }

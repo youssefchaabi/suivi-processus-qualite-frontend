@@ -101,4 +101,31 @@ export class FormulaireProjetComponent implements OnInit {
   retourListe(): void {
     this.router.navigate(['/fiche-projet']);
   }
+
+  getStatutLabel(statut: string): string {
+    const labels: { [key: string]: string } = {
+      'EN_COURS': 'En Cours',
+      'VALIDE': 'Validé',
+      'CLOTURE': 'Clôturé'
+    };
+    return labels[statut] || statut;
+  }
+
+  getStatutIcon(statut: string): string {
+    const icons: { [key: string]: string } = {
+      'EN_COURS': 'pending',
+      'VALIDE': 'check_circle',
+      'CLOTURE': 'archive'
+    };
+    return icons[statut] || 'flag';
+  }
+
+  getStatutClass(statut: string): string {
+    const classes: { [key: string]: string } = {
+      'EN_COURS': 'status-en-cours',
+      'VALIDE': 'status-valide',
+      'CLOTURE': 'status-cloture'
+    };
+    return classes[statut] || '';
+  }
 } 

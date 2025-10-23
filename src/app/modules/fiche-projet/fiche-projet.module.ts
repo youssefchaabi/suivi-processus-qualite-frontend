@@ -19,11 +19,17 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { FormulaireProjetComponent } from './pages/formulaire/formulaire-projet.component';
-import { ListeProjetComponent } from './pages/liste/liste-projet.component';
+import { ListeProjetComponent, ProjetDetailsDialogComponent, ProjetFormDialogComponent, ConfirmDeleteDialogComponent } from './pages/liste/liste-projet.component';
 import { FicheProjetRoutingModule } from './fiche-projet-routing.module';
 
 @NgModule({
-  declarations: [FormulaireProjetComponent, ListeProjetComponent],
+  declarations: [
+    FormulaireProjetComponent, 
+    ListeProjetComponent, 
+    ProjetDetailsDialogComponent,
+    ProjetFormDialogComponent,
+    ConfirmDeleteDialogComponent
+  ],
   imports: [
     CommonModule,
     ReactiveFormsModule,

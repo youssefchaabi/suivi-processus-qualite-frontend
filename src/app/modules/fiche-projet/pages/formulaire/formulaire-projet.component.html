@@ -1,51 +1,148 @@
-<div class="fiche-projet-form-container">
-  <h2><mat-icon style="vertical-align: middle; color: #1976d2;">assignment</mat-icon>
-    {{ modeEdition ? 'Modifier le projet' : 'Créer un projet' }}
-  </h2>
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Nom du projet</mat-label>
-      <input matInput formControlName="nom" required autofocus />
-      <mat-error *ngIf="form.get('nom')?.hasError('required')">Champ obligatoire</mat-error>
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Description</mat-label>
-      <textarea matInput formControlName="description" required></textarea>
-      <mat-error *ngIf="form.get('description')?.hasError('required')">Champ obligatoire</mat-error>
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Objectifs</mat-label>
-      <textarea matInput formControlName="objectifs" required></textarea>
-      <mat-error *ngIf="form.get('objectifs')?.hasError('required')">Champ obligatoire</mat-error>
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Responsable</mat-label>
-      <mat-select formControlName="responsable" required>
-        <mat-option *ngFor="let user of utilisateurs" [value]="user.nom">{{ user.nom }} ({{ user.role }})</mat-option>
-      </mat-select>
-      <mat-error *ngIf="form.get('responsable')?.hasError('required')">Champ obligatoire</mat-error>
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Echéance</mat-label>
-      <input matInput [matDatepicker]="picker" formControlName="echeance" required autocomplete="off" (keydown)="$event.preventDefault()" (focus)="picker.open()" />
-      <mat-datepicker-toggle matSuffix matDatepicker="picker"></mat-datepicker-toggle>
-      <mat-datepicker #picker></mat-datepicker>
-      <mat-error *ngIf="form.get('echeance')?.hasError('required')">Champ obligatoire</mat-error>
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Statut</mat-label>
-      <mat-select formControlName="statut" required>
-        <mat-option *ngFor="let statut of statutOptions" [value]="statut">{{ statut }}</mat-option>
-      </mat-select>
-      <mat-error *ngIf="form.get('statut')?.hasError('required')">Champ obligatoire</mat-error>
-    </mat-form-field>
+<div class="form-container">
+  <!-- Header avec gradient -->
+  <div class="form-header">
+    <div class="header-content">
+      <mat-icon class="header-icon">{{ modeEdition ? 'edit_note' : 'add_box' }}</mat-icon>
+      <div class="header-text">
+        <h1 class="form-title">{{ modeEdition ? 'Modifier le Projet' : 'Nouveau Projet' }}</h1>
+        <p class="form-subtitle">{{ modeEdition ? 'Mettez à jour les informations du projet' : 'Créez un nouveau projet de qualité' }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulaire -->
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="modern-form">
+    <mat-card class="form-card">
+      <!-- Section 1: Informations Générales -->
+      <div class="section-header">
+        <mat-icon class="section-icon">info</mat-icon>
+        <h2 class="section-title">Informations Générales</h2>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nom du Projet</mat-label>
+          <input matInput formControlName="nom" required autofocus placeholder="Ex: Amélioration du processus qualité" />
+          <mat-icon matPrefix class="field-icon">assignment</mat-icon>
+          <mat-hint>Nom court et descriptif du projet</mat-hint>
+          <mat-error *ngIf="form.get('nom')?.hasError('required')">Le nom du projet est obligatoire</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description Détaillée</mat-label>
+          <textarea 
+            matInput 
+            formControlName="description" 
+            required 
+            rows="4"
+            placeholder="Décrivez en détail le contexte, les enjeux et le périmètre du projet..."></textarea>
+          <mat-icon matPrefix class="field-icon textarea-icon">description</mat-icon>
+          <mat-hint>Minimum 20 caractères - Soyez précis et complet</mat-hint>
+          <mat-error *ngIf="form.get('description')?.hasError('required')">La description est obligatoire</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Objectifs du Projet</mat-label>
+          <textarea 
+            matInput 
+            formControlName="objectifs" 
+            required 
+            rows="4"
+            placeholder="Listez les objectifs SMART (Spécifiques, Mesurables, Atteignables, Réalistes, Temporels)..."></textarea>
+          <mat-icon matPrefix class="field-icon textarea-icon">flag</mat-icon>
+          <mat-hint>Définissez des objectifs clairs et mesurables</mat-hint>
+          <mat-error *ngIf="form.get('objectifs')?.hasError('required')">Les objectifs sont obligatoires</mat-error>
+        </mat-form-field>
+      </div>
+    </mat-card>
+
+    <mat-card class="form-card">
+      <!-- Section 2: Gestion et Planification -->
+      <div class="section-header">
+        <mat-icon class="section-icon">settings</mat-icon>
+        <h2 class="section-title">Gestion & Planification</h2>
+      </div>
+
+      <div class="form-row two-columns">
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Responsable du Projet</mat-label>
+          <mat-select formControlName="responsable" required>
+            <mat-option *ngFor="let user of utilisateurs" [value]="user.nom">
+              <div class="user-option">
+                <mat-icon class="user-icon">person</mat-icon>
+                <span class="user-name">{{ user.nom }}</span>
+                <span class="user-role">{{ user.role }}</span>
+              </div>
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix class="field-icon">person_pin</mat-icon>
+          <mat-hint>Chef de projet principal</mat-hint>
+          <mat-error *ngIf="form.get('responsable')?.hasError('required')">Le responsable est obligatoire</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="half-width">
+          <mat-label>Date d'Échéance</mat-label>
+          <input 
+            matInput 
+            [matDatepicker]="picker" 
+            formControlName="echeance" 
+            required 
+            autocomplete="off" 
+            (keydown)="$event.preventDefault()" 
+            (focus)="picker.open()" 
+            placeholder="JJ/MM/AAAA" />
+          <mat-icon matPrefix class="field-icon">event</mat-icon>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-hint>Date limite de réalisation</mat-hint>
+          <mat-error *ngIf="form.get('echeance')?.hasError('required')">L'échéance est obligatoire</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Statut du Projet</mat-label>
+          <mat-select formControlName="statut" required>
+            <mat-option *ngFor="let statut of statutOptions" [value]="statut">
+              <div class="status-option">
+                <mat-icon class="status-icon" [ngClass]="getStatutClass(statut)">{{ getStatutIcon(statut) }}</mat-icon>
+                <span>{{ getStatutLabel(statut) }}</span>
+              </div>
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix class="field-icon">info_outline</mat-icon>
+          <mat-hint>État actuel du projet</mat-hint>
+          <mat-error *ngIf="form.get('statut')?.hasError('required')">Le statut est obligatoire</mat-error>
+        </mat-form-field>
+      </div>
+    </mat-card>
+
+    <!-- Actions -->
     <div class="form-actions">
-      <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || loading">
-        <mat-icon>save</mat-icon> {{ modeEdition ? 'Enregistrer' : 'Créer' }}
-        <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+      <button 
+        mat-raised-button 
+        color="primary" 
+        type="submit" 
+        [disabled]="form.invalid || loading"
+        class="submit-btn">
+        <mat-icon>{{ modeEdition ? 'save' : 'add_circle' }}</mat-icon>
+        <span>{{ modeEdition ? 'Enregistrer les Modifications' : 'Créer le Projet' }}</span>
+        <mat-spinner *ngIf="loading" diameter="20" class="btn-spinner"></mat-spinner>
       </button>
-      <button mat-stroked-button color="accent" type="button" (click)="retourListe()" [disabled]="loading" matTooltip="Retour à la liste des projets">
-        <mat-icon>arrow_back</mat-icon> Retour à la liste
+      
+      <button 
+        mat-stroked-button 
+        color="accent" 
+        type="button" 
+        (click)="retourListe()" 
+        [disabled]="loading"
+        class="cancel-btn">
+        <mat-icon>arrow_back</mat-icon>
+        <span>Retour à la Liste</span>
       </button>
     </div>
   </form>

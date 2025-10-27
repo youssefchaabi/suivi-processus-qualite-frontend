@@ -22,6 +22,7 @@ import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 
 @NgModule({
@@ -33,6 +34,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
   ],
   imports: [
     CommonModule,
+    SharedModule,
     FicheSuiviRoutingModule,
     MatCardModule,
     MatIconModule,

@@ -37,6 +37,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { StatCardComponent } from './components/stat-card/stat-card.component';
 import { LoadingSpinnerComponent } from './components/loading-spinner/loading-spinner.component';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
+import { DashboardSidebarComponent } from './dashboard-sidebar/dashboard-sidebar.component';
 
 const MATERIAL_MODULES = [
   MatButtonModule,
@@ -73,7 +74,8 @@ const MATERIAL_MODULES = [
 const SHARED_COMPONENTS = [
   StatCardComponent,
   LoadingSpinnerComponent,
-  ConfirmDialogComponent
+  ConfirmDialogComponent,
+  DashboardSidebarComponent
 ];
 
 @NgModule({

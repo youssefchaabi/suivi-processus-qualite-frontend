@@ -26,7 +26,9 @@ export class LoginComponent {
   ) {
     // Redirection automatique si déjà connecté
     if (this.authService.isLoggedIn()) {
-      const role = this.authService.getRole();
+      const roleRaw = this.authService.getRole();
+      const role = (roleRaw || '').replace(/^ROLE_/, '');
+      
       if (role === 'ADMIN') {
         this.router.navigate(['/admin/dashboard']);
       } else if (role === 'PILOTE_QUALITE') {
@@ -48,15 +50,26 @@ export class LoginComponent {
 
     this.authService.login(email!, password!).subscribe({
       next: () => {
-        const role = this.authService.getRole();
+        const roleRaw = this.authService.getRole();
+        const role = (roleRaw || '').replace(/^ROLE_/, '');
+        
+        console.log('=== LOGIN RÉUSSI ===');
+        console.log('Rôle brut:', roleRaw);
+        console.log('Rôle nettoyé:', role);
+        
         this.snackBar.open('Connexion réussie !', 'Fermer', { duration: 2000, panelClass: ['mat-snack-bar-success'] });
+        
         if (role === 'ADMIN') {
+          console.log('Redirection vers: /admin/dashboard');
           this.router.navigate(['/admin/dashboard']);
         } else if (role === 'PILOTE_QUALITE') {
+          console.log('Redirection vers: /fiche-suivi/dashboard');
           this.router.navigate(['/fiche-suivi/dashboard']);
         } else if (role === 'CHEF_PROJET') {
+          console.log('Redirection vers: /fiche-qualite/dashboard');
           this.router.navigate(['/fiche-qualite/dashboard']);
         } else {
+          console.log('Rôle inconnu, redirection vers: /');
           this.router.navigate(['/']);
         }
       },

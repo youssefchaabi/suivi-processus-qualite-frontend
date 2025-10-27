@@ -18,14 +18,19 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { MatCardModule } from '@angular/material/card';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSortModule } from '@angular/material/sort';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { SuccessSnackbarComponent } from 'src/app/shared/success-snackbar/success-snackbar.component';
+import { UtilisateurModalComponent } from './components/utilisateur-modal/utilisateur-modal.component';
 
 
 @NgModule({
   declarations: [
     UtilisateurComponent,
     ListeComponent,
-    FormulaireComponent
+    FormulaireComponent,
+    UtilisateurModalComponent
   ],
   imports: [
     CommonModule,
@@ -44,7 +49,9 @@ import { SuccessSnackbarComponent } from 'src/app/shared/success-snackbar/succes
     MatTooltipModule,
     OverlayModule,
     MatCardModule,
-  
+    MatDialogModule,
+    MatSortModule,
+    MatSnackBarModule
   ]
 })
 export class UtilisateurModule { }

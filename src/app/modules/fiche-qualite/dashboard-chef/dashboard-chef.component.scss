@@ -1,0 +1,130 @@
+.dashboard-layout {
+  display: flex;
+  min-height: calc(100vh - 64px);
+}
+
+.dashboard-content {
+  margin-left: 280px;
+  flex: 1;
+  padding: 2rem;
+  background: linear-gradient(120deg, #e8f5e9 0%, #fff 100%);
+  min-height: 100vh;
+  transition: margin-left 0.3s ease;
+
+  @media (max-width: 768px) {
+    margin-left: 70px;
+    padding: 1rem;
+  }
+}
+
+.dashboard-section {
+  margin-bottom: 3rem;
+  scroll-margin-top: 2rem;
+}
+
+.dashboard-header {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(56, 142, 60, 0.1);
+  margin-bottom: 2rem;
+}
+
+.dashboard-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #388e3c;
+  margin: 0 0 0.5rem 0;
+
+  mat-icon {
+    font-size: 2.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}
+
+.dashboard-subtitle {
+  color: #666;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 1.5rem 0;
+
+  mat-icon {
+    color: #388e3c;
+  }
+}
+
+.projects-grid,
+.quality-grid,
+.tracking-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.action-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+
+  mat-card-content {
+    text-align: center;
+    padding: 2rem !important;
+  }
+
+  .card-icon {
+    font-size: 4rem;
+    width: 4rem;
+    height: 4rem;
+    color: #388e3c;
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 0.5rem 0;
+  }
+
+  p {
+    color: #666;
+    margin: 0 0 1.5rem 0;
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
+.tasks-info,
+.reports-info {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+  p {
+    margin: 0;
+    color: #666;
+  }
+}

@@ -1,0 +1,108 @@
+<div class="dashboard-layout">
+  <!-- Sidebar Navigation -->
+  <app-dashboard-sidebar
+    title="Dashboard Chef"
+    [sections]="sidebarSections">
+  </app-dashboard-sidebar>
+
+  <!-- Main Content -->
+  <div class="dashboard-content">
+    <!-- Section: Tableau de bord -->
+    <section id="overview" class="dashboard-section">
+      <div class="dashboard-header">
+        <h1 class="dashboard-title">
+          <mat-icon>engineering</mat-icon>
+          Espace Chef de Projet
+        </h1>
+        <p class="dashboard-subtitle">
+          Gérez vos fiches qualité et suivez l'avancement de vos projets
+        </p>
+      </div>
+    </section>
+
+    <!-- Section: Mes Projets -->
+    <section id="projects" class="dashboard-section">
+      <h2 class="section-title">
+        <mat-icon>folder_special</mat-icon>
+        Mes Projets
+      </h2>
+      <div class="projects-grid">
+        <mat-card class="action-card">
+          <mat-card-content>
+            <mat-icon class="card-icon">work</mat-icon>
+            <h3>Fiches Projet</h3>
+            <p>Gérez vos projets qualité</p>
+            <a mat-raised-button color="primary" routerLink="/fiche-projet">
+              <mat-icon>arrow_forward</mat-icon>
+              Accéder
+            </a>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </section>
+
+    <!-- Section: Fiches Qualité -->
+    <section id="quality" class="dashboard-section">
+      <h2 class="section-title">
+        <mat-icon>verified</mat-icon>
+        Fiches Qualité
+      </h2>
+      <div class="quality-grid">
+        <mat-card class="action-card">
+          <mat-card-content>
+            <mat-icon class="card-icon">assignment</mat-icon>
+            <h3>Fiches Qualité</h3>
+            <p>Consultez et gérez les fiches qualité</p>
+            <a mat-raised-button color="primary" routerLink="/fiche-qualite">
+              <mat-icon>arrow_forward</mat-icon>
+              Accéder
+            </a>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </section>
+
+    <!-- Section: Fiches de Suivi -->
+    <section id="tracking" class="dashboard-section">
+      <h2 class="section-title">
+        <mat-icon>assignment_turned_in</mat-icon>
+        Fiches de Suivi
+      </h2>
+      <div class="tracking-grid">
+        <mat-card class="action-card">
+          <mat-card-content>
+            <mat-icon class="card-icon">track_changes</mat-icon>
+            <h3>Fiches de Suivi</h3>
+            <p>Suivez l'avancement de vos fiches</p>
+            <a mat-raised-button color="accent" routerLink="/fiche-suivi/liste">
+              <mat-icon>arrow_forward</mat-icon>
+              Accéder
+            </a>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </section>
+
+    <!-- Section: Tâches -->
+    <section id="tasks" class="dashboard-section">
+      <h2 class="section-title">
+        <mat-icon>task_alt</mat-icon>
+        Mes Tâches
+      </h2>
+      <div class="tasks-info">
+        <p>Gérez vos tâches et priorités</p>
+      </div>
+    </section>
+
+    <!-- Section: Rapports -->
+    <section id="reports" class="dashboard-section">
+      <h2 class="section-title">
+        <mat-icon>assessment</mat-icon>
+        Rapports
+      </h2>
+      <div class="reports-info">
+        <p>Consultez les rapports de vos projets</p>
+      </div>
+    </section>
+  </div>
+</div>

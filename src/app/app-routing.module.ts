@@ -4,10 +4,13 @@ import { FormulaireComponent } from './modules/utilisateur/pages/formulaire/form
 import { AuthGuard } from './guards/auth.guard';
 import { UnauthorizedComponent } from './modules/auth/unauthorized/unauthorized.component';
 import { KpiComponent } from './kpi/kpi.component';
+import { LandingComponent } from './pages/landing/landing.component';
 
-const routes: Routes = [{ path: 'utilisateurs', loadChildren: () => import('./modules/utilisateur/utilisateur.module').then(m => m.UtilisateurModule) },
+const routes: Routes = [
+  { path: '', component: LandingComponent },
+  { path: 'home', component: LandingComponent },
+  { path: 'utilisateurs', loadChildren: () => import('./modules/utilisateur/utilisateur.module').then(m => m.UtilisateurModule) },
   { path: 'nomenclatures', canActivate: [AuthGuard], loadChildren: () => import('./modules/nomenclature/nomenclature.module').then(m => m.NomenclatureModule), data: { role: 'ADMIN' } },
-  { path: '', redirectTo: 'auth/login', pathMatch: 'full' },
   { path: 'utilisateurs/nouveau',component: FormulaireComponent},
   { path: 'utilisateurs/:id',component: FormulaireComponent},
   {
@@ -41,8 +44,8 @@ const routes: Routes = [{ path: 'utilisateurs', loadChildren: () => import('./mo
 { path: 'historique', canActivate: [AuthGuard], loadChildren: () => import('./modules/historique/historique.module').then(m => m.HistoriqueModule), data: { role: ['ADMIN', 'PILOTE_QUALITE'] } },
 { path: 'formulaires-obligatoires', canActivate: [AuthGuard], loadChildren: () => import('./modules/formulaires-obligatoires/formulaires-obligatoires.module').then(m => m.FormulairesObligatoiresModule), data: { role: ['ADMIN', 'PILOTE_QUALITE'] } },
 { path: 'fiche-projet', canActivate: [AuthGuard], loadChildren: () => import('./modules/fiche-projet/fiche-projet.module').then(m => m.FicheProjetModule), data: { role: ['ADMIN', 'CHEF_PROJET'] } },
-{ path: 'unauthorized', component: UnauthorizedComponent }, // Crée ce composant si besoin
-{ path: '**', redirectTo: 'auth/login' }
+{ path: 'unauthorized', component: UnauthorizedComponent },
+{ path: '**', redirectTo: '' } // Rediriger vers home au lieu de login
 ];
 
 @NgModule({

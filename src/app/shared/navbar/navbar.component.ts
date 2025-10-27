@@ -12,6 +12,8 @@ import { NotificationService } from 'src/app/services/notification.service';
 export class NavbarComponent implements OnInit {
   notificationCount = 0;
   private pollingHandle: any;
+  searchQuery = '';
+  showSearch = false;
 
   constructor(public authService: AuthService, private router: Router, private snackBar: MatSnackBar, private notifService: NotificationService) {}
 
@@ -34,7 +36,7 @@ export class NavbarComponent implements OnInit {
   logout() {
     this.authService.logout();
     this.snackBar.open('Déconnexion réussie.', 'Fermer', { duration: 2000, panelClass: ['mat-snack-bar-success'] });
-    this.router.navigate(['/auth/login']);
+    this.router.navigate(['/']);
   }
 
   goToDashboard() {
@@ -56,9 +58,34 @@ export class NavbarComponent implements OnInit {
     if (!token) return '';
     try {
       const decoded: any = JSON.parse(atob(token.split('.')[1]));
-      return decoded.nom || '';
+      return decoded.nom || decoded.email || '';
     } catch {
       return '';
+    }
+  }
+
+  toggleSearch(): void {
+    this.showSearch = !this.showSearch;
+    if (!this.showSearch) {
+      this.searchQuery = '';
+    }
+  }
+
+  onSearch(): void {
+    if (this.searchQuery.trim()) {
+      console.log('Recherche:', this.searchQuery);
+      // TODO: Implémenter la logique de recherche
+      this.snackBar.open(`Recherche: ${this.searchQuery}`, 'Fermer', { duration: 2000 });
+    }
+  }
+
+  getRoleLabel(): string {
+    const role = this.authService.getRole();
+    switch (role) {
+      case 'ADMIN': return 'Administrateur';
+      case 'CHEF_PROJET': return 'Chef de Projet';
+      case 'PILOTE_QUALITE': return 'Pilote Qualité';
+      default: return '';
     }
   }
 }

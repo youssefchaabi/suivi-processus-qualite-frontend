@@ -18,16 +18,19 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 import { ListeComponent } from './pages/liste/liste.component';
 import { FormulaireComponent } from './pages/formulaire/formulaire.component';
 import { NomenclatureRoutingModule } from './nomenclature-routing.module';
 import { SharedModule } from '../../shared/shared.module';
+import { NomenclatureModalComponent } from './components/nomenclature-modal/nomenclature-modal.component';
 
 @NgModule({
   declarations: [
     ListeComponent,
-    FormulaireComponent
+    FormulaireComponent,
+    NomenclatureModalComponent
   ],
   imports: [
     CommonModule,
@@ -49,6 +52,7 @@ import { SharedModule } from '../../shared/shared.module';
     MatChipsModule,
     MatProgressSpinnerModule,
     MatCheckboxModule,
+    MatSlideToggleModule,
     NomenclatureRoutingModule
   ]
 })

@@ -4,7 +4,9 @@ import { RouterModule } from '@angular/router';
 import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { AuthGuard } from '../../guards/auth.guard';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @NgModule({
   declarations: [
@@ -12,6 +14,7 @@ import { AuthGuard } from '../../guards/auth.guard';
   ],
   imports: [
     CommonModule,
+    SharedModule,
     RouterModule.forChild([
       { 
         path: 'dashboard', 
@@ -21,7 +24,8 @@ import { AuthGuard } from '../../guards/auth.guard';
       }
     ]),
     MatCardModule,
-    MatIconModule
+    MatIconModule,
+    MatButtonModule
   ]
 })
 export class AdminModule { }

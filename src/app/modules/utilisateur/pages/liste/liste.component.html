@@ -13,7 +13,7 @@
       <button *ngIf="authService.isAdmin()" 
               mat-raised-button 
               color="primary" 
-              routerLink="/utilisateurs/nouveau" 
+              (click)="creerUtilisateur()" 
               class="add-button"
               matTooltip="Ajouter un nouvel utilisateur">
         <mat-icon>person_add</mat-icon>
@@ -242,7 +242,8 @@
       </mat-table>
     </div>
 
-    <mat-paginator [pageSize]="10" 
+    <mat-paginator [pageSize]="5" 
+                   [pageSizeOptions]="[5, 10, 25, 50]"
                    showFirstLastButtons 
                    class="table-paginator"
                    *ngIf="utilisateursFiltres.length > 0">

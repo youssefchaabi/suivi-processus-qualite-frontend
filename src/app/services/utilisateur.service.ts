@@ -46,9 +46,15 @@ export class UtilisateurService {
       role: utilisateur.role,
       password: utilisateur.password
     };
+    
+    console.log('Service: Envoi création utilisateur vers:', `${this.adminApiUrl}/create-user`);
+    console.log('Service: Payload:', { ...payload, password: '***' });
+    
     return this.http.post<Utilisateur>(`${this.adminApiUrl}/create-user`, payload).pipe(
       catchError(error => {
-        console.error('Erreur lors de la création de l\'utilisateur:', error);
+        console.error('Service: Erreur lors de la création de l\'utilisateur:', error);
+        console.error('Service: Statut erreur:', error.status);
+        console.error('Service: Message erreur:', error.error);
         return throwError(() => error);
       })
     );

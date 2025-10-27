@@ -1,47 +1,100 @@
 <mat-toolbar color="primary" class="navbar mat-elevation-z4">
-  <span class="logo" (click)="goToDashboard()" tabindex="0" aria-label="Accueil Qualité">
-    <mat-icon>home</mat-icon>
-    <span class="app-title">Qualité</span>
-  </span>
+  <!-- Logo -->
+  <div class="logo-section" (click)="goToDashboard()" tabindex="0" aria-label="Accueil Qualité">
+    <mat-icon class="logo-icon">verified</mat-icon>
+    <span class="app-title">Suivi Qualité</span>
+  </div>
+
   <span class="spacer"></span>
 
-  <!-- Liens dynamiques selon le rôle -->
+  <!-- Barre de recherche -->
+  <div class="search-container" *ngIf="authService.isLoggedIn()" [class.active]="showSearch">
+    <button mat-icon-button class="search-toggle" (click)="toggleSearch()" matTooltip="Rechercher">
+      <mat-icon>search</mat-icon>
+    </button>
+    <div class="search-input-wrapper" *ngIf="showSearch">
+      <mat-form-field appearance="outline" class="search-field">
+        <input matInput 
+               [(ngModel)]="searchQuery" 
+               placeholder="Rechercher..."
+               (keyup.enter)="onSearch()"
+               autocomplete="off">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- Actions rapides -->
   <ng-container *ngIf="authService.isLoggedIn()">
-    <a mat-button routerLink="/admin/dashboard" *ngIf="authService.isAdmin()" matTooltip="Dashboard Admin">Dashboard Admin</a>
-    <a mat-button routerLink="/fiche-qualite/dashboard" *ngIf="authService.isChefProjet()" matTooltip="Dashboard Chef de Projet">Dashboard Chef de Projet</a>
-    <a mat-button routerLink="/fiche-suivi/dashboard" *ngIf="authService.isPiloteQualite()" matTooltip="Dashboard Pilote Qualité">Dashboard Pilote Qualité</a>
-    <a mat-button routerLink="/fiche-qualite" *ngIf="authService.isAdmin() || authService.isChefProjet()" matTooltip="Fiches Qualité">Fiches Qualité</a>
-    <a mat-button routerLink="/fiche-projet" *ngIf="authService.isAdmin() || authService.isChefProjet()" matTooltip="Fiches Projet">Fiches Projet</a>
-    <a mat-button routerLink="/fiche-suivi" *ngIf="authService.isAdmin() || authService.isChefProjet() || authService.isPiloteQualite()" matTooltip="Fiches Suivi">Fiches Suivi</a>
-    <a mat-button routerLink="/kpi" *ngIf="authService.isPiloteQualite()" matTooltip="KPI">KPI</a>
-    <a mat-button routerLink="/ai-dashboard" *ngIf="authService.isPiloteQualite()" matTooltip="Dashboard IA">Dashboard IA</a>
-    <a mat-button routerLink="/notifications" *ngIf="authService.isPiloteQualite()" matTooltip="Notifications">Notifications</a>
-    <a mat-button routerLink="/rapports" *ngIf="authService.isPiloteQualite()" matTooltip="Rapports">Rapports</a>
-    <a mat-button routerLink="/historique" *ngIf="authService.isAdmin() || authService.isPiloteQualite()" matTooltip="Historique">Historique</a>
-    <a mat-button routerLink="/formulaires-obligatoires" *ngIf="authService.isAdmin() || authService.isPiloteQualite()" matTooltip="Formulaires Obligatoires">Formulaires</a>
-    <a mat-button routerLink="/utilisateurs" *ngIf="authService.isAdmin()" matTooltip="Utilisateurs">Utilisateurs</a>
-    <a mat-button routerLink="/nomenclatures" *ngIf="authService.isAdmin()" matTooltip="Nomenclatures">Nomenclatures</a>
+    <!-- Dashboard -->
+    <button mat-icon-button 
+            (click)="goToDashboard()" 
+            matTooltip="Dashboard" 
+            class="action-btn">
+      <mat-icon>dashboard</mat-icon>
+    </button>
+
+    <!-- Notifications -->
+    <button mat-icon-button 
+            class="action-btn notif-btn" 
+            matTooltip="Notifications" 
+            (click)="goToNotifications()">
+      <mat-icon [matBadge]="notificationCount" 
+                [matBadgeHidden]="notificationCount === 0"
+                matBadgeColor="warn"
+                matBadgeSize="small">notifications</mat-icon>
+    </button>
+
+    <!-- Aide -->
+    <button mat-icon-button 
+            matTooltip="Aide" 
+            class="action-btn">
+      <mat-icon>help_outline</mat-icon>
+    </button>
+
+    <!-- Paramètres -->
+    <button mat-icon-button 
+            matTooltip="Paramètres" 
+            class="action-btn">
+      <mat-icon>settings</mat-icon>
+    </button>
   </ng-container>
 
-  <!-- Notifications -->
-  <button mat-icon-button class="notif-btn" *ngIf="authService.isLoggedIn()" matTooltip="Notifications" aria-label="Notifications" (click)="goToNotifications()">
-    <mat-icon>notifications</mat-icon>
-    <span class="notification-badge" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
-  </button>
-
-  <!-- Menu utilisateur à droite -->
+  <!-- Menu utilisateur -->
   <ng-container *ngIf="authService.isLoggedIn()">
-    <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Menu utilisateur">
-      <mat-icon>account_circle</mat-icon>
+    <button mat-button 
+            [matMenuTriggerFor]="userMenu" 
+            class="user-menu-btn"
+            aria-label="Menu utilisateur">
+      <mat-icon class="user-icon">account_circle</mat-icon>
+      <span class="user-name">{{ getUserName() }}</span>
+      <mat-icon class="dropdown-icon">arrow_drop_down</mat-icon>
     </button>
-    <mat-menu #userMenu="matMenu">
-      <button mat-menu-item disabled>
-        <mat-icon>person</mat-icon>
-        {{ getUserName() || authService.getRole() }}
+    <mat-menu #userMenu="matMenu" class="user-menu">
+      <div class="user-menu-header">
+        <mat-icon class="header-icon">person</mat-icon>
+        <div class="user-info">
+          <div class="user-name-text">{{ getUserName() }}</div>
+          <div class="user-role">{{ getRoleLabel() }}</div>
+        </div>
+      </div>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="goToDashboard()">
+        <mat-icon>dashboard</mat-icon>
+        <span>Mon Dashboard</span>
       </button>
-      <button mat-menu-item (click)="logout()">
+      <button mat-menu-item>
+        <mat-icon>person</mat-icon>
+        <span>Mon Profil</span>
+      </button>
+      <button mat-menu-item>
+        <mat-icon>settings</mat-icon>
+        <span>Paramètres</span>
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="logout()" class="logout-btn">
         <mat-icon>logout</mat-icon>
-        Déconnexion
+        <span>Déconnexion</span>
       </button>
     </mat-menu>
   </ng-container>

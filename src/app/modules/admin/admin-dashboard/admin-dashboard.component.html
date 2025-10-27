@@ -1,21 +1,36 @@
-<div class="admin-dashboard-container">
-  <!-- Header Premium -->
-  <div class="dashboard-header">
-    <div class="header-content">
-      <div class="welcome-section">
-        <h1 class="dashboard-title">
-          <mat-icon class="title-icon">admin_panel_settings</mat-icon>
-          Dashboard Administrateur
-        </h1>
-        <p class="dashboard-subtitle">
-          Gérez les utilisateurs et les nomenclatures de votre organisation
-        </p>
-      </div>
-    </div>
-  </div>
+<div class="dashboard-layout">
+  <!-- Sidebar Navigation -->
+  <app-dashboard-sidebar
+    title="Dashboard Admin"
+    [sections]="sidebarSections">
+  </app-dashboard-sidebar>
 
-  <!-- Stats Cards Premium -->
-  <div class="stats-grid">
+  <!-- Main Content -->
+  <div class="dashboard-content">
+    <!-- Section: Vue d'ensemble -->
+    <section id="overview" class="dashboard-section">
+      <div class="dashboard-header">
+        <div class="header-content">
+          <div class="welcome-section">
+            <h1 class="dashboard-title">
+              <mat-icon class="title-icon">admin_panel_settings</mat-icon>
+              Dashboard Administrateur
+            </h1>
+            <p class="dashboard-subtitle">
+              Gérez les utilisateurs et les nomenclatures de votre organisation
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section: Utilisateurs -->
+    <section id="users" class="dashboard-section">
+      <h2 class="section-title">
+        <mat-icon>group</mat-icon>
+        Gestion des Utilisateurs
+      </h2>
+      <div class="stats-grid">
     <!-- Card 1: Total Utilisateurs -->
     <mat-card class="stat-card card-primary" (click)="navigateToUsers()">
       <mat-card-content>
@@ -83,65 +98,99 @@
         </div>
       </mat-card-content>
     </mat-card>
-  </div>
+      </div>
+    </section>
 
-  <!-- Actions Rapides et Activités -->
-  <div class="bottom-grid">
-    <!-- Actions Rapides -->
-    <mat-card class="quick-actions-card">
-      <mat-card-header>
-        <mat-card-title>
-          <mat-icon>flash_on</mat-icon>
-          Actions Rapides
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="quick-actions-grid">
-          <button mat-raised-button class="quick-action-btn primary-action" (click)="navigateToUsers()">
-            <mat-icon>person_add</mat-icon>
-            <span>Créer Utilisateur</span>
-          </button>
-          <button mat-raised-button class="quick-action-btn secondary-action" (click)="navigateToUsers()">
-            <mat-icon>group</mat-icon>
-            <span>Gérer Utilisateurs</span>
-          </button>
-          <button mat-raised-button class="quick-action-btn tertiary-action" (click)="navigateToNomenclatures()">
-            <mat-icon>add_circle</mat-icon>
-            <span>Créer Nomenclature</span>
-          </button>
-          <button mat-raised-button class="quick-action-btn quaternary-action" (click)="navigateToNomenclatures()">
-            <mat-icon>category</mat-icon>
-            <span>Gérer Nomenclatures</span>
-          </button>
-        </div>
-      </mat-card-content>
-    </mat-card>
+    <!-- Section: Nomenclatures -->
+    <section id="nomenclatures" class="dashboard-section">
+      <h2 class="section-title">
+        <mat-icon>list_alt</mat-icon>
+        Nomenclatures
+      </h2>
+      <div class="nomenclatures-info">
+        <p>Accédez à la gestion des nomenclatures pour configurer votre système.</p>
+        <button mat-raised-button color="primary" (click)="navigateToNomenclatures()">
+          <mat-icon>settings</mat-icon>
+          Gérer les Nomenclatures
+        </button>
+      </div>
+    </section>
 
-    <!-- Activités Récentes -->
-    <mat-card class="activities-card">
-      <mat-card-header>
-        <mat-card-title>
-          <mat-icon>history</mat-icon>
-          Activités Récentes
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="activities-list">
-          <div *ngFor="let activity of recentActivities" class="activity-item">
-            <div class="activity-icon" [ngClass]="'icon-' + activity.color">
-              <mat-icon>{{ activity.icon }}</mat-icon>
+    <!-- Section: Activité Récente -->
+    <section id="activity" class="dashboard-section">
+      <h2 class="section-title">
+        <mat-icon>history</mat-icon>
+        Activité Récente
+      </h2>
+      <div class="bottom-grid">
+        <!-- Actions Rapides -->
+        <mat-card class="quick-actions-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>flash_on</mat-icon>
+              Actions Rapides
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="quick-actions-grid">
+              <button mat-raised-button class="quick-action-btn primary-action" (click)="navigateToUsers()">
+                <mat-icon>person_add</mat-icon>
+                <span>Créer Utilisateur</span>
+              </button>
+              <button mat-raised-button class="quick-action-btn secondary-action" (click)="navigateToUsers()">
+                <mat-icon>group</mat-icon>
+                <span>Gérer Utilisateurs</span>
+              </button>
+              <button mat-raised-button class="quick-action-btn tertiary-action" (click)="navigateToNomenclatures()">
+                <mat-icon>add_circle</mat-icon>
+                <span>Créer Nomenclature</span>
+              </button>
+              <button mat-raised-button class="quick-action-btn quaternary-action" (click)="navigateToNomenclatures()">
+                <mat-icon>category</mat-icon>
+                <span>Gérer Nomenclatures</span>
+              </button>
             </div>
-            <div class="activity-content">
-              <h4 class="activity-title">{{ activity.title }}</h4>
-              <p class="activity-description">{{ activity.description }}</p>
-              <span class="activity-meta">
-                <mat-icon class="meta-icon">schedule</mat-icon>
-                {{ activity.time }}
-              </span>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Activités Récentes -->
+        <mat-card class="activities-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>history</mat-icon>
+              Activités Récentes
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="activities-list">
+              <div *ngFor="let activity of recentActivities" class="activity-item">
+                <div class="activity-icon" [ngClass]="'icon-' + activity.color">
+                  <mat-icon>{{ activity.icon }}</mat-icon>
+                </div>
+                <div class="activity-content">
+                  <h4 class="activity-title">{{ activity.title }}</h4>
+                  <p class="activity-description">{{ activity.description }}</p>
+                  <span class="activity-meta">
+                    <mat-icon class="meta-icon">schedule</mat-icon>
+                    {{ activity.time }}
+                  </span>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </section>
+
+    <!-- Section: Paramètres -->
+    <section id="settings" class="dashboard-section">
+      <h2 class="section-title">
+        <mat-icon>settings</mat-icon>
+        Paramètres
+      </h2>
+      <div class="settings-info">
+        <p>Configurez les paramètres généraux de l'application.</p>
+      </div>
+    </section>
   </div>
 </div>

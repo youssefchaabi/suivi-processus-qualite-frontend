@@ -1,0 +1,274 @@
+<div class="landing-page">
+  <!-- Header -->
+  <header class="header">
+    <div class="header-container">
+      <div class="logo-section">
+        <mat-icon class="logo-icon">verified</mat-icon>
+        <span class="logo-text">Suivi Qualité</span>
+      </div>
+      <nav class="nav-menu">
+        <a href="#accueil" class="nav-link">Accueil</a>
+        <a href="#fonctionnalites" class="nav-link">Fonctionnalités</a>
+        <a href="#apropos" class="nav-link">À propos</a>
+        <a href="#contact" class="nav-link">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section" id="accueil">
+    <div class="hero-container">
+      <div class="hero-content">
+        <h1 class="hero-title">
+          Pilotez, suivez et améliorez vos processus qualité
+        </h1>
+        <p class="hero-subtitle">
+          Une solution simple et complète pour gérer vos projets qualité, indicateurs et retards.
+        </p>
+        <button mat-raised-button color="accent" class="cta-btn" (click)="scrollToRoles()">
+          <span>Découvrir les rôles</span>
+          <mat-icon>arrow_downward</mat-icon>
+        </button>
+      </div>
+      <div class="hero-image">
+        <div class="dashboard-preview">
+          <mat-icon class="preview-icon">dashboard</mat-icon>
+          <mat-icon class="preview-icon">assessment</mat-icon>
+          <mat-icon class="preview-icon">timeline</mat-icon>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Fonctionnalités selon les rôles -->
+  <section class="roles-section" id="fonctionnalites">
+    <div class="section-container">
+      <h2 class="section-title">Fonctionnalités selon les rôles</h2>
+      <p class="section-subtitle">Découvrez les fonctionnalités adaptées à chaque profil</p>
+
+      <div class="roles-grid">
+        <!-- Administrateur -->
+        <mat-card class="role-card admin-card">
+          <div class="role-header">
+            <div class="role-icon-wrapper admin-icon">
+              <mat-icon class="role-icon">admin_panel_settings</mat-icon>
+            </div>
+            <h3 class="role-title">Administrateur</h3>
+          </div>
+          <mat-card-content class="role-content">
+            <ul class="role-features">
+              <li>
+                <mat-icon>check_circle</mat-icon>
+                <span>Gère les comptes utilisateurs</span>
+              </li>
+              <li>
+                <mat-icon>check_circle</mat-icon>
+                <span>Définit les nomenclatures</span>
+              </li>
+              <li>
+                <mat-icon>check_circle</mat-icon>
+                <span>Supervise l'ensemble du système</span>
+              </li>
+            </ul>
+          </mat-card-content>
+          <mat-card-actions class="role-actions">
+            <button mat-raised-button class="role-btn admin-btn" (click)="openLoginModal('ADMIN')">
+              <mat-icon>login</mat-icon>
+              Connexion administrateur
+            </button>
+          </mat-card-actions>
+        </mat-card>
+
+        <!-- Chef de Projet -->
+        <mat-card class="role-card chef-card">
+          <div class="role-header">
+            <div class="role-icon-wrapper chef-icon">
+              <mat-icon class="role-icon">engineering</mat-icon>
+            </div>
+            <h3 class="role-title">Chef de Projet</h3>
+          </div>
+          <mat-card-content class="role-content">
+            <ul class="role-features">
+              <li>
+                <mat-icon>check_circle</mat-icon>
+                <span>Crée et suit les projets qualité</span>
+              </li>
+              <li>
+                <mat-icon>check_circle</mat-icon>
+                <span>Met à jour les fiches de suivi</span>
+              </li>
+              <li>
+                <mat-icon>check_circle</mat-icon>
+                <span>Consulte ses statistiques</span>
+              </li>
+            </ul>
+          </mat-card-content>
+          <mat-card-actions class="role-actions">
+            <button mat-raised-button class="role-btn chef-btn" (click)="openLoginModal('CHEF_PROJET')">
+              <mat-icon>login</mat-icon>
+              Connexion chef de projet
+            </button>
+          </mat-card-actions>
+        </mat-card>
+
+        <!-- Pilote Qualité -->
+        <mat-card class="role-card pilote-card">
+          <div class="role-header">
+            <div class="role-icon-wrapper pilote-icon">
+              <mat-icon class="role-icon">science</mat-icon>
+            </div>
+            <h3 class="role-title">Pilote Qualité</h3>
+          </div>
+          <mat-card-content class="role-content">
+            <ul class="role-features">
+              <li>
+                <mat-icon>check_circle</mat-icon>
+                <span>Analyse les KPI</span>
+              </li>
+              <li>
+                <mat-icon>check_circle</mat-icon>
+                <span>Génère les rapports</span>
+              </li>
+              <li>
+                <mat-icon>check_circle</mat-icon>
+                <span>Suit les retards et les alertes</span>
+              </li>
+            </ul>
+          </mat-card-content>
+          <mat-card-actions class="role-actions">
+            <button mat-raised-button class="role-btn pilote-btn" (click)="openLoginModal('PILOTE_QUALITE')">
+              <mat-icon>login</mat-icon>
+              Connexion pilote qualité
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
+  </section>
+
+  <!-- À propos -->
+  <section class="about-section" id="apropos">
+    <div class="section-container">
+      <div class="about-content">
+        <div class="about-text">
+          <h2 class="section-title">À propos</h2>
+          <p class="about-description">
+            Notre plateforme facilite la gestion de la qualité en centralisant le suivi des projets, 
+            les indicateurs et les actions correctives. Conçue pour les professionnels exigeants, 
+            elle offre une vision claire et complète de vos processus qualité.
+          </p>
+          <div class="about-stats">
+            <div class="stat-item">
+              <mat-icon>business</mat-icon>
+              <div class="stat-content">
+                <span class="stat-number">100+</span>
+                <span class="stat-label">Entreprises</span>
+              </div>
+            </div>
+            <div class="stat-item">
+              <mat-icon>folder_special</mat-icon>
+              <div class="stat-content">
+                <span class="stat-number">500+</span>
+                <span class="stat-label">Projets suivis</span>
+              </div>
+            </div>
+            <div class="stat-item">
+              <mat-icon>trending_up</mat-icon>
+              <div class="stat-content">
+                <span class="stat-number">95%</span>
+                <span class="stat-label">Satisfaction</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="about-image">
+          <div class="feature-grid">
+            <div class="feature-item">
+              <mat-icon>speed</mat-icon>
+              <span>Rapide</span>
+            </div>
+            <div class="feature-item">
+              <mat-icon>security</mat-icon>
+              <span>Sécurisé</span>
+            </div>
+            <div class="feature-item">
+              <mat-icon>insights</mat-icon>
+              <span>Analytique</span>
+            </div>
+            <div class="feature-item">
+              <mat-icon>cloud</mat-icon>
+              <span>Cloud</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section class="contact-section" id="contact">
+    <div class="section-container">
+      <h2 class="section-title">Contactez-nous</h2>
+      <p class="section-subtitle">Une question ? Notre équipe est là pour vous aider</p>
+      <div class="contact-grid">
+        <div class="contact-item">
+          <mat-icon>email</mat-icon>
+          <h4>Email</h4>
+          <p>contact@suiviqualite.com</p>
+        </div>
+        <div class="contact-item">
+          <mat-icon>phone</mat-icon>
+          <h4>Téléphone</h4>
+          <p>+33 1 23 45 67 89</p>
+        </div>
+        <div class="contact-item">
+          <mat-icon>location_on</mat-icon>
+          <h4>Adresse</h4>
+          <p>123 Avenue de la Qualité, Paris</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4>Suivi Qualité</h4>
+          <p>Votre partenaire pour l'excellence opérationnelle</p>
+        </div>
+        <div class="footer-section">
+          <h4>Liens rapides</h4>
+          <a href="#accueil">Accueil</a>
+          <a href="#fonctionnalites">Fonctionnalités</a>
+          <a href="#apropos">À propos</a>
+          <a href="#contact">Contact</a>
+        </div>
+        <div class="footer-section">
+          <h4>Légal</h4>
+          <a href="#">Mentions légales</a>
+          <a href="#">Politique de confidentialité</a>
+          <a href="#">CGU</a>
+        </div>
+        <div class="footer-section">
+          <h4>Suivez-nous</h4>
+          <div class="social-links">
+            <button mat-icon-button>
+              <mat-icon>facebook</mat-icon>
+            </button>
+            <button mat-icon-button>
+              <mat-icon>link</mat-icon>
+            </button>
+            <button mat-icon-button>
+              <mat-icon>email</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 Suivi Qualité. Tous droits réservés.</p>
+      </div>
+    </div>
+  </footer>
+</div>

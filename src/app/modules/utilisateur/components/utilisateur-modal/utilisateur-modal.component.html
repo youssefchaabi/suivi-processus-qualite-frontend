@@ -1,0 +1,119 @@
+<div class="utilisateur-modal">
+  <!-- Header -->
+  <div class="modal-header" [style.background]="getSelectedRoleInfo()?.color || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'">
+    <div class="header-content">
+      <mat-icon class="header-icon">{{ getSelectedRoleInfo()?.icon || 'person_add' }}</mat-icon>
+      <div class="header-text">
+        <h2 class="modal-title">{{ isEditMode ? 'Modifier' : 'Nouvel' }} Utilisateur</h2>
+        <p class="modal-subtitle">{{ getSelectedRoleInfo()?.label || 'Sélectionnez un rôle' }}</p>
+      </div>
+    </div>
+    <button mat-icon-button class="close-btn" (click)="onCancel()" [disabled]="loading">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Body -->
+  <div class="modal-body">
+    <form [formGroup]="utilisateurForm" (ngSubmit)="onSubmit()">
+      
+      <!-- Informations personnelles -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <mat-icon>badge</mat-icon>
+          Informations Personnelles
+        </h3>
+        
+        <div class="form-grid">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Nom complet</mat-label>
+            <input matInput formControlName="nom" placeholder="Ex: Jean Dupont">
+            <mat-icon matPrefix>person</mat-icon>
+            <mat-error *ngIf="utilisateurForm.get('nom')?.hasError('required')">
+              Le nom est requis
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" formControlName="email" placeholder="exemple@email.com">
+            <mat-icon matPrefix>email</mat-icon>
+            <mat-error *ngIf="utilisateurForm.get('email')?.hasError('required')">
+              L'email est requis
+            </mat-error>
+            <mat-error *ngIf="utilisateurForm.get('email')?.hasError('email')">
+              Email invalide
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width" *ngIf="!isEditMode">
+            <mat-label>Mot de passe</mat-label>
+            <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" placeholder="Minimum 6 caractères">
+            <mat-icon matPrefix>lock</mat-icon>
+            <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
+              <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            <mat-error *ngIf="utilisateurForm.get('password')?.hasError('required')">
+              Le mot de passe est requis
+            </mat-error>
+            <mat-error *ngIf="utilisateurForm.get('password')?.hasError('minlength')">
+              Minimum 6 caractères
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Rôle -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <mat-icon>shield</mat-icon>
+          Rôle et Permissions
+        </h3>
+        
+        <div class="role-grid">
+          <div *ngFor="let role of roles" 
+               class="role-card"
+               [class.selected]="utilisateurForm.get('role')?.value === role.value"
+               (click)="utilisateurForm.patchValue({role: role.value})">
+            <div class="role-icon" [style.background-color]="role.color">
+              <mat-icon>{{ role.icon }}</mat-icon>
+            </div>
+            <div class="role-info">
+              <div class="role-label">{{ role.label }}</div>
+              <div class="role-value">{{ role.value }}</div>
+            </div>
+            <mat-icon class="check-icon">check_circle</mat-icon>
+          </div>
+        </div>
+        
+        <mat-error *ngIf="utilisateurForm.get('role')?.invalid && utilisateurForm.get('role')?.touched">
+          Veuillez sélectionner un rôle
+        </mat-error>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Footer -->
+  <div class="modal-footer">
+    <button mat-stroked-button 
+            (click)="onCancel()" 
+            [disabled]="loading"
+            class="cancel-btn">
+      <mat-icon>close</mat-icon>
+      Annuler
+    </button>
+    
+    <button mat-raised-button 
+            color="primary"
+            (click)="onSubmit()"
+            [disabled]="utilisateurForm.invalid || loading"
+            class="submit-btn">
+      <mat-spinner diameter="20" *ngIf="loading" class="spinner"></mat-spinner>
+      <span *ngIf="!loading">
+        <mat-icon>{{ isEditMode ? 'save' : 'person_add' }}</mat-icon>
+        {{ isEditMode ? 'Enregistrer' : 'Créer' }}
+      </span>
+    </button>
+  </div>
+</div>

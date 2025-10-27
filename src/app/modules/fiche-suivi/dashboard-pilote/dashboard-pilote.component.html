@@ -1,0 +1,139 @@
+<div class="dashboard-layout">
+  <!-- Sidebar Navigation -->
+  <app-dashboard-sidebar
+    title="Dashboard Pilote"
+    [sections]="sidebarSections">
+  </app-dashboard-sidebar>
+
+  <!-- Main Content -->
+  <div class="dashboard-content">
+    <!-- Section: Vue d'ensemble -->
+    <section id="overview" class="dashboard-section">
+      <div class="dashboard-header">
+        <h1 class="dashboard-title">
+          <mat-icon>insights</mat-icon>
+          Espace Pilote Qualité
+        </h1>
+        <p class="dashboard-subtitle">
+          Suivez vos KPI, fiches de suivi et notifications qualité
+        </p>
+      </div>
+    </section>
+
+    <!-- Section: KPI -->
+    <section id="kpi" class="dashboard-section">
+      <h2 class="section-title">
+        <mat-icon>speed</mat-icon>
+        Indicateurs KPI
+      </h2>
+      <div class="kpi-grid">
+        <mat-card class="action-card">
+          <mat-card-content>
+            <mat-icon class="card-icon">bar_chart</mat-icon>
+            <h3>Tableau KPI</h3>
+            <p>Consultez vos indicateurs de performance</p>
+            <a mat-raised-button color="primary" routerLink="/kpi">
+              <mat-icon>arrow_forward</mat-icon>
+              Accéder
+            </a>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </section>
+
+    <!-- Section: Fiches de Suivi -->
+    <section id="tracking" class="dashboard-section">
+      <h2 class="section-title">
+        <mat-icon>assignment_turned_in</mat-icon>
+        Fiches de Suivi
+      </h2>
+      <div class="tracking-grid">
+        <mat-card class="action-card">
+          <mat-card-content>
+            <mat-icon class="card-icon">track_changes</mat-icon>
+            <h3>Fiches de Suivi</h3>
+            <p>Suivez l'avancement des fiches</p>
+            <a mat-raised-button color="primary" routerLink="/fiche-suivi/liste">
+              <mat-icon>arrow_forward</mat-icon>
+              Accéder
+            </a>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </section>
+
+    <!-- Section: Fiches Qualité -->
+    <section id="quality" class="dashboard-section">
+      <h2 class="section-title">
+        <mat-icon>verified</mat-icon>
+        Fiches Qualité
+      </h2>
+      <div class="quality-info">
+        <p>Consultez les fiches qualité du système</p>
+      </div>
+    </section>
+
+    <!-- Section: Alertes -->
+    <section id="alerts" class="dashboard-section">
+      <h2 class="section-title">
+        <mat-icon>warning</mat-icon>
+        Alertes et Notifications
+      </h2>
+      <div class="alerts-grid">
+        <mat-card class="action-card">
+          <mat-card-content>
+            <mat-icon class="card-icon">notifications</mat-icon>
+            <h3>Notifications</h3>
+            <p>Gérez vos notifications qualité</p>
+            <a mat-raised-button color="accent" routerLink="/notifications">
+              <mat-icon>arrow_forward</mat-icon>
+              Accéder
+            </a>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </section>
+
+    <!-- Section: Analyses IA -->
+    <section id="analytics" class="dashboard-section">
+      <h2 class="section-title">
+        <mat-icon>psychology</mat-icon>
+        Analyses IA
+      </h2>
+      <div class="analytics-grid">
+        <mat-card class="action-card">
+          <mat-card-content>
+            <mat-icon class="card-icon">auto_awesome</mat-icon>
+            <h3>Dashboard IA</h3>
+            <p>Analyses prédictives et insights</p>
+            <a mat-raised-button color="warn" routerLink="/ai-dashboard">
+              <mat-icon>arrow_forward</mat-icon>
+              Accéder
+            </a>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </section>
+
+    <!-- Section: Rapports -->
+    <section id="reports" class="dashboard-section">
+      <h2 class="section-title">
+        <mat-icon>description</mat-icon>
+        Rapports
+      </h2>
+      <div class="reports-grid">
+        <mat-card class="action-card">
+          <mat-card-content>
+            <mat-icon class="card-icon">assessment</mat-icon>
+            <h3>Rapports Qualité</h3>
+            <p>Générez et consultez vos rapports</p>
+            <a mat-raised-button color="primary" routerLink="/rapports">
+              <mat-icon>arrow_forward</mat-icon>
+              Accéder
+            </a>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </section>
+  </div>
+</div>

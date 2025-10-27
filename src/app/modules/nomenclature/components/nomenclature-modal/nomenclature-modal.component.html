@@ -1,0 +1,88 @@
+<div class="nomenclature-modal">
+  <!-- Header -->
+  <div class="modal-header" [style.background]="getSelectedTypeInfo()?.color || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'">
+    <div class="header-content">
+      <mat-icon class="header-icon">{{ getSelectedTypeInfo()?.icon || 'category' }}</mat-icon>
+      <div class="header-text">
+        <h2 class="modal-title">{{ isEditMode ? 'Modifier' : 'Nouvelle' }} Nomenclature</h2>
+        <p class="modal-subtitle">{{ getSelectedTypeInfo()?.label || 'Sélectionnez un type' }}</p>
+      </div>
+    </div>
+    <button mat-icon-button class="close-btn" (click)="onCancel()" [disabled]="loading">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Body -->
+  <div class="modal-body">
+    <form [formGroup]="nomenclatureForm" (ngSubmit)="onSubmit()">
+      
+      <!-- Type Selection -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <mat-icon>label</mat-icon>
+          Type de Nomenclature
+        </h3>
+        
+        <div class="type-grid">
+          <div *ngFor="let type of typesNomenclature" 
+               class="type-card"
+               [class.selected]="nomenclatureForm.get('type')?.value === type.value"
+               (click)="nomenclatureForm.patchValue({type: type.value})">
+            <div class="type-icon" [style.background-color]="type.color">
+              <mat-icon>{{ type.icon }}</mat-icon>
+            </div>
+            <div class="type-info">
+              <div class="type-label">{{ type.label }}</div>
+              <div class="type-value">{{ type.value }}</div>
+            </div>
+            <mat-icon class="check-icon">check_circle</mat-icon>
+          </div>
+        </div>
+        
+        <mat-error *ngIf="nomenclatureForm.get('type')?.invalid && nomenclatureForm.get('type')?.touched">
+          Veuillez sélectionner un type
+        </mat-error>
+      </div>
+
+      <!-- Statut -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <mat-icon>toggle_on</mat-icon>
+          Statut
+        </h3>
+        
+        <mat-slide-toggle formControlName="actif" color="primary" class="status-toggle">
+          <span class="toggle-label">
+            <mat-icon>{{ nomenclatureForm.get('actif')?.value ? 'check_circle' : 'cancel' }}</mat-icon>
+            {{ nomenclatureForm.get('actif')?.value ? 'Actif' : 'Inactif' }}
+          </span>
+        </mat-slide-toggle>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Footer -->
+  <div class="modal-footer">
+    <button mat-stroked-button 
+            (click)="onCancel()" 
+            [disabled]="loading"
+            class="cancel-btn">
+      <mat-icon>close</mat-icon>
+      Annuler
+    </button>
+    
+    <button mat-raised-button 
+            color="primary"
+            (click)="onSubmit()"
+            [disabled]="nomenclatureForm.invalid || loading"
+            class="submit-btn">
+      <mat-spinner diameter="20" *ngIf="loading" class="spinner"></mat-spinner>
+      <span *ngIf="!loading">
+        <mat-icon>{{ isEditMode ? 'save' : 'add_circle' }}</mat-icon>
+        {{ isEditMode ? 'Enregistrer' : 'Créer' }}
+      </span>
+    </button>
+  </div>
+</div>

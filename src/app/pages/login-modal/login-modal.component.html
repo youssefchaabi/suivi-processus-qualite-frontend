@@ -1,0 +1,92 @@
+<div class="login-modal">
+  <!-- Header avec rôle -->
+  <div class="modal-header" [style.background]="'linear-gradient(135deg, ' + roleInfo.color + ' 0%, ' + roleInfo.color + 'dd 100%)'">
+    <div class="role-badge">
+      <mat-icon class="role-icon">{{ roleInfo.icon }}</mat-icon>
+      <div class="role-info">
+        <h2 class="role-title">{{ roleInfo.title }}</h2>
+        <p class="role-description">{{ roleInfo.description }}</p>
+      </div>
+    </div>
+    <button mat-icon-button class="close-btn" (click)="onCancel()" matTooltip="Fermer">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Formulaire de connexion -->
+  <div class="modal-body">
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <!-- Email -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput 
+               type="email" 
+               formControlName="email" 
+               placeholder="votre.email@exemple.com"
+               autocomplete="email">
+        <mat-icon matPrefix>email</mat-icon>
+        <mat-error *ngIf="loginForm.get('email')?.hasError('required')">
+          L'email est requis
+        </mat-error>
+        <mat-error *ngIf="loginForm.get('email')?.hasError('email')">
+          Email invalide
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Mot de passe -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Mot de passe</mat-label>
+        <input matInput 
+               [type]="hidePassword ? 'password' : 'text'" 
+               formControlName="password"
+               placeholder="••••••••"
+               autocomplete="current-password">
+        <mat-icon matPrefix>lock</mat-icon>
+        <button mat-icon-button 
+                matSuffix 
+                type="button"
+                (click)="hidePassword = !hidePassword"
+                [attr.aria-label]="'Afficher le mot de passe'"
+                [attr.aria-pressed]="!hidePassword">
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
+          Le mot de passe est requis
+        </mat-error>
+        <mat-error *ngIf="loginForm.get('password')?.hasError('minlength')">
+          Minimum 6 caractères
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Actions -->
+      <div class="modal-actions">
+        <button mat-button 
+                type="button" 
+                class="cancel-btn"
+                (click)="onCancel()"
+                [disabled]="loading">
+          Annuler
+        </button>
+        <button mat-raised-button 
+                type="submit" 
+                class="submit-btn"
+                [style.background]="roleInfo.color"
+                [disabled]="!loginForm.valid || loading">
+          <mat-spinner *ngIf="loading" diameter="20" class="spinner"></mat-spinner>
+          <span *ngIf="!loading">
+            <mat-icon>login</mat-icon>
+            Se connecter
+          </span>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Footer -->
+  <div class="modal-footer">
+    <p class="footer-text">
+      <mat-icon class="info-icon">info</mat-icon>
+      Connectez-vous avec vos identifiants {{ roleInfo.title }}
+    </p>
+  </div>
+</div>

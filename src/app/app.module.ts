@@ -16,6 +16,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { AuthInterceptor } from './auth.interceptor';
 import { NavbarComponent } from './shared/navbar/navbar.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
@@ -33,6 +35,9 @@ import { KpiComponent } from './kpi/kpi.component';
 
 // Import Chart.js
 import { Chart, registerables } from 'chart.js';
+import { LandingComponent } from './pages/landing/landing.component';
+import { LoginModalComponent } from './pages/login-modal/login-modal.component';
+import { SharedModule } from './shared/shared.module';
 Chart.register(...registerables);
 
 @NgModule({
@@ -40,13 +45,16 @@ Chart.register(...registerables);
     AppComponent,
     SuccessSnackbarComponent,
     NavbarComponent,
-    KpiComponent
+    KpiComponent,
+    LandingComponent,
+    LoginModalComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     BrowserAnimationsModule,
+    SharedModule,
     MatAutocompleteModule,
     MatDialogModule,
     MatMenuModule,
@@ -67,6 +75,8 @@ Chart.register(...registerables);
     MatTooltipModule,
     MatPaginatorModule,
     MatSortModule,
+    MatBadgeModule,
+    MatDividerModule,
     FormsModule,
     ReactiveFormsModule
   ], 

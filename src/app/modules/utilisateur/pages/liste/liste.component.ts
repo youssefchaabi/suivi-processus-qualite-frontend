@@ -1,12 +1,14 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { MatDialog } from '@angular/material/dialog';
 import { Utilisateur, UtilisateurService } from 'src/app/services/utilisateur.service';
 import { Router } from '@angular/router';
 import { SuccessSnackbarComponent } from 'src/app/shared/success-snackbar/success-snackbar.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from 'src/app/services/authentification.service';
+import { UtilisateurModalComponent } from '../../components/utilisateur-modal/utilisateur-modal.component';
 import { trigger, state, style, transition, animate, query, stagger } from '@angular/animations';
 
 @Component({
@@ -35,7 +37,7 @@ import { trigger, state, style, transition, animate, query, stagger } from '@ang
     ])
   ]
 })
-export class ListeComponent implements OnInit {
+export class ListeComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<Utilisateur>();
   displayedColumns = ['nom', 'email', 'role', 'actions'];
 
@@ -56,7 +58,8 @@ export class ListeComponent implements OnInit {
   constructor(private utilisateurService: UtilisateurService,
     private router: Router,
     private snackBar: MatSnackBar,
-    public authService: AuthService
+    public authService: AuthService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -72,15 +75,27 @@ export class ListeComponent implements OnInit {
     this.loading = true;
     this.utilisateurService.getUtilisateurs().subscribe({
       next: (data: Utilisateur[]) => {
+        console.log('Utilisateurs chargés:', data.length, 'éléments');
         this.utilisateurs = data;
         this.utilisateursFiltres = [...data];
         this.dataSource.data = data;
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
+        
+        // Reconnecter le paginator et sort après chargement des données
+        setTimeout(() => {
+          if (this.paginator) {
+            this.dataSource.paginator = this.paginator;
+            this.paginator.firstPage();
+          }
+          if (this.sort) {
+            this.dataSource.sort = this.sort;
+          }
+        });
+        
         this.loading = false;
         this.appliquerFiltres();
       },
-      error: () => {
+      error: (err) => {
+        console.error('Erreur chargement utilisateurs:', err);
         this.errorMessage = "Erreur de chargement.";
         this.loading = false;
       }
@@ -108,6 +123,14 @@ export class ListeComponent implements OnInit {
 
     this.utilisateursFiltres = resultats;
     this.dataSource.data = resultats;
+    
+    // Reconnecter le paginator après filtrage
+    setTimeout(() => {
+      if (this.paginator) {
+        this.dataSource.paginator = this.paginator;
+        this.paginator.firstPage();
+      }
+    });
   }
 
   // Méthode pour effacer tous les filtres
@@ -120,6 +143,19 @@ export class ListeComponent implements OnInit {
   // Méthode pour basculer entre l'affichage en cartes et en tableau
   basculerAffichage(): void {
     this.affichageCartes = !this.affichageCartes;
+    
+    // Si on passe au tableau, reconnecter le paginator
+    if (!this.affichageCartes) {
+      setTimeout(() => {
+        if (this.paginator) {
+          this.dataSource.paginator = this.paginator;
+          this.paginator.firstPage();
+        }
+        if (this.sort) {
+          this.dataSource.sort = this.sort;
+        }
+      });
+    }
   }
 
   // Méthode pour obtenir l'icône du rôle
@@ -161,10 +197,11 @@ export class ListeComponent implements OnInit {
   supprimerUtilisateur(id: string) {
     if (confirm("Supprimer cet utilisateur ?")) {
       this.utilisateurService.supprimerUtilisateur(id).subscribe(() => {
-        this.chargerUtilisateurs();
-        this.snackBar.openFromComponent(SuccessSnackbarComponent, {
-          data: { message: 'Utilisateur supprimé avec succès ✅' },
-          duration: 3000,
+        // Supprimer de la liste sans recharger
+        this.utilisateurs = this.utilisateurs.filter(u => u.id !== id);
+        this.appliquerFiltres();
+        this.snackBar.open('Utilisateur supprimé avec succès ✅', 'Fermer', {
+          duration: 2000,
           panelClass: ['success-snackbar']
         });
       });
@@ -172,6 +209,54 @@ export class ListeComponent implements OnInit {
   }
 
   modifierUtilisateur(id: string): void {
-    this.router.navigate(['/utilisateurs', id]); // redirection vers le formulaire
+    const utilisateur = this.utilisateurs.find(u => u.id === id);
+    if (!utilisateur) return;
+
+    const dialogRef = this.dialog.open(UtilisateurModalComponent, {
+      width: '700px',
+      maxWidth: '95vw',
+      data: { utilisateur },
+      disableClose: false,
+      autoFocus: true,
+      panelClass: 'utilisateur-modal-container'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Mettre à jour seulement l'utilisateur modifié
+        const index = this.utilisateurs.findIndex(u => u.id === result.id);
+        if (index !== -1) {
+          this.utilisateurs[index] = result;
+          this.appliquerFiltres();
+          this.snackBar.open('Utilisateur modifié avec succès ✅', 'Fermer', { 
+            duration: 2000, 
+            panelClass: ['success-snackbar'] 
+          });
+        }
+      }
+    });
+  }
+
+  creerUtilisateur(): void {
+    const dialogRef = this.dialog.open(UtilisateurModalComponent, {
+      width: '700px',
+      maxWidth: '95vw',
+      data: {},
+      disableClose: false,
+      autoFocus: true,
+      panelClass: 'utilisateur-modal-container'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Ajouter le nouvel utilisateur à la liste
+        this.utilisateurs.push(result);
+        this.appliquerFiltres();
+        this.snackBar.open('Utilisateur créé avec succès ✅', 'Fermer', { 
+          duration: 2000, 
+          panelClass: ['success-snackbar'] 
+        });
+      }
+    });
   }
 }

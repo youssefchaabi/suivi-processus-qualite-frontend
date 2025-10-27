@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { SidebarSection } from 'src/app/shared/dashboard-sidebar/dashboard-sidebar.component';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -7,6 +8,14 @@ import { Router } from '@angular/router';
   styleUrls: ['./admin-dashboard.component.scss']
 })
 export class AdminDashboardComponent implements OnInit {
+  sidebarSections: SidebarSection[] = [
+    { id: 'overview', label: 'Vue d\'ensemble', icon: 'dashboard' },
+    { id: 'users', label: 'Utilisateurs', icon: 'group' },
+    { id: 'nomenclatures', label: 'Nomenclatures', icon: 'list_alt' },
+    { id: 'activity', label: 'Activité Récente', icon: 'history' },
+    { id: 'settings', label: 'Paramètres', icon: 'settings' }
+  ];
+
   stats = {
     totalUsers: 0,
     activeUsers: 0,

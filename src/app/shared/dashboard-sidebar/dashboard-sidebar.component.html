@@ -1,0 +1,34 @@
+<aside class="dashboard-sidebar" [class.collapsed]="collapsed">
+  <!-- Header -->
+  <div class="sidebar-header">
+    <div class="header-content" *ngIf="!collapsed">
+      <mat-icon class="dashboard-icon">dashboard</mat-icon>
+      <h3 class="sidebar-title">{{ title }}</h3>
+    </div>
+    <button mat-icon-button class="toggle-btn" (click)="toggleSidebar()" matTooltip="{{ collapsed ? 'Ouvrir' : 'Fermer' }}">
+      <mat-icon>{{ collapsed ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+    </button>
+  </div>
+
+  <!-- Navigation Sections -->
+  <nav class="sidebar-nav">
+    <ul class="nav-list">
+      <li *ngFor="let section of sections" 
+          class="nav-item"
+          [class.active]="activeSection === section.id"
+          (click)="selectSection(section.id)">
+        <mat-icon class="nav-icon">{{ section.icon }}</mat-icon>
+        <span class="nav-label" *ngIf="!collapsed">{{ section.label }}</span>
+        <div class="active-indicator" *ngIf="activeSection === section.id"></div>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Footer Info -->
+  <div class="sidebar-footer" *ngIf="!collapsed">
+    <div class="footer-info">
+      <mat-icon>info</mat-icon>
+      <span>Navigation rapide</span>
+    </div>
+  </div>
+</aside>

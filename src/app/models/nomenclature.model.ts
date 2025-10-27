@@ -4,8 +4,8 @@
 export interface Nomenclature {
   id?: string;
   type: NomenclatureType;
-  code: string;
-  libelle: string;
+  code?: string;
+  libelle?: string;
   description?: string;
   actif: boolean;
   ordre?: number;
@@ -20,15 +20,16 @@ export type NomenclatureType =
   | 'TYPE_FICHE' 
   | 'STATUT' 
   | 'CATEGORIE_PROJET' 
-  | 'PRIORITE';
+  | 'PRIORITE'
+  | 'KPI';
 
 /**
  * DTO pour création/mise à jour nomenclature
  */
 export interface NomenclatureDto {
   type: NomenclatureType;
-  code: string;
-  libelle: string;
+  code?: string;
+  libelle?: string;
   description?: string;
   actif: boolean;
   ordre?: number;

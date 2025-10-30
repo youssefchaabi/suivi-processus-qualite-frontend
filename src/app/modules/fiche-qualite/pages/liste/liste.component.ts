@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -9,17 +9,23 @@ import { FicheQualiteService } from 'src/app/services/fiche-qualite.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from 'src/app/services/authentification.service';
 import { ConfirmDialogComponent } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
+import { FicheQualiteModalComponent } from '../../components/fiche-qualite-modal/fiche-qualite-modal.component';
 
 @Component({
   selector: 'app-fiche-qualite-list',
   templateUrl: './liste.component.html',
   styleUrls: ['./liste.component.scss']
 })
-export class ListeComponent implements OnInit {
+export class ListeComponent implements OnInit, AfterViewInit {
   colonnes: string[] = ['titre', 'typeFiche', 'statut', 'responsable', 'actions'];
   dataSource = new MatTableDataSource<FicheQualite>();
   fiches: FicheQualite[] = [];
+  fichesFiltrees: FicheQualite[] = [];
   loading = true;
+  affichageCartes = true;
+  recherche = '';
+  filtreStatut = '';
+  filtreType = '';
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -48,7 +54,19 @@ export class ListeComponent implements OnInit {
       next: (data) => {
         console.log('✅ Fiches reçues:', data);
         this.fiches = data || [];
+        this.fichesFiltrees = [...this.fiches];
         this.dataSource.data = this.fiches;
+        
+        setTimeout(() => {
+          if (this.paginator) {
+            this.dataSource.paginator = this.paginator;
+            this.paginator.firstPage();
+          }
+          if (this.sort) {
+            this.dataSource.sort = this.sort;
+          }
+        });
+        
         this.loading = false;
       },
       error: (error) => {
@@ -56,7 +74,6 @@ export class ListeComponent implements OnInit {
         console.error('Status:', error.status);
         console.error('Message:', error.message);
         
-        // Afficher un message d'erreur approprié
         if (error.status === 401) {
           this.snackBar.open('⚠️ Session expirée. Veuillez vous reconnecter.', 'Fermer', { duration: 5000 });
         } else {
@@ -64,6 +81,7 @@ export class ListeComponent implements OnInit {
         }
         
         this.fiches = [];
+        this.fichesFiltrees = [];
         this.dataSource.data = [];
         this.loading = false;
       }
@@ -76,11 +94,35 @@ export class ListeComponent implements OnInit {
   }
 
   addFiche(): void {
-    this.router.navigate(['/fiche-qualite/nouveau']);
+    const dialogRef = this.dialog.open(FicheQualiteModalComponent, {
+      width: '900px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      data: { mode: 'create' },
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.chargerFiches();
+      }
+    });
   }
 
   editFiche(fiche: FicheQualite): void {
-    this.router.navigate(['/fiche-qualite', fiche.id]);
+    const dialogRef = this.dialog.open(FicheQualiteModalComponent, {
+      width: '900px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      data: { mode: 'edit', ficheId: fiche.id },
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.chargerFiches();
+      }
+    });
   }
 
   deleteFiche(fiche: FicheQualite): void {
@@ -117,12 +159,131 @@ export class ListeComponent implements OnInit {
     });
   }
 
+  retourDashboard(): void {
+    const role = this.authService.getRole();
+    if (role === 'ADMIN') {
+      this.router.navigate(['/admin/dashboard']);
+    } else if (role === 'CHEF_PROJET') {
+      this.router.navigate(['/fiche-qualite/dashboard']);
+    } else if (role === 'PILOTE_QUALITE') {
+      this.router.navigate(['/fiche-suivi/dashboard']);
+    } else {
+      this.router.navigate(['/']);
+    }
+  }
+
+  appliquerFiltres(): void {
+    let resultats = [...this.fiches];
+    
+    if (this.recherche.trim()) {
+      const rechercheLower = this.recherche.toLowerCase();
+      resultats = resultats.filter(fiche =>
+        fiche.titre?.toLowerCase().includes(rechercheLower) ||
+        fiche.description?.toLowerCase().includes(rechercheLower) ||
+        fiche.responsable?.toLowerCase().includes(rechercheLower)
+      );
+    }
+    
+    if (this.filtreStatut) {
+      resultats = resultats.filter(fiche => fiche.statut === this.filtreStatut);
+    }
+    
+    if (this.filtreType) {
+      resultats = resultats.filter(fiche => fiche.typeFiche === this.filtreType);
+    }
+    
+    this.fichesFiltrees = resultats;
+    this.dataSource.data = resultats;
+    
+    setTimeout(() => {
+      if (this.paginator) {
+        this.dataSource.paginator = this.paginator;
+        this.paginator.firstPage();
+      }
+    });
+  }
+
+  effacerFiltres(): void {
+    this.recherche = '';
+    this.filtreStatut = '';
+    this.filtreType = '';
+    this.appliquerFiltres();
+  }
+
+  basculerAffichage(): void {
+    this.affichageCartes = !this.affichageCartes;
+    
+    if (!this.affichageCartes) {
+      setTimeout(() => {
+        if (this.paginator) {
+          this.dataSource.paginator = this.paginator;
+          this.paginator.firstPage();
+        }
+        if (this.sort) {
+          this.dataSource.sort = this.sort;
+        }
+      });
+    }
+  }
+
+  getTypeIcon(type: string): string {
+    const icons: { [key: string]: string } = {
+      'AUDIT': 'fact_check',
+      'CONTROLE': 'verified',
+      'AMELIORATION': 'trending_up',
+      'FORMATION': 'school',
+      'MAINTENANCE': 'build',
+      'AUTRE': 'more_horiz'
+    };
+    return icons[type] || 'description';
+  }
+
+  getTypeColor(type: string): string {
+    const colors: { [key: string]: string } = {
+      'AUDIT': '#2196f3',
+      'CONTROLE': '#4caf50',
+      'AMELIORATION': '#ff9800',
+      'FORMATION': '#9c27b0',
+      'MAINTENANCE': '#795548',
+      'AUTRE': '#607d8b'
+    };
+    return colors[type] || '#666';
+  }
+
+  getStatutIcon(statut: string): string {
+    const icons: { [key: string]: string } = {
+      'EN_COURS': 'pending',
+      'VALIDE': 'check_circle',
+      'CLOTURE': 'archive'
+    };
+    return icons[statut] || 'flag';
+  }
+
+  getStatutColor(statut: string): string {
+    const colors: { [key: string]: string } = {
+      'EN_COURS': '#ff9800',
+      'VALIDE': '#4caf50',
+      'CLOTURE': '#9e9e9e'
+    };
+    return colors[statut] || '#666';
+  }
+
+  getStatutClass(statut: string): string {
+    const classes: { [key: string]: string } = {
+      'EN_COURS': 'statut-en-cours',
+      'VALIDE': 'statut-valide',
+      'CLOTURE': 'statut-cloture'
+    };
+    return classes[statut] || 'statut-default';
+  }
+
   getChipColor(statut: string | null | undefined): 'primary' | 'warn' | 'accent' {
     if (!statut) return 'accent';
     
     switch (statut.toLowerCase()) {
       case 'validée':
       case 'termine':
+      case 'valide':
         return 'primary';
       case 'refusée':
       case 'bloque':
@@ -134,41 +295,4 @@ export class ListeComponent implements OnInit {
     }
   }
 
-  getStatutClass(statut: string | null | undefined): string {
-    if (!statut) return 'statut-default';
-    
-    switch (statut.toLowerCase()) {
-      case 'validée':
-      case 'termine':
-        return 'statut-success';
-      case 'refusée':
-      case 'bloque':
-        return 'statut-danger';
-      case 'en_cours':
-        return 'statut-warning';
-      case 'en_attente':
-        return 'statut-info';
-      default:
-        return 'statut-default';
-    }
-  }
-
-  getStatutIcon(statut: string | null | undefined): string {
-    if (!statut) return 'help_outline';
-    
-    switch (statut.toLowerCase()) {
-      case 'validée':
-      case 'termine':
-        return 'check_circle';
-      case 'refusée':
-      case 'bloque':
-        return 'cancel';
-      case 'en_cours':
-        return 'pending';
-      case 'en_attente':
-        return 'schedule';
-      default:
-        return 'flag';
-    }
-  }
 }

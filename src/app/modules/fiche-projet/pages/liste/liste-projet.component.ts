@@ -36,6 +36,17 @@ export class ListeProjetComponent implements OnInit {
   ngOnInit(): void {
     this.getProjets();
   }
+  
+  retourDashboard(): void {
+    const role = this.authService.getRole();
+    if (role === 'ADMIN') {
+      this.router.navigate(['/admin/dashboard']);
+    } else if (role === 'CHEF_PROJET') {
+      this.router.navigate(['/fiche-qualite/dashboard']);
+    } else {
+      this.router.navigate(['/']);
+    }
+  }
 
   getProjets(): void {
     this.loading = true;
@@ -55,34 +66,51 @@ export class ListeProjetComponent implements OnInit {
 
   ajouterProjet(): void {
     const dialogRef = this.dialog.open(ProjetFormDialogComponent, {
-      width: '800px',
+      width: '850px',
       maxWidth: '95vw',
       maxHeight: '90vh',
       data: { mode: 'create' },
-      panelClass: 'form-dialog',
-      disableClose: true
+      panelClass: 'custom-dialog-container',
+      disableClose: false,
+      autoFocus: true
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.getProjets();
+      if (result && result.projet) {
+        // Ajouter le nouveau projet sans recharger
+        this.dataSource.data = [...this.dataSource.data, result.projet];
+        this.snackBar.open('✅ Projet créé avec succès!', 'Fermer', { 
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
       }
     });
   }
 
   modifierProjet(id: string): void {
     const dialogRef = this.dialog.open(ProjetFormDialogComponent, {
-      width: '800px',
+      width: '850px',
       maxWidth: '95vw',
       maxHeight: '90vh',
       data: { mode: 'edit', projetId: id },
-      panelClass: 'form-dialog',
-      disableClose: true
+      panelClass: 'custom-dialog-container',
+      disableClose: false,
+      autoFocus: true
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.getProjets();
+      if (result && result.projet) {
+        // Mettre à jour le projet sans recharger
+        const index = this.dataSource.data.findIndex(p => p.id === id);
+        if (index !== -1) {
+          const updatedData = [...this.dataSource.data];
+          updatedData[index] = result.projet;
+          this.dataSource.data = updatedData;
+        }
+        this.snackBar.open('✅ Projet modifié avec succès!', 'Fermer', { 
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
       }
     });
   }
@@ -194,9 +222,7 @@ export class ListeProjetComponent implements OnInit {
               <mat-icon class="detail-icon">event</mat-icon>
               <div class="detail-info">
                 <span class="detail-label">Échéance</span>
-                <p class="detail-value">
-                  {{ data.echeance ? (data.echeance | date:'dd/MM/yyyy') : 'Pas d\'échéance' }}
-                </p>
+                <p class="detail-value">{{ formatDate(data.echeance) }}</p>
               </div>
             </div>
 
@@ -349,6 +375,23 @@ export class ListeProjetComponent implements OnInit {
 export class ProjetDetailsDialogComponent {
   constructor(@Inject(MAT_DIALOG_DATA) public data: FicheProjet) {}
 
+  formatDate(date: any): string {
+    if (!date) return 'Pas d\'échéance';
+    
+    try {
+      const d = new Date(date);
+      if (isNaN(d.getTime())) return 'Date invalide';
+      
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = d.getFullYear();
+      
+      return `${day}/${month}/${year}`;
+    } catch (e) {
+      return 'Date invalide';
+    }
+  }
+
   getStatutClass(statut: string): string {
     if (!statut) return '';
     const statutLower = statut.toLowerCase().replace(/\s+/g, '-');
@@ -441,10 +484,7 @@ export class ProjetDetailsDialogComponent {
             <mat-label>Statut</mat-label>
             <mat-select formControlName="statut" required>
               <mat-option *ngFor="let statut of statutOptions" [value]="statut">
-                <div class="status-option">
-                  <mat-icon class="status-icon" [ngClass]="getStatutClass(statut)">{{ getStatutIcon(statut) }}</mat-icon>
-                  <span>{{ getStatutLabel(statut) }}</span>
-                </div>
+                {{ getStatutLabel(statut) }}
               </mat-option>
             </mat-select>
             <mat-icon matPrefix class="field-icon">info_outline</mat-icon>
@@ -467,67 +507,7 @@ export class ProjetDetailsDialogComponent {
     </div>
   `,
   styles: [`
-    .dialog-container { padding: 0; }
-    .dialog-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.5rem;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      margin: -24px -24px 0 -24px;
-    }
-    .dialog-header h2 {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin: 0;
-      font-size: 1.5rem;
-      font-weight: 600;
-    }
-    .dialog-header mat-icon { font-size: 2rem; width: 2rem; height: 2rem; }
-    .close-btn { color: white; }
-    .dialog-content { padding: 1.5rem !important; max-height: 60vh; }
-    .modal-form { display: flex; flex-direction: column; gap: 0.5rem; }
-    .section-header {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin: 1rem 0 1rem 0;
-      padding-bottom: 0.75rem;
-      border-bottom: 2px solid #e0e0e0;
-    }
-    .section-icon { color: #1976d2; font-size: 1.5rem; }
-    .section-title { margin: 0; font-size: 1.1rem; font-weight: 600; color: #333; }
-    .full-width { width: 100%; }
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
-    .half-width { width: 100%; }
-    .field-icon { color: #1976d2; margin-right: 0.5rem; }
-    .textarea-icon { align-self: flex-start; margin-top: 0.5rem; }
-    .user-option, .status-option {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .user-icon, .status-icon { font-size: 1.1rem; }
-    .status-en-cours { color: #ff9800; }
-    .status-valide { color: #4caf50; }
-    .status-cloture { color: #9e9e9e; }
-    .dialog-actions {
-      padding: 1rem 1.5rem;
-      background: #f5f5f5;
-      margin: 0 -24px -24px -24px;
-      justify-content: flex-end;
-      gap: 0.75rem;
-    }
-    .btn-spinner { margin-left: 0.5rem; }
-    @media (max-width: 600px) {
-      .form-row { grid-template-columns: 1fr; }
-    }
+    /* Styles déplacés dans styles.scss global pour éviter les problèmes */
   `]
 })
 export class ProjetFormDialogComponent implements OnInit {
@@ -585,23 +565,29 @@ export class ProjetFormDialogComponent implements OnInit {
 
     if (this.data.mode === 'edit') {
       this.ficheProjetService.updateProjet(this.data.projetId, projet).subscribe({
-        next: () => {
-          this.snackBar.open('Projet modifié avec succès ✅', 'Fermer', { duration: 3000 });
-          this.dialogRef.close(true);
+        next: (projetUpdated) => {
+          this.loading = false;
+          this.dialogRef.close({ projet: projetUpdated });
         },
         error: () => {
-          this.snackBar.open('Erreur lors de la modification ❌', 'Fermer', { duration: 2000 });
+          this.snackBar.open('❌ Erreur lors de la modification', 'Fermer', { 
+            duration: 3000,
+            panelClass: ['error-snackbar']
+          });
           this.loading = false;
         }
       });
     } else {
       this.ficheProjetService.createProjet(projet).subscribe({
-        next: () => {
-          this.snackBar.open('Projet créé avec succès ✅', 'Fermer', { duration: 3000 });
-          this.dialogRef.close(true);
+        next: (projetCreated) => {
+          this.loading = false;
+          this.dialogRef.close({ projet: projetCreated });
         },
         error: () => {
-          this.snackBar.open('Erreur lors de la création ❌', 'Fermer', { duration: 2000 });
+          this.snackBar.open('❌ Erreur lors de la création', 'Fermer', { 
+            duration: 3000,
+            panelClass: ['error-snackbar']
+          });
           this.loading = false;
         }
       });

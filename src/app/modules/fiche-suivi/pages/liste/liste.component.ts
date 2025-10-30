@@ -39,6 +39,19 @@ export class ListeComponent implements OnInit, AfterViewInit {
     private router: Router,
     public authService: AuthService // injection pour le template
   ) {}
+  
+  retourDashboard(): void {
+    const role = this.authService.getRole();
+    if (role === 'ADMIN') {
+      this.router.navigate(['/admin/dashboard']);
+    } else if (role === 'CHEF_PROJET') {
+      this.router.navigate(['/fiche-qualite/dashboard']);
+    } else if (role === 'PILOTE_QUALITE') {
+      this.router.navigate(['/fiche-suivi/dashboard']);
+    } else {
+      this.router.navigate(['/']);
+    }
+  }
 
   ngOnInit(): void {
     this.displayedColumns = ['ficheQualite', 'dateSuivi', 'etat', 'delai', 'problemes', 'decisions', 'indicateursKpi', 'responsable'];

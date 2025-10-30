@@ -34,9 +34,17 @@ export class NavbarComponent implements OnInit {
   }
 
   logout() {
-    this.authService.logout();
-    this.snackBar.open('Déconnexion réussie.', 'Fermer', { duration: 2000, panelClass: ['mat-snack-bar-success'] });
-    this.router.navigate(['/']);
+    // Nettoyer le token immédiatement
+    localStorage.removeItem('token');
+    
+    // Afficher le message
+    this.snackBar.open('Déconnexion réussie.', 'Fermer', { 
+      duration: 2000, 
+      panelClass: ['mat-snack-bar-success'] 
+    });
+    
+    // Naviguer vers la page d'accueil sans délai
+    this.router.navigate(['/home'], { replaceUrl: true });
   }
 
   goToDashboard() {

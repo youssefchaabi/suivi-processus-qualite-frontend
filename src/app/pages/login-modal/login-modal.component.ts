@@ -110,23 +110,30 @@ export class LoginModalComponent implements OnInit {
     console.log('=== REDIRECTION PAR RÔLE ===');
     console.log('Rôle:', role);
     
+    let targetRoute = '/';
+    
     switch (role) {
       case 'ADMIN':
         console.log('Redirection vers: /admin/dashboard');
-        this.router.navigate(['/admin/dashboard']);
+        targetRoute = '/admin/dashboard';
         break;
       case 'CHEF_PROJET':
         console.log('Redirection vers: /fiche-qualite/dashboard');
-        this.router.navigate(['/fiche-qualite/dashboard']);
+        targetRoute = '/fiche-qualite/dashboard';
         break;
       case 'PILOTE_QUALITE':
         console.log('Redirection vers: /fiche-suivi/dashboard');
-        this.router.navigate(['/fiche-suivi/dashboard']);
+        targetRoute = '/fiche-suivi/dashboard';
         break;
       default:
         console.log('Rôle inconnu, redirection vers: /');
-        this.router.navigate(['/']);
+        targetRoute = '/';
     }
+    
+    // Naviguer et scroller en haut
+    this.router.navigate([targetRoute]).then(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
   }
 
   onCancel(): void {

@@ -1,0 +1,158 @@
+<div class="modal-container">
+  <!-- Header -->
+  <div class="modal-header">
+    <h2 mat-dialog-title class="modal-title">
+      <mat-icon class="title-icon">{{ isEditMode ? 'edit' : 'add_circle' }}</mat-icon>
+      <span>{{ isEditMode ? 'Modifier' : 'Nouvelle' }} Fiche Qualité</span>
+    </h2>
+    <button mat-icon-button (click)="onCancel()" class="close-button" [disabled]="loading">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Content -->
+  <mat-dialog-content class="modal-content">
+    <form [formGroup]="form" class="fiche-form">
+      
+      <!-- Titre -->
+      <div class="form-row full-width">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Titre de la fiche</mat-label>
+          <input matInput formControlName="titre" placeholder="Ex: Audit qualité projet X">
+          <mat-icon matPrefix>title</mat-icon>
+          <mat-error *ngIf="form.get('titre')?.invalid">
+            {{ getErrorMessage('titre') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Description -->
+      <div class="form-row full-width">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput formControlName="description" 
+                    rows="3" 
+                    placeholder="Description détaillée de la fiche qualité"></textarea>
+          <mat-icon matPrefix>description</mat-icon>
+          <mat-error *ngIf="form.get('description')?.invalid">
+            {{ getErrorMessage('description') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Type et Statut -->
+      <div class="form-row two-columns">
+        <mat-form-field appearance="outline">
+          <mat-label>Type de Fiche</mat-label>
+          <mat-select formControlName="typeFiche">
+            <mat-option *ngFor="let type of typesFiche" [value]="type.code">
+              <mat-icon class="option-icon">{{ getTypeIcon(type.code) }}</mat-icon>
+              {{ type.libelle }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>category</mat-icon>
+          <mat-error *ngIf="form.get('typeFiche')?.invalid">
+            {{ getErrorMessage('typeFiche') }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Statut</mat-label>
+          <mat-select formControlName="statut">
+            <mat-option *ngFor="let statut of statuts" [value]="statut.code">
+              <mat-icon class="option-icon" [style.color]="getStatutColor(statut.code)">
+                {{ getStatutIcon(statut.code) }}
+              </mat-icon>
+              {{ statut.libelle }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>flag</mat-icon>
+          <mat-error *ngIf="form.get('statut')?.invalid">
+            {{ getErrorMessage('statut') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Catégorie et Priorité -->
+      <div class="form-row two-columns">
+        <mat-form-field appearance="outline">
+          <mat-label>Catégorie (optionnel)</mat-label>
+          <mat-select formControlName="categorie">
+            <mat-option value="">Aucune</mat-option>
+            <mat-option *ngFor="let cat of categories" [value]="cat.code">
+              {{ cat.libelle }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>folder</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Priorité (optionnel)</mat-label>
+          <mat-select formControlName="priorite">
+            <mat-option value="">Aucune</mat-option>
+            <mat-option *ngFor="let prio of priorites" [value]="prio.code">
+              {{ prio.libelle }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>priority_high</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <!-- Responsable et Date -->
+      <div class="form-row two-columns">
+        <mat-form-field appearance="outline">
+          <mat-label>Responsable</mat-label>
+          <mat-select formControlName="responsable">
+            <mat-option *ngFor="let user of utilisateurs" [value]="user.email">
+              <mat-icon class="option-icon">person</mat-icon>
+              {{ user.nom }} ({{ user.role }})
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>person</mat-icon>
+          <mat-error *ngIf="form.get('responsable')?.invalid">
+            {{ getErrorMessage('responsable') }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Date d'échéance</mat-label>
+          <input matInput type="date" formControlName="dateEcheance">
+          <mat-icon matPrefix>event</mat-icon>
+          <mat-error *ngIf="form.get('dateEcheance')?.invalid">
+            {{ getErrorMessage('dateEcheance') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Observations -->
+      <div class="form-row full-width">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Observations (optionnel)</mat-label>
+          <textarea matInput formControlName="observations" 
+                    rows="2" 
+                    placeholder="Remarques ou observations complémentaires"></textarea>
+          <mat-icon matPrefix>notes</mat-icon>
+        </mat-form-field>
+      </div>
+
+    </form>
+
+    <!-- Loading Indicator -->
+    <mat-progress-bar *ngIf="loading" mode="indeterminate" class="loading-bar"></mat-progress-bar>
+  </mat-dialog-content>
+
+  <!-- Actions -->
+  <mat-dialog-actions class="modal-actions">
+    <button mat-stroked-button (click)="onCancel()" [disabled]="loading" class="btn-cancel">
+      <mat-icon>close</mat-icon>
+      <span>Annuler</span>
+    </button>
+    <button mat-raised-button color="primary" 
+            (click)="onSubmit()" 
+            [disabled]="form.invalid || loading"
+            class="btn-submit">
+      <mat-icon>{{ isEditMode ? 'save' : 'add_circle' }}</mat-icon>
+      <span>{{ isEditMode ? 'Enregistrer' : 'Créer' }}</span>
+    </button>
+  </mat-dialog-actions>
+</div>

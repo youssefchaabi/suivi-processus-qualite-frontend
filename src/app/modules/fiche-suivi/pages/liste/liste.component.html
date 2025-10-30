@@ -1,9 +1,15 @@
 <mat-card class="fiche-suivi-liste-container mat-elevation-z4" style="background: #f8fafd; padding: 24px; margin: 24px auto; max-width: 1200px;">
   <div class="header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
     <h2 style="margin: 0; color: #1976d2; font-weight: 600; letter-spacing: 1px;">Gestion des Fiches de Suivi</h2>
-    <button *ngIf="authService.isAdmin() || authService.isChefProjet()" mat-raised-button color="primary" (click)="ajouterFiche()">
-      <mat-icon>add</mat-icon> Ajouter une fiche de suivi
-    </button>
+    <div class="header-actions" style="display: flex; gap: 12px;">
+      <button *ngIf="authService.isAdmin() || authService.isChefProjet()" 
+              mat-raised-button color="primary" (click)="ajouterFiche()">
+        <mat-icon>add</mat-icon> Ajouter une fiche de suivi
+      </button>
+      <button mat-stroked-button color="accent" (click)="retourDashboard()" class="back-button">
+        <mat-icon>arrow_back</mat-icon> Retour Dashboard
+      </button>
+    </div>
   </div>
 
   <!-- Filtres et recherche -->

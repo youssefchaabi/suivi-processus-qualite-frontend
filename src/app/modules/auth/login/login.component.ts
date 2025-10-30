@@ -59,19 +59,26 @@ export class LoginComponent {
         
         this.snackBar.open('Connexion réussie !', 'Fermer', { duration: 2000, panelClass: ['mat-snack-bar-success'] });
         
+        let targetRoute = '/';
+        
         if (role === 'ADMIN') {
           console.log('Redirection vers: /admin/dashboard');
-          this.router.navigate(['/admin/dashboard']);
+          targetRoute = '/admin/dashboard';
         } else if (role === 'PILOTE_QUALITE') {
           console.log('Redirection vers: /fiche-suivi/dashboard');
-          this.router.navigate(['/fiche-suivi/dashboard']);
+          targetRoute = '/fiche-suivi/dashboard';
         } else if (role === 'CHEF_PROJET') {
           console.log('Redirection vers: /fiche-qualite/dashboard');
-          this.router.navigate(['/fiche-qualite/dashboard']);
+          targetRoute = '/fiche-qualite/dashboard';
         } else {
           console.log('Rôle inconnu, redirection vers: /');
-          this.router.navigate(['/']);
+          targetRoute = '/';
         }
+        
+        // Naviguer et scroller en haut
+        this.router.navigate([targetRoute]).then(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
       },
       error: err => {
         console.error('Erreur de connexion :', err);

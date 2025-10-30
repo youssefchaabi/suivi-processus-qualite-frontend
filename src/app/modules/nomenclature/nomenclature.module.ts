@@ -25,6 +25,7 @@ import { FormulaireComponent } from './pages/formulaire/formulaire.component';
 import { NomenclatureRoutingModule } from './nomenclature-routing.module';
 import { SharedModule } from '../../shared/shared.module';
 import { NomenclatureModalComponent } from './components/nomenclature-modal/nomenclature-modal.component';
+import { NomenclatureService } from './services/nomenclature.service';
 
 @NgModule({
   declarations: [
@@ -54,6 +55,9 @@ import { NomenclatureModalComponent } from './components/nomenclature-modal/nome
     MatCheckboxModule,
     MatSlideToggleModule,
     NomenclatureRoutingModule
+  ],
+  providers: [
+    NomenclatureService
   ]
 })
 export class NomenclatureModule { } 

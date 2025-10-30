@@ -8,15 +8,24 @@
       </div>
       <p class="page-subtitle">Gérez et suivez tous vos projets en un seul endroit</p>
     </div>
-    <button 
-      mat-raised-button 
-      color="primary" 
-      class="add-button"
-      (click)="ajouterProjet()" 
-      *ngIf="authService.isAdmin() || authService.isChefProjet()">
-      <mat-icon>add_circle</mat-icon>
-      <span>Nouveau Projet</span>
-    </button>
+    <div class="header-actions">
+      <button 
+        mat-raised-button 
+        color="primary" 
+        class="btn-nouveau-projet"
+        (click)="ajouterProjet()" 
+        *ngIf="authService.isAdmin() || authService.isChefProjet()">
+        <mat-icon>add_circle_outline</mat-icon>
+        <span>Nouveau Projet</span>
+      </button>
+      <button 
+        mat-stroked-button 
+        class="btn-retour-dashboard" 
+        (click)="retourDashboard()">
+        <mat-icon>dashboard</mat-icon>
+        <span>Retour Dashboard</span>
+      </button>
+    </div>
   </div>
 
   <!-- Skeleton Loading State -->

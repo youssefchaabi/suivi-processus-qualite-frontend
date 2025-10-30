@@ -14,6 +14,13 @@
             <span class="stat-label">Fiches</span>
           </div>
         </div>
+        <div class="stat-card">
+          <mat-icon>filter_list</mat-icon>
+          <div class="stat-info">
+            <span class="stat-value">{{ fichesFiltrees.length }}</span>
+            <span class="stat-label">Filtrées</span>
+          </div>
+        </div>
       </div>
     </div>
     <div class="header-actions">
@@ -95,7 +102,9 @@
       <mat-icon style="font-size: 64px; width: 64px; height: 64px; color: #999;">search_off</mat-icon>
       <h3>Aucun résultat</h3>
       <p>Essayez de modifier vos critères de recherche</p>
-      <button mat-stroked-button (click)="effacerFiltres()">Effacer les filtres</button>
+      <button mat-stroked-button (click)="effacerFiltres()">
+        Effacer les filtres
+      </button>
     </div>
 
     <div class="fiches-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; padding: 20px 0;">
@@ -137,93 +146,58 @@
     </div>
   </div>
 
-  <!-- Table Premium -->
+  <!-- Vue Tableau -->
   <div *ngIf="!loading && fiches.length > 0 && !affichageCartes" class="table-container">
     <table mat-table [dataSource]="dataSource" matSort class="fiche-qualite-table">
-      
-      <!-- Titre -->
       <ng-container matColumnDef="titre">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>
-          <mat-icon>title</mat-icon>
-          Titre
-        </th>
-        <td mat-cell *matCellDef="let f">
-          <div class="cell-content">
-            <mat-icon class="cell-icon">description</mat-icon>
-            <span class="cell-text">{{ f.titre }}</span>
-          </div>
-        </td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Titre</th>
+        <td mat-cell *matCellDef="let fiche">{{ fiche.titre }}</td>
       </ng-container>
 
-      <!-- Type -->
       <ng-container matColumnDef="typeFiche">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>
-          <mat-icon>category</mat-icon>
-          Type
-        </th>
-        <td mat-cell *matCellDef="let f">
-          <span class="badge badge-type">
-            <mat-icon>label</mat-icon>
-            {{ f.typeFiche || 'Non défini' }}
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+        <td mat-cell *matCellDef="let fiche">
+          <span class="badge badge-type" [style.background-color]="getTypeColor(fiche.typeFiche)"
+                style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 16px; color: white; font-size: 12px;">
+            <mat-icon style="font-size: 16px; width: 16px; height: 16px;">{{ getTypeIcon(fiche.typeFiche) }}</mat-icon>
+            {{ fiche.typeFiche }}
           </span>
         </td>
       </ng-container>
 
-      <!-- Statut -->
       <ng-container matColumnDef="statut">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>
-          <mat-icon>flag</mat-icon>
-          Statut
-        </th>
-        <td mat-cell *matCellDef="let f">
-          <span class="badge badge-statut" [ngClass]="getStatutClass(f.statut)">
-            <mat-icon>{{ getStatutIcon(f.statut) }}</mat-icon>
-            {{ f.statut || 'Non défini' }}
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Statut</th>
+        <td mat-cell *matCellDef="let fiche">
+          <span class="badge badge-statut" [style.background-color]="getStatutColor(fiche.statut)"
+                style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 16px; color: white; font-size: 12px;">
+            <mat-icon style="font-size: 16px; width: 16px; height: 16px;">{{ getStatutIcon(fiche.statut) }}</mat-icon>
+            {{ fiche.statut }}
           </span>
         </td>
       </ng-container>
 
-      <!-- Responsable -->
       <ng-container matColumnDef="responsable">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>
-          <mat-icon>person</mat-icon>
-          Responsable
-        </th>
-        <td mat-cell *matCellDef="let f">
-          <div class="responsable-cell">
-            <mat-icon>account_circle</mat-icon>
-            <span>{{ f.responsable || 'Non assigné' }}</span>
-          </div>
-        </td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Responsable</th>
+        <td mat-cell *matCellDef="let fiche">{{ fiche.responsable }}</td>
       </ng-container>
 
-      <!-- Actions -->
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>
-          <mat-icon>settings</mat-icon>
-          Actions
-        </th>
-        <td mat-cell *matCellDef="let f">
-          <div class="action-buttons" *ngIf="authService.isAdmin() || authService.isChefProjet()">
-            <button mat-icon-button class="btn-edit" (click)="editFiche(f)" matTooltip="Modifier">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button class="btn-delete" (click)="deleteFiche(f)" matTooltip="Supprimer">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </div>
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let fiche">
+          <button mat-icon-button color="primary" (click)="editFiche(fiche)" matTooltip="Modifier">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deleteFiche(fiche)" matTooltip="Supprimer">
+            <mat-icon>delete</mat-icon>
+          </button>
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="colonnes; sticky: true"></tr>
-      <tr mat-row *matRowDef="let row; columns: colonnes;" class="table-row"></tr>
+      <tr mat-header-row *matHeaderRowDef="colonnes"></tr>
+      <tr mat-row *matRowDef="let row; columns: colonnes;"></tr>
     </table>
 
-    <mat-paginator 
-      [pageSizeOptions]="[5, 10, 25, 50]" 
-      [pageSize]="10"
-      showFirstLastButtons
-      class="paginator-premium">
-    </mat-paginator>
+    <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 50]" 
+                   showFirstLastButtons></mat-paginator>
   </div>
 </div>

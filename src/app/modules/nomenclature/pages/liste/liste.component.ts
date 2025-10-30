@@ -1,15 +1,11 @@
-// duplicate component removed; using ListeComponent below
-
-import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
-import { Nomenclature, NomenclatureService } from 'src/app/services/nomenclature.service';
-import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { AuthService } from 'src/app/services/authentification.service';
-import { ConfirmDialogComponent } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
+import { NomenclatureService } from '../../services/nomenclature.service';
+import { Nomenclature } from '../../models/nomenclature.model';
 import { NomenclatureModalComponent } from '../../components/nomenclature-modal/nomenclature-modal.component';
 
 @Component({
@@ -18,46 +14,47 @@ import { NomenclatureModalComponent } from '../../components/nomenclature-modal/
   styleUrls: ['./liste.component.scss']
 })
 export class ListeComponent implements OnInit, AfterViewInit {
-  dataSource = new MatTableDataSource<Nomenclature>();
-  displayedColumns = ['type', 'actif', 'actions'];
-  filtreType: string = '';
-  filtreActif: string = '';
-  recherche: string = '';
-  loading: boolean = false;
-  errorMessage: string = '';
+  displayedColumns: string[] = ['type', 'actif', 'ordre', 'actions'];
+  dataSource: MatTableDataSource<Nomenclature>;
+  nomenclatures: Nomenclature[] = [];
+  loading = false;
+  recherche = '';
+  filtreType = '';
+  filtreActif = '';
+  errorMessage = '';
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private nomenclatureService: NomenclatureService,
-    private router: Router,
-    private snackBar: MatSnackBar,
-    public authService: AuthService,
-    private dialog: MatDialog
-  ) {}
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
+  ) {
+    this.dataSource = new MatTableDataSource<Nomenclature>([]);
+  }
 
   ngOnInit(): void {
-    this.chargerNomenclatures();
+    this.loadNomenclatures();
   }
 
   ngAfterViewInit(): void {
+    // Attacher le paginator et le sort après l'initialisation de la vue
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
 
-  chargerNomenclatures(): void {
+  loadNomenclatures(): void {
     this.loading = true;
-    this.nomenclatureService.getNomenclatures().subscribe({
+    this.nomenclatureService.getAll().subscribe({
       next: (data: Nomenclature[]) => {
-        console.log('Nomenclatures chargées:', data.length, 'éléments');
+        this.nomenclatures = data;
         this.dataSource.data = data;
         
-        // Reconnecter le paginator et sort après chargement des données
+        // Réattacher le paginator après le chargement des données
         setTimeout(() => {
           if (this.paginator) {
             this.dataSource.paginator = this.paginator;
-            this.paginator.firstPage();
           }
           if (this.sort) {
             this.dataSource.sort = this.sort;
@@ -66,157 +63,153 @@ export class ListeComponent implements OnInit, AfterViewInit {
         
         this.loading = false;
       },
-      error: (err) => {
-        console.error('Erreur chargement nomenclatures:', err);
-        this.errorMessage = "Erreur de chargement.";
+      error: (error: any) => {
+        console.error('Erreur chargement nomenclatures:', error);
+        this.snackBar.open('Erreur lors du chargement', 'Fermer', { duration: 3000 });
         this.loading = false;
       }
     });
   }
 
-  supprimerNomenclature(id: string): void {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
-      data: {
-        title: 'Confirmer la suppression',
-        message: 'Êtes-vous sûr de vouloir supprimer cette nomenclature ? Cette action est irréversible.',
-        confirmText: 'Supprimer',
-        cancelText: 'Annuler'
-      }
+  applyFilter(event: Event): void {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+  openCreateDialog(): void {
+    const dialogRef = this.dialog.open(NomenclatureModalComponent, {
+      width: '600px',
+      data: { isEditMode: false }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.nomenclatureService.deleteNomenclature(id).subscribe({
-          next: () => {
-            this.dataSource.data = this.dataSource.data.filter(n => n.id !== id);
-            this.snackBar.open('Nomenclature supprimée avec succès ✅', 'Fermer', {
-              duration: 3000,
-              panelClass: ['success-snackbar']
-            });
-          },
-          error: (err) => {
-            console.error('Erreur suppression:', err);
-            this.snackBar.open('Erreur lors de la suppression', 'Fermer', {
-              duration: 3000
-            });
-          }
-        });
+        this.loadNomenclatures();
       }
     });
   }
 
-  modifierNomenclature(id: string): void {
-    console.log('=== MODIFICATION NOMENCLATURE ===');
-    console.log('ID reçu:', id);
-    console.log('Données actuelles:', this.dataSource.data);
-    
-    const nomenclature = this.dataSource.data.find(n => n.id === id);
-    console.log('Nomenclature trouvée:', nomenclature);
-    
-    if (!nomenclature) {
-      console.error('ERREUR: Nomenclature non trouvée avec ID:', id);
-      this.snackBar.open('Erreur: Nomenclature non trouvée', 'Fermer', { duration: 3000 });
-      return;
-    }
-
-    console.log('Ouverture modal avec:', nomenclature);
-
+  openEditDialog(nomenclature: Nomenclature): void {
     const dialogRef = this.dialog.open(NomenclatureModalComponent, {
-      width: '700px',
-      maxWidth: '95vw',
-      data: { nomenclature: { ...nomenclature } }, // Clone pour éviter mutation
-      disableClose: false,
-      autoFocus: true,
-      panelClass: 'nomenclature-modal-container'
+      width: '600px',
+      data: { isEditMode: true, nomenclature: nomenclature }
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('Modal fermé, résultat:', result);
       if (result) {
-        // Mettre à jour seulement la nomenclature modifiée
-        const currentData = this.dataSource.data;
-        const index = currentData.findIndex(n => n.id === result.id);
-        console.log('Index trouvé:', index);
-        if (index !== -1) {
-          currentData[index] = result;
-          this.dataSource.data = [...currentData];
-          this.appliquerFiltres();
-          this.snackBar.open('Nomenclature modifiée avec succès ✅', 'Fermer', { duration: 2000 });
-        }
+        this.loadNomenclatures();
       }
     });
+  }
+
+  deleteNomenclature(id: string): void {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette nomenclature ?')) {
+      this.nomenclatureService.delete(id).subscribe({
+        next: () => {
+          // Supprimer l'élément localement sans recharger toute la liste
+          this.nomenclatures = this.nomenclatures.filter(n => n.id !== id);
+          this.dataSource.data = this.nomenclatures;
+          
+          this.snackBar.open('Nomenclature supprimée avec succès', 'Fermer', { duration: 3000 });
+        },
+        error: (error: any) => {
+          console.error('Erreur suppression:', error);
+          this.snackBar.open('Erreur lors de la suppression', 'Fermer', { duration: 3000 });
+        }
+      });
+    }
   }
 
   getTypeIcon(type: string): string {
-    switch (type) {
-      case 'STATUT': return 'flag';
-      case 'TYPE_FICHE': return 'description';
-      case 'CATEGORIE_PROJET': return 'category';
-      case 'PRIORITE': return 'priority_high';
-      case 'KPI': return 'analytics';
-      default: return 'label';
-    }
+    const icons: { [key: string]: string } = {
+      'TYPE_FICHE': 'assignment',
+      'STATUT': 'flag',
+      'PRIORITE': 'priority_high',
+      'CATEGORIE': 'category'
+    };
+    return icons[type] || 'label';
+  }
+
+  getTypeLabel(type: string): string {
+    const labels: { [key: string]: string } = {
+      'TYPE_FICHE': 'Type de Fiche',
+      'STATUT': 'Statut',
+      'PRIORITE': 'Priorité',
+      'CATEGORIE': 'Catégorie'
+    };
+    return labels[type] || type;
   }
 
   getTypeColor(type: string): string {
-    switch (type) {
-      case 'STATUT': return '#1976d2';
-      case 'TYPE_FICHE': return '#388e3c';
-      case 'CATEGORIE_PROJET': return '#f57c00';
-      case 'PRIORITE': return '#d32f2f';
-      case 'KPI': return '#9c27b0';
-      default: return '#757575';
-    }
+    const colors: { [key: string]: string } = {
+      'TYPE_FICHE': '#4CAF50',
+      'STATUT': '#2196F3',
+      'PRIORITE': '#FF9800',
+      'CATEGORIE': '#9C27B0'
+    };
+    return colors[type] || '#757575';
   }
 
-  appliquerFiltres(): void {
-    let data = this.dataSource.data;
-    
-    if (this.filtreType) {
-      data = data.filter(n => n.type === this.filtreType);
-    }
-    
-    if (this.filtreActif) {
-      const actif = this.filtreActif === 'true';
-      data = data.filter(n => n.actif === actif);
-    }
-    
-    if (this.recherche) {
-      const search = this.recherche.toLowerCase();
-      data = data.filter(n => 
-        n.type?.toLowerCase().includes(search)
-      );
-    }
-    
-    this.dataSource.data = data;
-  }
-
-  resetFiltres(): void {
-    this.filtreType = '';
-    this.filtreActif = '';
-    this.recherche = '';
-    this.chargerNomenclatures();
+  get authService(): any {
+    return { isAdmin: () => true };
   }
 
   creerNomenclature(): void {
-    const dialogRef = this.dialog.open(NomenclatureModalComponent, {
-      width: '700px',
-      maxWidth: '95vw',
-      data: {},
-      disableClose: false,
-      autoFocus: true,
-      panelClass: 'nomenclature-modal-container'
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        // Ajouter la nouvelle nomenclature à la liste
-        const currentData = this.dataSource.data;
-        currentData.push(result);
-        this.dataSource.data = [...currentData];
-        this.appliquerFiltres();
-      }
-    });
+    this.openCreateDialog();
   }
-} 
+
+  modifierNomenclature(id: string): void {
+    const nomenclature = this.nomenclatures.find(n => n.id === id);
+    if (nomenclature) {
+      this.openEditDialog(nomenclature);
+    }
+  }
+
+  supprimerNomenclature(id: string): void {
+    this.deleteNomenclature(id);
+  }
+
+  appliquerFiltres(): void {
+    let filtered = this.nomenclatures;
+
+    if (this.recherche) {
+      filtered = filtered.filter(n => 
+        n.type.toLowerCase().includes(this.recherche.toLowerCase()) ||
+        (n.code && n.code.toLowerCase().includes(this.recherche.toLowerCase())) ||
+        (n.libelle && n.libelle.toLowerCase().includes(this.recherche.toLowerCase()))
+      );
+    }
+
+    if (this.filtreType) {
+      filtered = filtered.filter(n => n.type === this.filtreType);
+    }
+
+    if (this.filtreActif) {
+      const actif = this.filtreActif === 'true';
+      filtered = filtered.filter(n => n.actif === actif);
+    }
+
+    this.dataSource.data = filtered;
+    
+    // Réinitialiser le paginator après filtrage
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+  resetFiltres(): void {
+    this.recherche = '';
+    this.filtreType = '';
+    this.filtreActif = '';
+    this.dataSource.data = this.nomenclatures;
+    
+    // Réinitialiser le paginator
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+}

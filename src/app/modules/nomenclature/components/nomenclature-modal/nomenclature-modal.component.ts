@@ -2,7 +2,8 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Nomenclature, NomenclatureService } from 'src/app/services/nomenclature.service';
+import { Nomenclature } from '../../models/nomenclature.model';
+import { NomenclatureService } from '../../services/nomenclature.service';
 
 @Component({
   selector: 'app-nomenclature-modal',
@@ -95,11 +96,11 @@ export class NomenclatureModalComponent implements OnInit {
       console.log('=== ENVOI PAYLOAD FINAL ===', payload);
 
       const operation = this.isEditMode
-        ? this.nomenclatureService.updateNomenclature(this.data.nomenclature!.id!, payload)
-        : this.nomenclatureService.createNomenclature(payload);
+        ? this.nomenclatureService.update(this.data.nomenclature!.id!, payload)
+        : this.nomenclatureService.create(payload);
 
       operation.subscribe({
-        next: (result) => {
+        next: (result: any) => {
           this.loading = false;
           this.snackBar.open(
             this.isEditMode ? 'Nomenclature modifiée avec succès ✅' : 'Nomenclature créée avec succès ✅',
@@ -108,7 +109,7 @@ export class NomenclatureModalComponent implements OnInit {
           );
           this.dialogRef.close(result);
         },
-        error: (error) => {
+        error: (error: any) => {
           this.loading = false;
           console.error('Erreur complète:', error);
           console.error('Message erreur:', error.error);

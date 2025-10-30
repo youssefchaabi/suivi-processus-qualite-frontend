@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { jwtDecode } from 'jwt-decode';
@@ -14,7 +15,7 @@ export interface JwtPayload {
 export class AuthService {
   private apiUrl = `${environment.apiUrl}/auth/login`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   login(email: string, password: string) {
     return this.http.post<{ token: string }>(this.apiUrl, { email, password }).pipe(
@@ -26,6 +27,7 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem('token');
+    // Ne pas naviguer ici, laisser le composant gérer la navigation
   }
 
   isLoggedIn(): boolean {

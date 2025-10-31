@@ -45,6 +45,27 @@
         </mat-error>
       </div>
 
+      <!-- Libellé -->
+      <div class="form-section">
+        <h3 class="section-title">
+          <mat-icon>edit</mat-icon>
+          Libellé
+        </h3>
+        
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Libellé</mat-label>
+          <input matInput formControlName="libelle" placeholder="Ex: Audit, En cours, Haute priorité" maxlength="100">
+          <mat-icon matPrefix>label</mat-icon>
+          <mat-hint>Nom affiché dans l'application</mat-hint>
+          <mat-error *ngIf="nomenclatureForm.get('libelle')?.hasError('required')">
+            Le libellé est obligatoire
+          </mat-error>
+          <mat-error *ngIf="nomenclatureForm.get('libelle')?.hasError('minlength')">
+            Minimum 2 caractères
+          </mat-error>
+        </mat-form-field>
+      </div>
+
       <!-- Statut -->
       <div class="form-section">
         <h3 class="section-title">

@@ -20,7 +20,6 @@ export class NomenclatureModalComponent implements OnInit {
     { value: 'STATUT', label: 'Statut', icon: 'flag', color: '#1976d2' },
     { value: 'CATEGORIE_PROJET', label: 'Catégorie Projet', icon: 'category', color: '#f57c00' },
     { value: 'PRIORITE', label: 'Priorité', icon: 'priority_high', color: '#d32f2f' },
-    { value: 'RESPONSABLE', label: 'Responsable', icon: 'person', color: '#607d8b' },
     { value: 'KPI', label: 'KPI', icon: 'analytics', color: '#9c27b0' }
   ];
 
@@ -40,6 +39,7 @@ export class NomenclatureModalComponent implements OnInit {
   initForm(): void {
     this.nomenclatureForm = this.fb.group({
       type: [this.data?.nomenclature?.type || '', Validators.required],
+      libelle: [this.data?.nomenclature?.libelle || '', [Validators.required, Validators.minLength(2)]],
       actif: [this.data?.nomenclature?.actif ?? true, Validators.required]
     });
   }
@@ -53,47 +53,23 @@ export class NomenclatureModalComponent implements OnInit {
     if (this.nomenclatureForm.valid) {
       this.loading = true;
       
-      // Générer automatiquement code et libellé basés sur le type
-      const typeInfo = this.getSelectedTypeInfo();
       const type = this.nomenclatureForm.get('type')?.value;
+      const libelle = this.nomenclatureForm.get('libelle')?.value.trim();
       const actif = this.nomenclatureForm.get('actif')?.value;
       
-      let payload: any;
+      // Générer automatiquement le code basé sur le libellé
+      const code = this.isEditMode && this.data.nomenclature?.code 
+        ? this.data.nomenclature.code 
+        : libelle.toUpperCase().replace(/\s+/g, '_').replace(/[^A-Z0-9_]/g, '');
       
-      console.log('=== PRÉPARATION PAYLOAD ===');
-      console.log('Mode édition:', this.isEditMode);
-      console.log('Type sélectionné:', type);
-      console.log('Actif:', actif);
-      console.log('TypeInfo:', typeInfo);
-      console.log('Data nomenclature:', this.data.nomenclature);
+      const payload = {
+        type: type,
+        code: code,
+        libelle: libelle,
+        actif: actif
+      };
       
-      if (!this.isEditMode) {
-        // Pour création: générer code et libellé automatiquement
-        const timestamp = Date.now();
-        payload = {
-          type: type,
-          code: `${type}_${timestamp}`,
-          libelle: typeInfo?.label || type,
-          actif: actif
-        };
-        console.log('CRÉATION - Payload généré:', payload);
-      } else {
-        // Pour modification: garder les valeurs existantes
-        const code = this.data.nomenclature?.code || `${type}_${Date.now()}`;
-        const libelle = this.data.nomenclature?.libelle || typeInfo?.label || type;
-        
-        payload = {
-          type: type,
-          code: code,
-          libelle: libelle,
-          actif: actif
-        };
-        console.log('MODIFICATION - Code:', code);
-        console.log('MODIFICATION - Libellé:', libelle);
-        console.log('MODIFICATION - Payload généré:', payload);
-      }
-
-      console.log('=== ENVOI PAYLOAD FINAL ===', payload);
+      console.log('=== ENVOI PAYLOAD ===', payload);
 
       const operation = this.isEditMode
         ? this.nomenclatureService.update(this.data.nomenclature!.id!, payload)
@@ -105,18 +81,17 @@ export class NomenclatureModalComponent implements OnInit {
           this.snackBar.open(
             this.isEditMode ? 'Nomenclature modifiée avec succès ✅' : 'Nomenclature créée avec succès ✅',
             'Fermer',
-            { duration: 3000, panelClass: ['success-snackbar'] }
+            { duration: 3000 }
           );
           this.dialogRef.close(result);
         },
         error: (error: any) => {
           this.loading = false;
-          console.error('Erreur complète:', error);
-          console.error('Message erreur:', error.error);
+          console.error('Erreur:', error);
           this.snackBar.open(
-            error.error?.message || error.message || 'Erreur lors de l\'enregistrement ❌',
+            error.error?.message || 'Erreur lors de l\'enregistrement ❌',
             'Fermer',
-            { duration: 5000, panelClass: ['error-snackbar'] }
+            { duration: 5000 }
           );
         }
       });

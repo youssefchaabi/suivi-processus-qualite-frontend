@@ -56,6 +56,10 @@ export class FormulaireComponent implements OnInit {
       typeFiche: ['', Validators.required],
       statut: ['EN_COURS', Validators.required],
       responsable: ['', Validators.required],
+      dateEcheance: ['', Validators.required],
+      categorie: [''],
+      priorite: [''],
+      observations: [''],
       commentaire: ['']
     });
   }
@@ -162,6 +166,10 @@ export class FormulaireComponent implements OnInit {
           typeFiche: fiche.typeFiche,
           statut: fiche.statut,
           responsable: fiche.responsable,
+          dateEcheance: fiche.dateEcheance,
+          categorie: fiche.categorie,
+          priorite: fiche.priorite,
+          observations: fiche.observations,
           commentaire: fiche.commentaire
         });
         this.loading = false;
@@ -196,7 +204,11 @@ export class FormulaireComponent implements OnInit {
       typeFiche: formValue.typeFiche || '',
       statut: formValue.statut || '',
       responsable: formValue.responsable || '',  // Email maintenant
-      commentaire: formValue.commentaire?.trim() || ''
+      dateEcheance: formValue.dateEcheance || new Date(),
+      categorie: formValue.categorie || undefined,
+      priorite: formValue.priorite || undefined,
+      observations: formValue.observations?.trim() || undefined,
+      commentaire: formValue.commentaire?.trim() || undefined
     };
 
     console.log('📤 Données à envoyer:', ficheData);

@@ -1,0 +1,115 @@
+<div class="details-modal-container">
+  <!-- Header -->
+  <div class="details-header">
+    <div class="header-content">
+      <div class="type-badge" [style.background-color]="getTypeColor(fiche.typeFiche)">
+        <mat-icon>{{ getTypeIcon(fiche.typeFiche) }}</mat-icon>
+      </div>
+      <div class="header-text">
+        <h2>{{ fiche.titre }}</h2>
+        <div class="statut-badge" [style.background-color]="getStatutColor(fiche.statut)">
+          <mat-icon>{{ getStatutIcon(fiche.statut) }}</mat-icon>
+          <span>{{ fiche.statut }}</span>
+        </div>
+      </div>
+    </div>
+    <button mat-icon-button (click)="onClose()" class="close-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Content -->
+  <mat-dialog-content class="details-content">
+    <div class="details-grid">
+      
+      <!-- Description -->
+      <div class="detail-section full-width">
+        <div class="section-header">
+          <mat-icon>description</mat-icon>
+          <h3>Description</h3>
+        </div>
+        <p class="description-text">{{ fiche.description || 'Aucune description' }}</p>
+      </div>
+
+      <!-- Informations principales -->
+      <div class="detail-section">
+        <div class="section-header">
+          <mat-icon>info</mat-icon>
+          <h3>Informations</h3>
+        </div>
+        <div class="info-list">
+          <div class="info-item">
+            <span class="info-label">
+              <mat-icon>category</mat-icon>
+              Type de fiche
+            </span>
+            <span class="info-value">{{ fiche.typeFiche || 'Non défini' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">
+              <mat-icon>folder</mat-icon>
+              Catégorie
+            </span>
+            <span class="info-value">{{ fiche.categorie || 'Non définie' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">
+              <mat-icon>priority_high</mat-icon>
+              Priorité
+            </span>
+            <span class="info-value">{{ fiche.priorite || 'Non définie' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Responsable et dates -->
+      <div class="detail-section">
+        <div class="section-header">
+          <mat-icon>person</mat-icon>
+          <h3>Responsable & Dates</h3>
+        </div>
+        <div class="info-list">
+          <div class="info-item">
+            <span class="info-label">
+              <mat-icon>account_circle</mat-icon>
+              Responsable
+            </span>
+            <span class="info-value">{{ fiche.responsable || 'Non assigné' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">
+              <mat-icon>event</mat-icon>
+              Date d'échéance
+            </span>
+            <span class="info-value">{{ formatDate(fiche.dateEcheance) }}</span>
+          </div>
+          <div class="info-item" *ngIf="fiche.dateCreation">
+            <span class="info-label">
+              <mat-icon>add_circle</mat-icon>
+              Date de création
+            </span>
+            <span class="info-value">{{ formatDate(fiche.dateCreation) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Observations -->
+      <div class="detail-section full-width" *ngIf="fiche.observations">
+        <div class="section-header">
+          <mat-icon>notes</mat-icon>
+          <h3>Observations</h3>
+        </div>
+        <p class="observations-text">{{ fiche.observations }}</p>
+      </div>
+
+    </div>
+  </mat-dialog-content>
+
+  <!-- Actions -->
+  <mat-dialog-actions class="details-actions">
+    <button mat-raised-button color="primary" (click)="onClose()">
+      <mat-icon>check</mat-icon>
+      <span>Fermer</span>
+    </button>
+  </mat-dialog-actions>
+</div>

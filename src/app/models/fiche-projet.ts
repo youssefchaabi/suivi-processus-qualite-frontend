@@ -6,4 +6,7 @@ export interface FicheProjet {
   responsable: string;
   echeance: Date;
   statut: string;
+  type?: string;
+  dateCreation?: Date;
+  dateModification?: Date;
 } 

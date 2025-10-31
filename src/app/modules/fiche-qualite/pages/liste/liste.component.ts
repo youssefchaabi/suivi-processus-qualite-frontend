@@ -10,6 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from 'src/app/services/authentification.service';
 import { ConfirmDialogComponent } from 'src/app/shared/confirm-dialog/confirm-dialog.component';
 import { FicheQualiteModalComponent } from '../../components/fiche-qualite-modal/fiche-qualite-modal.component';
+import { FicheQualiteDetailsModalComponent } from '../../components/fiche-qualite-details-modal/fiche-qualite-details-modal.component';
 
 @Component({
   selector: 'app-fiche-qualite-list',
@@ -18,6 +19,15 @@ import { FicheQualiteModalComponent } from '../../components/fiche-qualite-modal
 })
 export class ListeComponent implements OnInit, AfterViewInit {
   colonnes: string[] = ['titre', 'typeFiche', 'statut', 'responsable', 'actions'];
+  
+  viewFiche(fiche: FicheQualite): void {
+    this.dialog.open(FicheQualiteDetailsModalComponent, {
+      width: '900px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      data: fiche
+    });
+  }
   dataSource = new MatTableDataSource<FicheQualite>();
   fiches: FicheQualite[] = [];
   fichesFiltrees: FicheQualite[] = [];
@@ -125,7 +135,11 @@ export class ListeComponent implements OnInit, AfterViewInit {
     });
   }
 
-  deleteFiche(fiche: FicheQualite): void {
+  deleteFiche(fiche: FicheQualite, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
       data: {
@@ -142,17 +156,25 @@ export class ListeComponent implements OnInit, AfterViewInit {
         this.ficheService.delete(fiche.id!).subscribe({
           next: () => {
             console.log('✅ Fiche supprimée avec succès');
-            // Mise à jour locale sans rechargement
-            this.dataSource.data = this.dataSource.data.filter(f => f.id !== fiche.id);
+            // Mise à jour locale SANS rechargement de la page
             this.fiches = this.fiches.filter(f => f.id !== fiche.id);
-            this.snackBar.open('Fiche supprimée avec succès ✅', 'Fermer', {
-              duration: 3000,
-              panelClass: ['success-snackbar']
+            this.fichesFiltrees = this.fichesFiltrees.filter(f => f.id !== fiche.id);
+            this.dataSource.data = this.dataSource.data.filter(f => f.id !== fiche.id);
+            
+            // Réattacher le paginator après la mise à jour
+            setTimeout(() => {
+              if (this.paginator) {
+                this.dataSource.paginator = this.paginator;
+              }
+            });
+            
+            this.snackBar.open('✅ Fiche supprimée avec succès', 'Fermer', {
+              duration: 3000
             });
           },
           error: (error) => {
             console.error('❌ Erreur suppression:', error);
-            this.snackBar.open('Erreur lors de la suppression', 'Fermer', { duration: 3000 });
+            this.snackBar.open('❌ Erreur lors de la suppression', 'Fermer', { duration: 3000 });
           }
         });
       }

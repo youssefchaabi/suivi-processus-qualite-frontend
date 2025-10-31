@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vérification Nomenclatures</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #667eea;
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .test-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: #f9f9f9;
+            border-left: 4px solid #4caf50;
+            border-radius: 4px;
+        }
+        .code {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        .success {
+            color: #4caf50;
+            font-weight: bold;
+        }
+        .error {
+            color: #f44336;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Vérification des Nomenclatures</h1>
+    
+    <div class="card">
+        <h2>📋 Valeurs attendues dans le code TypeScript</h2>
+        <p>Le fichier <code>fiche-qualite-modal.component.ts</code> contient :</p>
+        
+        <div class="code">
+typesFiche: Nomenclature[] = [
+  { type: 'TYPE_FICHE', code: 'AUDIT', libelle: 'Audit', actif: true },
+  { type: 'TYPE_FICHE', code: 'CONTROLE', libelle: 'Contrôle', actif: true },
+  { type: 'TYPE_FICHE', code: 'AMELIORATION', libelle: 'Amélioration', actif: true },
+  { type: 'TYPE_FICHE', code: 'FORMATION', libelle: 'Formation', actif: true },
+  { type: 'TYPE_FICHE', code: 'MAINTENANCE', libelle: 'Maintenance', actif: true },
+  { type: 'TYPE_FICHE', code: 'AUTRE', libelle: 'Autre', actif: true }
+];
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>✅ Checklist de vérification</h2>
+        <div class="test-item">1. Ouvrez la console du navigateur (F12)</div>
+        <div class="test-item">2. Cliquez sur "Nouvelle Fiche Qualité"</div>
+        <div class="test-item">3. Vérifiez les logs dans la console</div>
+        <div class="test-item">4. Vérifiez que les listes déroulantes contiennent des valeurs</div>
+    </div>
+
+    <div class="card">
+        <h2>🔧 Si le problème persiste</h2>
+        <ol>
+            <li><strong>Videz le cache du navigateur</strong>
+                <ul>
+                    <li>Chrome/Edge: CTRL + SHIFT + DELETE</li>
+                    <li>Cochez "Images et fichiers en cache"</li>
+                    <li>Cliquez sur "Effacer les données"</li>
+                </ul>
+            </li>
+            <li><strong>Forcez le rechargement</strong>
+                <ul>
+                    <li>Windows/Linux: CTRL + SHIFT + R</li>
+                    <li>Mac: CMD + SHIFT + R</li>
+                </ul>
+            </li>
+            <li><strong>Testez en navigation privée</strong>
+                <ul>
+                    <li>Chrome/Edge: CTRL + SHIFT + N</li>
+                    <li>Firefox: CTRL + SHIFT + P</li>
+                </ul>
+            </li>
+            <li><strong>Vérifiez que le serveur Angular est bien redémarré</strong>
+                <ul>
+                    <li>Arrêtez le serveur (CTRL + C)</li>
+                    <li>Relancez: <code>ng serve</code></li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+
+    <div class="card">
+        <h2>📊 Logs attendus dans la console</h2>
+        <div class="code">
+🎯 CONSTRUCTOR - Valeurs par défaut initialisées
+Types de fiche: 6
+Statuts: 6
+Catégories: 5
+Priorités: 3
+
+🚀 ngOnInit - Début initialisation
+📋 Vérification tableaux AVANT création formulaire:
+- typesFiche: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+- statuts: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+- categories: (5) [{…}, {…}, {…}, {…}, {…}]
+- priorites: (3) [{…}, {…}, {…}]
+✅ Formulaire créé
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>🎯 Résultat attendu</h2>
+        <p class="success">✅ Les listes déroulantes doivent afficher les valeurs suivantes :</p>
+        <ul>
+            <li><strong>Type de Fiche:</strong> Audit, Contrôle, Amélioration, Formation, Maintenance, Autre</li>
+            <li><strong>Statut:</strong> En cours, Terminée, Validée, Rejetée, En attente, Bloquée</li>
+            <li><strong>Catégorie:</strong> Développement, Infrastructure, Qualité, Sécurité, Formation</li>
+            <li><strong>Priorité:</strong> Haute, Moyenne, Basse</li>
+        </ul>
+    </div>
+</body>
+</html>

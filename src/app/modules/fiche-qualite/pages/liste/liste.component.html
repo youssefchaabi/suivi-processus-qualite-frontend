@@ -45,8 +45,11 @@
       <mat-select [(ngModel)]="filtreStatut" (selectionChange)="appliquerFiltres()">
         <mat-option value="">Tous</mat-option>
         <mat-option value="EN_COURS">En cours</mat-option>
-        <mat-option value="VALIDE">Validé</mat-option>
-        <mat-option value="CLOTURE">Clôturé</mat-option>
+        <mat-option value="TERMINEE">Terminée</mat-option>
+        <mat-option value="VALIDEE">Validée</mat-option>
+        <mat-option value="REJETEE">Rejetée</mat-option>
+        <mat-option value="EN_ATTENTE">En attente</mat-option>
+        <mat-option value="BLOQUEE">Bloquée</mat-option>
       </mat-select>
     </mat-form-field>
 
@@ -57,6 +60,9 @@
         <mat-option value="AUDIT">Audit</mat-option>
         <mat-option value="CONTROLE">Contrôle</mat-option>
         <mat-option value="AMELIORATION">Amélioration</mat-option>
+        <mat-option value="FORMATION">Formation</mat-option>
+        <mat-option value="MAINTENANCE">Maintenance</mat-option>
+        <mat-option value="AUTRE">Autre</mat-option>
       </mat-select>
     </mat-form-field>
 
@@ -125,11 +131,14 @@
           </div>
         </mat-card-content>
 
-        <mat-card-actions *ngIf="authService.isAdmin() || authService.isChefProjet()" style="display: flex; justify-content: flex-end; gap: 8px;">
-          <button mat-icon-button color="primary" (click)="editFiche(fiche)" matTooltip="Modifier">
+        <mat-card-actions style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button mat-icon-button color="accent" (click)="viewFiche(fiche); $event.stopPropagation()" matTooltip="Voir détails">
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button mat-icon-button color="primary" (click)="editFiche(fiche); $event.stopPropagation()" matTooltip="Modifier" *ngIf="authService.isAdmin() || authService.isChefProjet()">
             <mat-icon>edit</mat-icon>
           </button>
-          <button mat-icon-button color="warn" (click)="deleteFiche(fiche)" matTooltip="Supprimer">
+          <button mat-icon-button color="warn" (click)="deleteFiche(fiche, $event)" matTooltip="Supprimer" *ngIf="authService.isAdmin() || authService.isChefProjet()">
             <mat-icon>delete</mat-icon>
           </button>
         </mat-card-actions>
@@ -204,11 +213,14 @@
           Actions
         </th>
         <td mat-cell *matCellDef="let f">
-          <div class="action-buttons" *ngIf="authService.isAdmin() || authService.isChefProjet()">
-            <button mat-icon-button class="btn-edit" (click)="editFiche(f)" matTooltip="Modifier">
+          <div class="action-buttons">
+            <button mat-icon-button class="btn-view" (click)="viewFiche(f)" matTooltip="Voir détails">
+              <mat-icon>visibility</mat-icon>
+            </button>
+            <button mat-icon-button class="btn-edit" (click)="editFiche(f)" matTooltip="Modifier" *ngIf="authService.isAdmin() || authService.isChefProjet()">
               <mat-icon>edit</mat-icon>
             </button>
-            <button mat-icon-button class="btn-delete" (click)="deleteFiche(f)" matTooltip="Supprimer">
+            <button mat-icon-button class="btn-delete" (click)="deleteFiche(f, $event)" matTooltip="Supprimer" *ngIf="authService.isAdmin() || authService.isChefProjet()">
               <mat-icon>delete</mat-icon>
             </button>
           </div>

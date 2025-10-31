@@ -173,7 +173,13 @@
   }
 }
 
-// Form Grid
+// Form Fields
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
 .form-grid {
   display: grid;
   gap: 1.5rem;

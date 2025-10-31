@@ -15,12 +15,15 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 import { SharedModule } from '../../shared/shared.module';
 import { FicheQualiteRoutingModule } from './fiche-qualite-routing.module';
 import { FicheQualiteComponent } from './fiche-qualite.component';
 import { ListeComponent } from './pages/liste/liste.component';
 import { FicheQualiteModalComponent } from './components/fiche-qualite-modal/fiche-qualite-modal.component';
+import { FicheQualiteDetailsModalComponent } from './components/fiche-qualite-details-modal/fiche-qualite-details-modal.component';
 import { FormulaireComponent } from './pages/formulaire/formulaire.component';
 import { DashboardChefComponent } from './dashboard-chef/dashboard-chef.component';
 
@@ -29,6 +32,7 @@ import { DashboardChefComponent } from './dashboard-chef/dashboard-chef.componen
     FicheQualiteComponent,
     ListeComponent,
     FicheQualiteModalComponent,
+    FicheQualiteDetailsModalComponent,
     FormulaireComponent,
     DashboardChefComponent
   ],
@@ -51,7 +55,9 @@ import { DashboardChefComponent } from './dashboard-chef/dashboard-chef.componen
     MatSnackBarModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ]
 })
 export class FicheQualiteModule { }

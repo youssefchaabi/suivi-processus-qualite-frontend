@@ -116,8 +116,11 @@
 
         <mat-form-field appearance="outline">
           <mat-label>Date d'échéance</mat-label>
-          <input matInput type="date" formControlName="dateEcheance">
+          <input matInput [matDatepicker]="picker" formControlName="dateEcheance" 
+                 placeholder="JJ/MM/AAAA" readonly (click)="picker.open()">
           <mat-icon matPrefix>event</mat-icon>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
           <mat-error *ngIf="form.get('dateEcheance')?.invalid">
             {{ getErrorMessage('dateEcheance') }}
           </mat-error>

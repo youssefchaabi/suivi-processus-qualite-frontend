@@ -14,7 +14,7 @@ import { NomenclatureModalComponent } from '../../components/nomenclature-modal/
   styleUrls: ['./liste.component.scss']
 })
 export class ListeComponent implements OnInit, AfterViewInit {
-  displayedColumns: string[] = ['type', 'actif', 'ordre', 'actions'];
+  displayedColumns: string[] = ['type', 'libelle', 'actif', 'actions'];
   dataSource: MatTableDataSource<Nomenclature>;
   nomenclatures: Nomenclature[] = [];
   loading = false;
@@ -49,7 +49,13 @@ export class ListeComponent implements OnInit, AfterViewInit {
     this.nomenclatureService.getAll().subscribe({
       next: (data: Nomenclature[]) => {
         this.nomenclatures = data;
-        this.dataSource.data = data;
+        
+        // Appliquer les filtres actuels si présents
+        if (this.recherche || this.filtreType || this.filtreActif) {
+          this.appliquerFiltres();
+        } else {
+          this.dataSource.data = data;
+        }
         
         // Réattacher le paginator après le chargement des données
         setTimeout(() => {
@@ -82,26 +88,39 @@ export class ListeComponent implements OnInit, AfterViewInit {
 
   openCreateDialog(): void {
     const dialogRef = this.dialog.open(NomenclatureModalComponent, {
-      width: '600px',
-      data: { isEditMode: false }
+      width: '700px',
+      maxWidth: '95vw',
+      disableClose: true,
+      data: { nomenclature: null }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.loadNomenclatures();
+        // Ajouter la nouvelle nomenclature localement sans recharger
+        this.nomenclatures.push(result);
+        this.appliquerFiltres();
+        this.snackBar.open('✅ Nomenclature créée avec succès', 'Fermer', { duration: 3000 });
       }
     });
   }
 
   openEditDialog(nomenclature: Nomenclature): void {
     const dialogRef = this.dialog.open(NomenclatureModalComponent, {
-      width: '600px',
-      data: { isEditMode: true, nomenclature: nomenclature }
+      width: '700px',
+      maxWidth: '95vw',
+      disableClose: true,
+      data: { nomenclature: nomenclature }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.loadNomenclatures();
+        // Mettre à jour localement sans recharger
+        const index = this.nomenclatures.findIndex(n => n.id === result.id);
+        if (index !== -1) {
+          this.nomenclatures[index] = result;
+          this.appliquerFiltres();
+          this.snackBar.open('✅ Nomenclature modifiée avec succès', 'Fermer', { duration: 3000 });
+        }
       }
     });
   }

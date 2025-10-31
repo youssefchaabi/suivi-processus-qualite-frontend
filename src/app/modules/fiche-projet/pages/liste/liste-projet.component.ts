@@ -8,6 +8,7 @@ import { FicheProjet } from 'src/app/models/fiche-projet';
 import { FicheProjetService } from 'src/app/services/fiche-projet.service';
 import { AuthService } from 'src/app/services/authentification.service';
 import { UtilisateurService, Utilisateur } from 'src/app/services/utilisateur.service';
+import { NomenclatureService, Nomenclature } from 'src/app/services/nomenclature.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 
@@ -21,6 +22,13 @@ export class ListeProjetComponent implements OnInit {
   displayedColumns: string[] = ['nom', 'description', 'objectifs', 'responsable', 'echeance', 'statut', 'actions'];
   loading = false;
   errorMessage = '';
+  
+  // Filtres
+  projets: FicheProjet[] = [];
+  recherche = '';
+  filtreStatut = '';
+  affichageGrille = true;
+  statuts: Nomenclature[] = [];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -30,11 +38,31 @@ export class ListeProjetComponent implements OnInit {
     public authService: AuthService,
     private snackBar: MatSnackBar,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private nomenclatureService: NomenclatureService
   ) {}
 
   ngOnInit(): void {
+    this.chargerStatuts();
     this.getProjets();
+  }
+
+  chargerStatuts(): void {
+    this.nomenclatureService.getNomenclaturesByType('STATUT').subscribe({
+      next: (data) => {
+        this.statuts = data.filter(n => n.actif);
+        console.log('✅ Statuts chargés:', this.statuts);
+      },
+      error: (err) => {
+        console.error('❌ Erreur chargement statuts:', err);
+        // Valeurs par défaut
+        this.statuts = [
+          { type: 'STATUT', code: 'EN_COURS', libelle: 'En cours', actif: true },
+          { type: 'STATUT', code: 'BLOQUE', libelle: 'Bloqué', actif: true },
+          { type: 'STATUT', code: 'VALIDE', libelle: 'Validé', actif: true }
+        ];
+      }
+    });
   }
   
   retourDashboard(): void {
@@ -52,6 +80,7 @@ export class ListeProjetComponent implements OnInit {
     this.loading = true;
     this.ficheProjetService.getAll().subscribe({
       next: projets => {
+        this.projets = projets;
         this.dataSource.data = projets;
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
@@ -62,6 +91,96 @@ export class ListeProjetComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  appliquerFiltres(): void {
+    let resultats = [...this.projets];
+    
+    console.log('🔍 Filtrage - Statut sélectionné:', this.filtreStatut);
+    console.log('📊 Projets avant filtrage:', resultats.length);
+    
+    // Filtre par recherche
+    if (this.recherche.trim()) {
+      const rechercheLower = this.recherche.toLowerCase();
+      resultats = resultats.filter(projet =>
+        projet.nom?.toLowerCase().includes(rechercheLower) ||
+        projet.description?.toLowerCase().includes(rechercheLower) ||
+        projet.responsable?.toLowerCase().includes(rechercheLower) ||
+        projet.objectifs?.toLowerCase().includes(rechercheLower)
+      );
+      console.log('📊 Après recherche:', resultats.length);
+    }
+    
+    // Filtre par statut - Comparaison insensible à la casse et aux espaces
+    if (this.filtreStatut) {
+      resultats = resultats.filter(projet => {
+        const projetStatut = (projet.statut || '').trim().toLowerCase();
+        const filtreStatutLower = this.filtreStatut.trim().toLowerCase();
+        const match = projetStatut === filtreStatutLower;
+        
+        if (!match) {
+          console.log(`❌ Pas de match: "${projet.statut}" !== "${this.filtreStatut}"`);
+        }
+        
+        return match;
+      });
+      console.log('📊 Après filtre statut:', resultats.length);
+    }
+    
+    this.dataSource.data = resultats;
+    
+    // Réinitialiser le paginator
+    if (this.paginator) {
+      this.paginator.firstPage();
+    }
+  }
+
+  getStatutClass(statut: string): string {
+    const statutLower = (statut || '').toLowerCase();
+    if (statutLower.includes('cours')) return 'statut-en-cours';
+    if (statutLower.includes('valid')) return 'statut-valide';
+    if (statutLower.includes('bloqu')) return 'statut-bloque';
+    if (statutLower.includes('clot') || statutLower.includes('clôtur')) return 'statut-cloture';
+    return 'statut-default';
+  }
+
+  effacerFiltres(): void {
+    this.recherche = '';
+    this.filtreStatut = '';
+    this.dataSource.data = this.projets;
+    
+    if (this.paginator) {
+      this.paginator.firstPage();
+    }
+  }
+
+  basculerAffichage(): void {
+    this.affichageGrille = !this.affichageGrille;
+    
+    // Réattacher le paginator et sort après le changement de vue
+    setTimeout(() => {
+      if (!this.affichageGrille && this.paginator && this.sort) {
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      }
+    });
+  }
+
+  formatDate(date: any): string {
+    if (!date) return 'Non définie';
+    
+    try {
+      const d = new Date(date);
+      if (isNaN(d.getTime())) return 'Date invalide';
+      
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = d.getFullYear();
+      
+      return `${day}/${month}/${year}`;
+    } catch (e) {
+      return 'Date invalide';
+    }
   }
 
   ajouterProjet(): void {
@@ -142,12 +261,6 @@ export class ListeProjetComponent implements OnInit {
         });
       }
     });
-  }
-
-  getStatutClass(statut: string): string {
-    if (!statut) return '';
-    const statutLower = statut.toLowerCase().replace(/\s+/g, '-');
-    return `status-${statutLower}`;
   }
 
   getStatutIcon(statut: string): string {
@@ -393,9 +506,12 @@ export class ProjetDetailsDialogComponent {
   }
 
   getStatutClass(statut: string): string {
-    if (!statut) return '';
-    const statutLower = statut.toLowerCase().replace(/\s+/g, '-');
-    return `status-${statutLower}`;
+    const statutLower = (statut || '').toLowerCase();
+    if (statutLower.includes('cours')) return 'statut-en-cours';
+    if (statutLower.includes('valid')) return 'statut-valide';
+    if (statutLower.includes('bloqu')) return 'statut-bloque';
+    if (statutLower.includes('clot') || statutLower.includes('clôtur')) return 'statut-cloture';
+    return 'statut-default';
   }
 }
 
@@ -483,8 +599,9 @@ export class ProjetDetailsDialogComponent {
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Statut</mat-label>
             <mat-select formControlName="statut" required>
-              <mat-option *ngFor="let statut of statutOptions" [value]="statut">
-                {{ getStatutLabel(statut) }}
+              <mat-option *ngFor="let statut of statuts" [value]="statut.libelle">
+                <mat-icon class="option-icon">flag</mat-icon>
+                {{ statut.libelle }}
               </mat-option>
             </mat-select>
             <mat-icon matPrefix class="field-icon">info_outline</mat-icon>
@@ -513,13 +630,14 @@ export class ProjetDetailsDialogComponent {
 export class ProjetFormDialogComponent implements OnInit {
   form!: FormGroup;
   loading = false;
-  statutOptions = ['EN_COURS', 'VALIDE', 'CLOTURE'];
+  statuts: Nomenclature[] = [];
   utilisateurs: Utilisateur[] = [];
 
   constructor(
     private fb: FormBuilder,
     private ficheProjetService: FicheProjetService,
     private utilisateurService: UtilisateurService,
+    private nomenclatureService: NomenclatureService,
     private snackBar: MatSnackBar,
     public dialogRef: MatDialogRef<ProjetFormDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
@@ -533,6 +651,21 @@ export class ProjetFormDialogComponent implements OnInit {
       responsable: ['', Validators.required],
       echeance: ['', Validators.required],
       statut: ['', Validators.required]
+    });
+
+    // Charger les statuts depuis la nomenclature
+    this.nomenclatureService.getNomenclaturesByType('STATUT').subscribe({
+      next: (data) => {
+        this.statuts = data.filter(n => n.actif);
+        console.log('✅ Statuts chargés dans formulaire:', this.statuts);
+      },
+      error: () => {
+        this.statuts = [
+          { type: 'STATUT', code: 'EN_COURS', libelle: 'En cours', actif: true },
+          { type: 'STATUT', code: 'BLOQUE', libelle: 'Bloqué', actif: true },
+          { type: 'STATUT', code: 'VALIDE', libelle: 'Validé', actif: true }
+        ];
+      }
     });
 
     this.utilisateurService.getUtilisateurs().subscribe({

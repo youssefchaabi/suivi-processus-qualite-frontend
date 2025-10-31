@@ -16,10 +16,39 @@ export class FicheQualiteModalComponent implements OnInit {
   loading = false;
   isEditMode = false;
   
-  typesFiche: Nomenclature[] = [];
-  statuts: Nomenclature[] = [];
-  categories: Nomenclature[] = [];
-  priorites: Nomenclature[] = [];
+  // INITIALISATION IMMÉDIATE DES TABLEAUX AVEC VALEURS PAR DÉFAUT
+  typesFiche: Nomenclature[] = [
+    { type: 'TYPE_FICHE', code: 'AUDIT', libelle: 'Audit', actif: true },
+    { type: 'TYPE_FICHE', code: 'CONTROLE', libelle: 'Contrôle', actif: true },
+    { type: 'TYPE_FICHE', code: 'AMELIORATION', libelle: 'Amélioration', actif: true },
+    { type: 'TYPE_FICHE', code: 'FORMATION', libelle: 'Formation', actif: true },
+    { type: 'TYPE_FICHE', code: 'MAINTENANCE', libelle: 'Maintenance', actif: true },
+    { type: 'TYPE_FICHE', code: 'AUTRE', libelle: 'Autre', actif: true }
+  ];
+  
+  statuts: Nomenclature[] = [
+    { type: 'STATUT', code: 'EN_COURS', libelle: 'En cours', actif: true },
+    { type: 'STATUT', code: 'TERMINEE', libelle: 'Terminée', actif: true },
+    { type: 'STATUT', code: 'VALIDEE', libelle: 'Validée', actif: true },
+    { type: 'STATUT', code: 'REJETEE', libelle: 'Rejetée', actif: true },
+    { type: 'STATUT', code: 'EN_ATTENTE', libelle: 'En attente', actif: true },
+    { type: 'STATUT', code: 'BLOQUEE', libelle: 'Bloquée', actif: true }
+  ];
+  
+  categories: Nomenclature[] = [
+    { type: 'CATEGORIE_PROJET', code: 'DEVELOPPEMENT', libelle: 'Développement', actif: true },
+    { type: 'CATEGORIE_PROJET', code: 'INFRASTRUCTURE', libelle: 'Infrastructure', actif: true },
+    { type: 'CATEGORIE_PROJET', code: 'QUALITE', libelle: 'Qualité', actif: true },
+    { type: 'CATEGORIE_PROJET', code: 'SECURITE', libelle: 'Sécurité', actif: true },
+    { type: 'CATEGORIE_PROJET', code: 'FORMATION', libelle: 'Formation', actif: true }
+  ];
+  
+  priorites: Nomenclature[] = [
+    { type: 'PRIORITE', code: 'HAUTE', libelle: 'Haute', actif: true },
+    { type: 'PRIORITE', code: 'MOYENNE', libelle: 'Moyenne', actif: true },
+    { type: 'PRIORITE', code: 'BASSE', libelle: 'Basse', actif: true }
+  ];
+  
   utilisateurs: Utilisateur[] = [];
 
   constructor(
@@ -30,10 +59,23 @@ export class FicheQualiteModalComponent implements OnInit {
     private nomenclatureService: NomenclatureService,
     private utilisateurService: UtilisateurService,
     private snackBar: MatSnackBar
-  ) {}
+  ) {
+    console.log('🎯 CONSTRUCTOR - Valeurs par défaut initialisées');
+    console.log('Types de fiche:', this.typesFiche.length);
+    console.log('Statuts:', this.statuts.length);
+    console.log('Catégories:', this.categories.length);
+    console.log('Priorités:', this.priorites.length);
+  }
 
   ngOnInit(): void {
+    console.log('🚀 ngOnInit - Début initialisation');
     this.isEditMode = this.data.mode === 'edit';
+    
+    console.log('📋 Vérification tableaux AVANT création formulaire:');
+    console.log('- typesFiche:', this.typesFiche);
+    console.log('- statuts:', this.statuts);
+    console.log('- categories:', this.categories);
+    console.log('- priorites:', this.priorites);
     
     this.form = this.fb.group({
       titre: ['', [Validators.required, Validators.minLength(3)]],
@@ -47,6 +89,8 @@ export class FicheQualiteModalComponent implements OnInit {
       observations: ['']
     });
     
+    console.log('✅ Formulaire créé');
+    
     this.chargerNomenclatures();
     this.chargerUtilisateurs();
     
@@ -56,54 +100,75 @@ export class FicheQualiteModalComponent implements OnInit {
   }
   
   chargerNomenclatures(): void {
-    // Charger Types de Fiche
+    console.log('🔄 Tentative de chargement depuis API...');
+    console.log('📊 Valeurs actuelles - Types:', this.typesFiche.length, 'Statuts:', this.statuts.length);
+    
+    // Charger depuis l'API (remplacera les valeurs par défaut si disponible)
     this.nomenclatureService.getNomenclaturesByType('TYPE_FICHE').subscribe({
       next: data => {
-        this.typesFiche = data.filter(n => n.actif);
-        console.log('✅ Types de fiche chargés:', this.typesFiche.length);
+        console.log('📥 API Response TYPE_FICHE:', data);
+        if (data && data.length > 0) {
+          const actifs = data.filter(n => n.actif);
+          if (actifs.length > 0) {
+            this.typesFiche = actifs;
+            console.log('✅ Types de fiche mis à jour depuis API:', this.typesFiche);
+          }
+        }
       },
-      error: () => {
-        // Valeurs par défaut si erreur
-        this.typesFiche = [
-          { type: 'TYPE_FICHE', code: 'AUDIT', libelle: 'Audit', actif: true },
-          { type: 'TYPE_FICHE', code: 'CONTROLE', libelle: 'Contrôle', actif: true },
-          { type: 'TYPE_FICHE', code: 'AMELIORATION', libelle: 'Amélioration', actif: true }
-        ];
+      error: (err) => {
+        console.warn('⚠️ Erreur chargement types, conservation valeurs par défaut:', err);
+        console.log('📋 Types actuels:', this.typesFiche);
       }
     });
     
-    // Charger Statuts
     this.nomenclatureService.getNomenclaturesByType('STATUT').subscribe({
       next: data => {
-        this.statuts = data.filter(n => n.actif);
-        console.log('✅ Statuts chargés:', this.statuts.length);
+        console.log('📥 API Response STATUT:', data);
+        if (data && data.length > 0) {
+          const actifs = data.filter(n => n.actif);
+          if (actifs.length > 0) {
+            this.statuts = actifs;
+            console.log('✅ Statuts mis à jour depuis API:', this.statuts);
+          }
+        }
       },
-      error: () => {
-        this.statuts = [
-          { type: 'STATUT', code: 'EN_COURS', libelle: 'En cours', actif: true },
-          { type: 'STATUT', code: 'VALIDE', libelle: 'Validé', actif: true },
-          { type: 'STATUT', code: 'CLOTURE', libelle: 'Clôturé', actif: true }
-        ];
+      error: (err) => {
+        console.warn('⚠️ Erreur chargement statuts, conservation valeurs par défaut:', err);
+        console.log('📋 Statuts actuels:', this.statuts);
       }
     });
     
-    // Charger Catégories
     this.nomenclatureService.getNomenclaturesByType('CATEGORIE_PROJET').subscribe({
       next: data => {
-        this.categories = data.filter(n => n.actif);
+        console.log('📥 API Response CATEGORIE_PROJET:', data);
+        if (data && data.length > 0) {
+          const actifs = data.filter(n => n.actif);
+          if (actifs.length > 0) {
+            this.categories = actifs;
+            console.log('✅ Catégories mises à jour depuis API:', this.categories);
+          }
+        }
       },
-      error: () => {
-        this.categories = [];
+      error: (err) => {
+        console.warn('⚠️ Erreur chargement catégories, conservation valeurs par défaut:', err);
+        console.log('📋 Catégories actuelles:', this.categories);
       }
     });
     
-    // Charger Priorités
     this.nomenclatureService.getNomenclaturesByType('PRIORITE').subscribe({
       next: data => {
-        this.priorites = data.filter(n => n.actif);
+        console.log('📥 API Response PRIORITE:', data);
+        if (data && data.length > 0) {
+          const actifs = data.filter(n => n.actif);
+          if (actifs.length > 0) {
+            this.priorites = actifs;
+            console.log('✅ Priorités mises à jour depuis API:', this.priorites);
+          }
+        }
       },
-      error: () => {
-        this.priorites = [];
+      error: (err) => {
+        console.warn('⚠️ Erreur chargement priorités, conservation valeurs par défaut:', err);
+        console.log('📋 Priorités actuelles:', this.priorites);
       }
     });
   }

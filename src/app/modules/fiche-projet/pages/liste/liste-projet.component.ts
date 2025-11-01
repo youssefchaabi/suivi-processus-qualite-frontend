@@ -80,13 +80,27 @@ export class ListeProjetComponent implements OnInit {
     this.loading = true;
     this.ficheProjetService.getAll().subscribe({
       next: projets => {
-        this.projets = projets;
-        this.dataSource.data = projets;
+        console.log('📦 Projets reçus du service:', projets);
+        console.log('📦 Premier projet:', projets[0]);
+        
+        // S'assurer que tous les projets ont un id
+        const projetsAvecId = projets.map(p => {
+          if (!p.id && (p as any)._id) {
+            return { ...p, id: (p as any)._id };
+          }
+          return p;
+        });
+        
+        console.log('✅ Projets après mapping:', projetsAvecId);
+        
+        this.projets = projetsAvecId;
+        this.dataSource.data = projetsAvecId;
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
         this.loading = false;
       },
-      error: () => {
+      error: (err) => {
+        console.error('❌ Erreur chargement projets:', err);
         this.errorMessage = 'Erreur lors du chargement des projets.';
         this.loading = false;
       }
@@ -207,11 +221,38 @@ export class ListeProjetComponent implements OnInit {
   }
 
   modifierProjet(id: string): void {
+    console.log('🔧 Modification projet - ID reçu:', id);
+    console.log('🔧 Type de l\'ID:', typeof id);
+    console.log('🔧 Tous les projets:', this.dataSource.data.map(p => ({ id: p.id, _id: (p as any)._id, nom: p.nom })));
+    
+    if (!id) {
+      console.error('❌ ID du projet est undefined ou null');
+      this.snackBar.open('❌ Erreur: ID du projet manquant', 'Fermer', { 
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+    
+    // Trouver le projet dans les données locales (chercher par id ou _id)
+    const projetLocal = this.dataSource.data.find(p => {
+      const pId = p.id || (p as any)._id;
+      return pId === id;
+    });
+    
+    if (!projetLocal) {
+      console.error('❌ Projet introuvable dans les données locales');
+      this.snackBar.open('❌ Projet introuvable', 'Fermer', { duration: 3000 });
+      return;
+    }
+    
+    console.log('📝 Modification du projet local:', projetLocal);
+    
     const dialogRef = this.dialog.open(ProjetFormDialogComponent, {
       width: '850px',
       maxWidth: '95vw',
       maxHeight: '90vh',
-      data: { mode: 'edit', projetId: id },
+      data: { mode: 'edit', projetId: id, projetData: projetLocal },
       panelClass: 'custom-dialog-container',
       disableClose: false,
       autoFocus: true
@@ -219,12 +260,17 @@ export class ListeProjetComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result && result.projet) {
+        console.log('✅ Projet modifié reçu:', result.projet);
         // Mettre à jour le projet sans recharger
-        const index = this.dataSource.data.findIndex(p => p.id === id);
+        const index = this.dataSource.data.findIndex(p => {
+          const pId = p.id || (p as any)._id;
+          return pId === id;
+        });
         if (index !== -1) {
           const updatedData = [...this.dataSource.data];
           updatedData[index] = result.projet;
           this.dataSource.data = updatedData;
+          this.projets = updatedData;
         }
         this.snackBar.open('✅ Projet modifié avec succès!', 'Fermer', { 
           duration: 3000,
@@ -675,17 +721,29 @@ export class ProjetFormDialogComponent implements OnInit {
 
     if (this.data.mode === 'edit' && this.data.projetId) {
       this.loading = true;
+      console.log('🔄 Chargement du projet ID:', this.data.projetId);
+      
       this.ficheProjetService.getProjetById(this.data.projetId).subscribe({
         next: projet => {
+          console.log('✅ Projet chargé:', projet);
+          
+          // Convertir l'échéance en Date si nécessaire
           if (projet.echeance && typeof projet.echeance === 'string') {
             projet.echeance = new Date(projet.echeance);
           }
+          
           this.form.patchValue(projet);
           this.loading = false;
         },
-        error: () => {
-          this.snackBar.open('Erreur lors du chargement ❌', 'Fermer', { duration: 2000 });
+        error: (err) => {
+          console.error('❌ Erreur chargement projet:', err);
+          this.snackBar.open('Erreur lors du chargement du projet ❌', 'Fermer', { 
+            duration: 3000,
+            panelClass: ['error-snackbar']
+          });
           this.loading = false;
+          // Fermer le dialog en cas d'erreur
+          this.dialogRef.close(false);
         }
       });
     }

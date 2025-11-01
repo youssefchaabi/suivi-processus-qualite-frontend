@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable, tap } from "rxjs";
+import { Observable, tap, map, catchError } from "rxjs";
 import { FicheQualite } from '../models/fiche-qualite';
 import { environment } from '../../environments/environment';
 // 
@@ -12,7 +12,15 @@ export class FicheQualiteService {
   constructor(private http: HttpClient) {}
 
   getAll(): Observable<FicheQualite[]> {
-    return this.http.get<FicheQualite[]>(this.apiUrl).pipe(
+    return this.http.get<any[]>(this.apiUrl).pipe(
+      map((fiches: any[]) => {
+        return fiches.map(fiche => {
+          if (fiche._id && !fiche.id) {
+            fiche.id = fiche._id;
+          }
+          return fiche as FicheQualite;
+        });
+      }),
       tap(data => {
         console.log('🔍 Données reçues du backend:', data);
         data.forEach((fiche, index) => {
@@ -29,16 +37,44 @@ export class FicheQualiteService {
   }
 
   getById(id: string): Observable<FicheQualite> {
-    return this.http.get<FicheQualite>(`${this.apiUrl}/${id}`);
+    console.log('📡 Service: Récupération fiche ID:', id);
+    return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(
+      map((fiche: any) => {
+        if (fiche._id && !fiche.id) {
+          fiche.id = fiche._id;
+        }
+        console.log('✅ Fiche mappée:', fiche);
+        return fiche as FicheQualite;
+      }),
+      catchError((error) => {
+        console.error('❌ Erreur récupération fiche:', error);
+        throw error;
+      })
+    );
   }
 
   create(fiche: FicheQualite): Observable<FicheQualite> {
     console.log('📤 Envoi de la fiche au backend:', fiche);
-    return this.http.post<FicheQualite>(this.apiUrl, fiche);
+    return this.http.post<any>(this.apiUrl, fiche).pipe(
+      map((result: any) => {
+        if (result._id && !result.id) {
+          result.id = result._id;
+        }
+        return result as FicheQualite;
+      })
+    );
   }
 
   update(id: string, fiche: FicheQualite): Observable<FicheQualite> {
-    return this.http.put<FicheQualite>(`${this.apiUrl}/${id}`, fiche);
+    console.log('📤 Mise à jour fiche ID:', id);
+    return this.http.put<any>(`${this.apiUrl}/${id}`, fiche).pipe(
+      map((result: any) => {
+        if (result._id && !result.id) {
+          result.id = result._id;
+        }
+        return result as FicheQualite;
+      })
+    );
   }
 
   delete(id: string): Observable<void> {

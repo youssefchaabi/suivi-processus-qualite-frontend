@@ -38,6 +38,10 @@ export class UtilisateurService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
+  deleteUtilisateur(id: string): Observable<void> {
+    return this.supprimerUtilisateur(id);
+  }
+
   createUtilisateur(utilisateur: Utilisateur): Observable<Utilisateur> {
     // Utilise le endpoint admin qui hash le mot de passe
     const payload = {

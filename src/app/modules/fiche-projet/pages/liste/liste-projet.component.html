@@ -231,12 +231,29 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let projet">
-          <button mat-icon-button (click)="voirDetails(projet)" matTooltip="Voir détails">
-            <mat-icon>visibility</mat-icon>
-          </button>
-          <button mat-icon-button (click)="modifierProjet(projet)" *ngIf="authService.isAdmin() || authService.isChefProjet()" matTooltip="Modifier">
-            <mat-icon>edit</mat-icon>
-          </button>
+          <div class="action-buttons">
+            <button mat-icon-button 
+                    color="accent"
+                    (click)="voirDetails(projet)" 
+                    matTooltip="Voir détails"
+                    class="action-btn">
+              <mat-icon>visibility</mat-icon>
+            </button>
+            <button mat-icon-button 
+                    color="primary"
+                    (click)="modifierProjet(projet.id || projet._id)" 
+                    *ngIf="authService.isAdmin() || authService.isChefProjet()" 
+                    matTooltip="Modifier">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button 
+                    color="warn"
+                    (click)="supprimerProjet(projet.id || projet._id)" 
+                    *ngIf="authService.isAdmin() || authService.isChefProjet()" 
+                    matTooltip="Supprimer">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
         </td>
       </ng-container>
       

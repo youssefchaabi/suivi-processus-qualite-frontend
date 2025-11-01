@@ -1,10 +1,176 @@
-<div *ngIf="utilisateurs.length > 0; else noUsers">
-  <ul>
-    <li *ngFor="let user of utilisateurs">
-      {{ user.nom }} - {{ user.email }}
-    </li>
-  </ul>
+<div class="utilisateur-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">
+          <div class="title-icon-wrapper">
+            <mat-icon class="title-icon">group</mat-icon>
+          </div>
+          <span class="title-text">Gestion des Utilisateurs</span>
+        </h1>
+        <p class="page-subtitle">Gérez les utilisateurs et leurs permissions</p>
+      </div>
+      <div class="header-actions">
+        <button mat-fab color="primary" class="fab-add" (click)="openCreateModal()" matTooltip="Ajouter un utilisateur">
+          <mat-icon>person_add</mat-icon>
+        </button>
+        <button mat-fab class="fab-refresh" (click)="loadUtilisateurs()" matTooltip="Actualiser">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card total">
+      <div class="stat-icon">
+        <mat-icon>group</mat-icon>
+      </div>
+      <div class="stat-content">
+        <span class="stat-number">{{ utilisateurs.length }}</span>
+        <span class="stat-label">Total Utilisateurs</span>
+      </div>
+    </div>
+
+    <div class="stat-card admin">
+      <div class="stat-icon">
+        <mat-icon>admin_panel_settings</mat-icon>
+      </div>
+      <div class="stat-content">
+        <span class="stat-number">{{ (utilisateurs | filter:'role':'ADMIN').length }}</span>
+        <span class="stat-label">Administrateurs</span>
+      </div>
+    </div>
+
+    <div class="stat-card chef">
+      <div class="stat-icon">
+        <mat-icon>engineering</mat-icon>
+      </div>
+      <div class="stat-content">
+        <span class="stat-number">{{ (utilisateurs | filter:'role':'CHEF_PROJET').length }}</span>
+        <span class="stat-label">Chefs de Projet</span>
+      </div>
+    </div>
+
+    <div class="stat-card pilote">
+      <div class="stat-icon">
+        <mat-icon>science</mat-icon>
+      </div>
+      <div class="stat-content">
+        <span class="stat-number">{{ (utilisateurs | filter:'role':'PILOTE_QUALITE').length }}</span>
+        <span class="stat-label">Pilotes Qualité</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table Container -->
+  <div class="table-container">
+    <div class="table-header">
+      <h2 class="table-title">
+        <mat-icon>list</mat-icon>
+        Liste des Utilisateurs
+      </h2>
+    </div>
+
+    <div class="table-wrapper" *ngIf="!loading && utilisateurs.length > 0">
+      <table mat-table [dataSource]="utilisateurs" class="utilisateurs-table">
+        
+        <!-- Nom Column -->
+        <ng-container matColumnDef="nom">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="header-cell">
+              <mat-icon>person</mat-icon>
+              <span>Nom</span>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let user">
+            <div class="user-name">
+              <div class="user-avatar">{{ user.nom.charAt(0).toUpperCase() }}</div>
+              <span>{{ user.nom }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Email Column -->
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="header-cell">
+              <mat-icon>email</mat-icon>
+              <span>Email</span>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let user">
+            <div class="user-email">
+              <mat-icon>alternate_email</mat-icon>
+              <span>{{ user.email }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Role Column -->
+        <ng-container matColumnDef="role">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="header-cell">
+              <mat-icon>shield</mat-icon>
+              <span>Rôle</span>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let user">
+            <div class="role-badge" [style.background-color]="getRoleInfo(user.role).color">
+              <mat-icon>{{ getRoleInfo(user.role).icon }}</mat-icon>
+              <span>{{ getRoleInfo(user.role).label }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="header-cell">
+              <mat-icon>settings</mat-icon>
+              <span>Actions</span>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let user">
+            <div class="action-buttons">
+              <button mat-icon-button 
+                      class="edit-btn" 
+                      (click)="openEditModal(user)"
+                      matTooltip="Modifier">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button 
+                      class="delete-btn" 
+                      (click)="deleteUtilisateur(user)"
+                      matTooltip="Supprimer">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+      </table>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="loading">
+      <mat-spinner diameter="60"></mat-spinner>
+      <p>Chargement des utilisateurs...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!loading && utilisateurs.length === 0">
+      <mat-icon>group_off</mat-icon>
+      <h3>Aucun utilisateur</h3>
+      <p>Commencez par créer votre premier utilisateur</p>
+      <button mat-raised-button color="primary" (click)="openCreateModal()">
+        <mat-icon>person_add</mat-icon>
+        Créer un utilisateur
+      </button>
+    </div>
+  </div>
 </div>
-<ng-template #noUsers>
-  <p>Aucun utilisateur trouvé ou erreur lors du chargement.</p>
-</ng-template>

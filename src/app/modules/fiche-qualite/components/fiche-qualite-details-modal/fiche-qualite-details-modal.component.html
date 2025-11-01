@@ -22,20 +22,29 @@
   <mat-dialog-content class="details-content">
     <div class="details-grid">
       
+      <!-- Titre (si différent du header) -->
+      <div class="detail-section full-width">
+        <div class="section-header">
+          <mat-icon>title</mat-icon>
+          <h3>Titre de la Fiche</h3>
+        </div>
+        <p class="description-text">{{ fiche.titre || 'Sans titre' }}</p>
+      </div>
+
       <!-- Description -->
       <div class="detail-section full-width">
         <div class="section-header">
           <mat-icon>description</mat-icon>
-          <h3>Description</h3>
+          <h3>Description Détaillée</h3>
         </div>
-        <p class="description-text">{{ fiche.description || 'Aucune description' }}</p>
+        <p class="description-text">{{ fiche.description || 'Aucune description fournie' }}</p>
       </div>
 
       <!-- Informations principales -->
       <div class="detail-section">
         <div class="section-header">
           <mat-icon>info</mat-icon>
-          <h3>Informations</h3>
+          <h3>Informations Générales</h3>
         </div>
         <div class="info-list">
           <div class="info-item">
@@ -44,6 +53,13 @@
               Type de fiche
             </span>
             <span class="info-value">{{ fiche.typeFiche || 'Non défini' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">
+              <mat-icon>flag</mat-icon>
+              Statut
+            </span>
+            <span class="info-value">{{ fiche.statut || 'Non défini' }}</span>
           </div>
           <div class="info-item">
             <span class="info-label">
@@ -65,8 +81,8 @@
       <!-- Responsable et dates -->
       <div class="detail-section">
         <div class="section-header">
-          <mat-icon>person</mat-icon>
-          <h3>Responsable & Dates</h3>
+          <mat-icon>schedule</mat-icon>
+          <h3>Responsable & Planning</h3>
         </div>
         <div class="info-list">
           <div class="info-item">
@@ -90,6 +106,13 @@
             </span>
             <span class="info-value">{{ formatDate(fiche.dateCreation) }}</span>
           </div>
+          <div class="info-item" *ngIf="fiche.dateModification">
+            <span class="info-label">
+              <mat-icon>update</mat-icon>
+              Dernière modification
+            </span>
+            <span class="info-value">{{ formatDate(fiche.dateModification) }}</span>
+          </div>
         </div>
       </div>
 
@@ -97,9 +120,20 @@
       <div class="detail-section full-width" *ngIf="fiche.observations">
         <div class="section-header">
           <mat-icon>notes</mat-icon>
-          <h3>Observations</h3>
+          <h3>Observations & Remarques</h3>
         </div>
         <p class="observations-text">{{ fiche.observations }}</p>
+      </div>
+
+      <!-- Message si pas d'observations -->
+      <div class="detail-section full-width" *ngIf="!fiche.observations">
+        <div class="section-header">
+          <mat-icon>notes</mat-icon>
+          <h3>Observations & Remarques</h3>
+        </div>
+        <p class="observations-text" style="color: #94a3b8; font-style: italic;">
+          Aucune observation n'a été ajoutée pour cette fiche.
+        </p>
       </div>
 
     </div>

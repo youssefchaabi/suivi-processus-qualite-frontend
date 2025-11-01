@@ -23,6 +23,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { SuccessSnackbarComponent } from 'src/app/shared/success-snackbar/success-snackbar.component';
 import { UtilisateurModalComponent } from './components/utilisateur-modal/utilisateur-modal.component';
+import { FilterPipe } from './pipes/filter.pipe';
 
 
 @NgModule({
@@ -30,7 +31,8 @@ import { UtilisateurModalComponent } from './components/utilisateur-modal/utilis
     UtilisateurComponent,
     ListeComponent,
     FormulaireComponent,
-    UtilisateurModalComponent
+    UtilisateurModalComponent,
+    FilterPipe
   ],
   imports: [
     CommonModule,

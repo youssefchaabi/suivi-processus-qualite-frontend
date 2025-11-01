@@ -187,16 +187,49 @@ export class FicheQualiteModalComponent implements OnInit {
   
   chargerFiche(): void {
     this.loading = true;
+    console.log('📥 Chargement de la fiche ID:', this.data.ficheId);
+    
     this.ficheQualiteService.getById(this.data.ficheId!).subscribe({
       next: (fiche: any) => {
-        // Convertir la date si nécessaire
-        if (fiche.dateEcheance && typeof fiche.dateEcheance === 'string') {
-          fiche.dateEcheance = new Date(fiche.dateEcheance);
+        console.log('✅ Fiche reçue du serveur:', fiche);
+        
+        // Mapper _id vers id si nécessaire
+        if (fiche._id && !fiche.id) {
+          fiche.id = fiche._id;
         }
-        this.form.patchValue(fiche);
+        
+        // Convertir la date si nécessaire
+        if (fiche.dateEcheance) {
+          if (typeof fiche.dateEcheance === 'string') {
+            fiche.dateEcheance = new Date(fiche.dateEcheance);
+          } else if (fiche.dateEcheance._seconds) {
+            // Format Firestore timestamp
+            fiche.dateEcheance = new Date(fiche.dateEcheance._seconds * 1000);
+          }
+        }
+        
+        // Préparer les données pour le formulaire
+        const formData = {
+          titre: fiche.titre || '',
+          description: fiche.description || '',
+          typeFiche: fiche.typeFiche || '',
+          statut: fiche.statut || '',
+          categorie: fiche.categorie || '',
+          priorite: fiche.priorite || '',
+          responsable: fiche.responsable || '',
+          dateEcheance: fiche.dateEcheance || '',
+          observations: fiche.observations || ''
+        };
+        
+        console.log('📝 Données pour le formulaire:', formData);
+        
+        this.form.patchValue(formData);
         this.loading = false;
+        
+        console.log('✅ Formulaire rempli:', this.form.value);
       },
-      error: () => {
+      error: (err) => {
+        console.error('❌ Erreur chargement fiche:', err);
         this.snackBar.open('❌ Erreur lors du chargement de la fiche', 'Fermer', { duration: 3000 });
         this.loading = false;
         this.dialogRef.close(false);
@@ -224,13 +257,25 @@ export class FicheQualiteModalComponent implements OnInit {
       : this.ficheQualiteService.create(fiche);
     
     operation.subscribe({
-      next: () => {
+      next: (result: any) => {
+        this.loading = false;
+        console.log('✅ Résultat du serveur:', result);
+        
+        // Créer l'objet complet à retourner
+        const ficheComplete = {
+          ...result,
+          ...fiche,
+          id: result.id || result._id || this.data.ficheId
+        };
+        
+        console.log('📤 Retour du modal:', ficheComplete);
+        
         this.snackBar.open(
           this.isEditMode ? '✅ Fiche modifiée avec succès' : '✅ Fiche créée avec succès',
           'Fermer',
           { duration: 3000 }
         );
-        this.dialogRef.close(true); // Retourner true pour recharger la liste
+        this.dialogRef.close({ fiche: ficheComplete }); // Retourner l'objet
       },
       error: (error: any) => {
         console.error('❌ Erreur:', error);

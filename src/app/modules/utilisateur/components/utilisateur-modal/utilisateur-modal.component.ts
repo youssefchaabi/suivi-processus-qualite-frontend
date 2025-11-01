@@ -83,12 +83,24 @@ export class UtilisateurModalComponent implements OnInit {
         next: (result) => {
           clearTimeout(timeoutId);
           this.loading = false;
+          console.log('✅ Résultat du serveur:', result);
+          
+          // Créer l'objet complet à retourner
+          const utilisateurComplet = {
+            ...result,
+            ...formData,
+            id: result.id || this.data?.utilisateur?.id,
+            password: undefined // Ne pas retourner le mot de passe
+          };
+          
+          console.log('📤 Retour du modal:', utilisateurComplet);
+          
           this.snackBar.open(
             this.isEditMode ? 'Utilisateur modifié avec succès ✅' : 'Utilisateur créé avec succès ✅',
             'Fermer',
             { duration: 3000, panelClass: ['success-snackbar'] }
           );
-          this.dialogRef.close(result);
+          this.dialogRef.close(utilisateurComplet);
         },
         error: (error) => {
           clearTimeout(timeoutId);

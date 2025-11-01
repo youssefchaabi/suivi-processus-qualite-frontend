@@ -109,12 +109,25 @@ export class ListeComponent implements OnInit, AfterViewInit {
       maxWidth: '95vw',
       maxHeight: '90vh',
       data: { mode: 'create' },
-      disableClose: true
+      disableClose: true,
+      panelClass: 'custom-dialog-container'
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.chargerFiches();
+      if (result && result.fiche) {
+        console.log('✅ Fiche créée reçue:', result.fiche);
+        // Ajouter localement sans recharger toute la page
+        this.fiches.push(result.fiche);
+        this.fichesFiltrees.push(result.fiche);
+        this.dataSource.data = [...this.fichesFiltrees];
+        
+        // Réattacher le paginator
+        setTimeout(() => {
+          if (this.paginator) {
+            this.dataSource.paginator = this.paginator;
+            this.paginator.lastPage();
+          }
+        });
       }
     });
   }
@@ -125,12 +138,34 @@ export class ListeComponent implements OnInit, AfterViewInit {
       maxWidth: '95vw',
       maxHeight: '90vh',
       data: { mode: 'edit', ficheId: fiche.id },
-      disableClose: true
+      disableClose: true,
+      panelClass: 'custom-dialog-container'
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.chargerFiches();
+      if (result && result.fiche) {
+        console.log('✅ Fiche modifiée reçue:', result.fiche);
+        // Mettre à jour localement sans recharger
+        const ficheId = result.fiche.id || result.fiche._id;
+        
+        const index = this.fiches.findIndex(f => (f.id || (f as any)._id) === ficheId);
+        if (index !== -1) {
+          this.fiches[index] = result.fiche;
+        }
+        
+        const indexFiltre = this.fichesFiltrees.findIndex(f => (f.id || (f as any)._id) === ficheId);
+        if (indexFiltre !== -1) {
+          this.fichesFiltrees[indexFiltre] = result.fiche;
+        }
+        
+        this.dataSource.data = [...this.fichesFiltrees];
+        
+        // Réattacher le paginator
+        setTimeout(() => {
+          if (this.paginator) {
+            this.dataSource.paginator = this.paginator;
+          }
+        });
       }
     });
   }

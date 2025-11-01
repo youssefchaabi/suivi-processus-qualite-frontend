@@ -7,8 +7,21 @@
   flex-direction: column;
   max-height: 90vh;
   background: #ffffff;
-  border-radius: 8px;
+  border-radius: 20px;
   overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 // ============================================
@@ -18,33 +31,62 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px 28px;
+  padding: 28px 32px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+    pointer-events: none;
+  }
 
   .modal-title {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     margin: 0;
-    font-size: 22px;
-    font-weight: 600;
+    font-size: 24px;
+    font-weight: 700;
     color: white;
+    position: relative;
+    z-index: 1;
 
     .title-icon {
-      font-size: 28px;
-      width: 28px;
-      height: 28px;
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+      animation: iconPulse 2s ease-in-out infinite;
     }
   }
 
   .close-button {
     color: white;
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s ease;
     
     &:hover {
-      background-color: rgba(255, 255, 255, 0.1);
+      background-color: rgba(255, 255, 255, 0.2);
+      transform: rotate(90deg);
     }
+  }
+}
+
+@keyframes iconPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
   }
 }
 
@@ -121,7 +163,13 @@ mat-form-field {
 
     .mat-mdc-text-field-wrapper {
       background-color: white;
-      border-radius: 8px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      
+      &:hover {
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+      }
     }
 
     .mat-mdc-form-field-subscript-wrapper {
@@ -132,6 +180,7 @@ mat-form-field {
     .mat-icon[matPrefix] {
       margin-right: 12px;
       color: #667eea;
+      transition: all 0.3s ease;
     }
 
     // Labels
@@ -142,6 +191,17 @@ mat-form-field {
     // Input focus
     .mat-mdc-input-element:focus {
       outline: none;
+    }
+    
+    // Focus state
+    &.mat-focused {
+      .mat-mdc-text-field-wrapper {
+        box-shadow: 0 4px 16px rgba(102, 126, 234, 0.25);
+      }
+      
+      .mat-icon[matPrefix] {
+        transform: scale(1.1);
+      }
     }
   }
 }
@@ -163,53 +223,73 @@ mat-form-field {
 .modal-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  padding: 20px 28px;
-  background: white;
-  border-top: 1px solid #e0e0e0;
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+  gap: 14px;
+  padding: 24px 32px;
+  background: linear-gradient(to top, #f8f9fa 0%, white 100%);
+  border-top: 1px solid rgba(102, 126, 234, 0.1);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
 
   button {
-    min-width: 120px;
-    height: 42px;
-    font-weight: 500;
-    border-radius: 6px;
+    min-width: 140px;
+    height: 48px;
+    font-weight: 600;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    transition: all 0.3s ease;
+    gap: 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 15px;
 
     mat-icon {
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
+      font-size: 22px;
+      width: 22px;
+      height: 22px;
+      transition: transform 0.3s ease;
     }
   }
 
   .btn-cancel {
     border: 2px solid #e0e0e0;
     color: #666;
+    background: white;
 
     &:hover:not(:disabled) {
       border-color: #d32f2f;
       color: #d32f2f;
       background-color: #ffebee;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(211, 47, 47, 0.2);
+      
+      mat-icon {
+        transform: rotate(90deg);
+      }
     }
   }
 
   .btn-submit {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    color: white;
+    border: none;
 
     &:hover:not(:disabled) {
-      box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
-      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+      transform: translateY(-3px);
+      
+      mat-icon {
+        transform: scale(1.2);
+      }
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(-1px);
     }
 
     &:disabled {
       opacity: 0.6;
       cursor: not-allowed;
+      transform: none;
     }
   }
 }

@@ -89,19 +89,18 @@
         <mat-icon>task_alt</mat-icon>
         Mes Tâches
       </h2>
-      <div class="tasks-info">
-        <p>Gérez vos tâches et priorités</p>
-      </div>
-    </section>
-
-    <!-- Section: Rapports -->
-    <section id="reports" class="dashboard-section">
-      <h2 class="section-title">
-        <mat-icon>assessment</mat-icon>
-        Rapports
-      </h2>
-      <div class="reports-info">
-        <p>Consultez les rapports de vos projets</p>
+      <div class="tasks-grid">
+        <mat-card class="action-card">
+          <mat-card-content>
+            <mat-icon class="card-icon">check_circle</mat-icon>
+            <h3>Mes Tâches</h3>
+            <p>Gérez vos tâches et priorités</p>
+            <a mat-raised-button color="primary" routerLink="/taches">
+              <mat-icon>arrow_forward</mat-icon>
+              Accéder
+            </a>
+          </mat-card-content>
+        </mat-card>
       </div>
     </section>
   </div>

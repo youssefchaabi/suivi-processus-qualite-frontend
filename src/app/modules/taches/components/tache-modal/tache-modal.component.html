@@ -1,0 +1,95 @@
+<div class="modal-header">
+  <div class="modal-title">
+    <div class="icon-wrapper" [class.edit-mode]="isEditMode">
+      <mat-icon>{{ isEditMode ? 'edit' : 'add_task' }}</mat-icon>
+    </div>
+    <h2>{{ isEditMode ? 'Modifier la tâche' : 'Nouvelle tâche' }}</h2>
+  </div>
+  <button mat-icon-button (click)="onCancel()" class="close-button" [disabled]="isLoading">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<mat-dialog-content>
+  <form [formGroup]="tacheForm" class="tache-form">
+    <!-- Titre -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Titre de la tâche</mat-label>
+      <input matInput formControlName="titre" placeholder="Ex: Remplir la fiche de suivi">
+      <mat-icon matPrefix>title</mat-icon>
+      <mat-error *ngIf="tacheForm.get('titre')?.invalid">
+        {{ getErrorMessage('titre') }}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Description -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" rows="4" 
+                placeholder="Décrivez les détails de la tâche..."></textarea>
+      <mat-icon matPrefix>description</mat-icon>
+    </mat-form-field>
+
+    <!-- Projet -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Projet associé</mat-label>
+      <mat-select formControlName="projetId">
+        <mat-option *ngFor="let projet of projets" [value]="projet.id">
+          {{ projet.nom }}
+        </mat-option>
+      </mat-select>
+      <mat-icon matPrefix>folder_open</mat-icon>
+      <mat-error *ngIf="tacheForm.get('projetId')?.invalid">
+        {{ getErrorMessage('projetId') }}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Date d'échéance -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Date d'échéance</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="dateEcheance">
+      <mat-icon matPrefix>event</mat-icon>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-error *ngIf="tacheForm.get('dateEcheance')?.invalid">
+        {{ getErrorMessage('dateEcheance') }}
+      </mat-error>
+    </mat-form-field>
+
+    <!-- Priorité et Statut -->
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Priorité</mat-label>
+        <mat-select formControlName="priorite">
+          <mat-option *ngFor="let priorite of priorites" [value]="priorite.value">
+            {{ priorite.label }}
+          </mat-option>
+        </mat-select>
+        <mat-icon matPrefix>flag</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Statut</mat-label>
+        <mat-select formControlName="statut">
+          <mat-option *ngFor="let statut of statuts" [value]="statut.value">
+            {{ statut.label }}
+          </mat-option>
+        </mat-select>
+        <mat-icon matPrefix>track_changes</mat-icon>
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-stroked-button (click)="onCancel()" [disabled]="isLoading" class="cancel-button">
+    <mat-icon>close</mat-icon>
+    Annuler
+  </button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" 
+          [disabled]="!tacheForm.valid || isLoading" class="submit-button">
+    <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
+    <mat-icon *ngIf="!isLoading">{{ isEditMode ? 'save' : 'add_circle' }}</mat-icon>
+    <span *ngIf="!isLoading">{{ isEditMode ? 'Enregistrer' : 'Créer la tâche' }}</span>
+  </button>
+</mat-dialog-actions>

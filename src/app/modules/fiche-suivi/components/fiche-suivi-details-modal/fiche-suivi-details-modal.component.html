@@ -1,0 +1,129 @@
+<div class="details-modal-container">
+  <!-- Header -->
+  <div class="details-header">
+    <div class="header-content">
+      <div class="etat-badge" [style.background-color]="getEtatColor(data.fiche.etatAvancement)">
+        <mat-icon>{{ getEtatIcon(data.fiche.etatAvancement) }}</mat-icon>
+      </div>
+      <div class="header-text">
+        <h2>Fiche de Suivi</h2>
+        <div class="statut-badge" [style.background-color]="getEtatColor(data.fiche.etatAvancement)">
+          <mat-icon>{{ getEtatIcon(data.fiche.etatAvancement) }}</mat-icon>
+          <span>{{ data.fiche.etatAvancement }}</span>
+        </div>
+      </div>
+    </div>
+    <button mat-icon-button (click)="onClose()" class="close-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Content -->
+  <mat-dialog-content class="details-content">
+    <div class="details-grid">
+      
+      <!-- Fiche Qualité Associée -->
+      <div class="detail-section full-width">
+        <div class="section-header">
+          <mat-icon>assignment</mat-icon>
+          <h3>Fiche Qualité Associée</h3>
+        </div>
+        <p class="description-text">{{ data.ficheQualiteTitre || 'Fiche ID: ' + data.fiche.ficheId }}</p>
+      </div>
+
+      <!-- Informations principales -->
+      <div class="detail-section">
+        <div class="section-header">
+          <mat-icon>info</mat-icon>
+          <h3>Informations Générales</h3>
+        </div>
+        <div class="info-list">
+          <div class="info-item">
+            <span class="info-label">
+              <mat-icon>event</mat-icon>
+              Date de suivi
+            </span>
+            <span class="info-value">{{ formatDate(data.fiche.dateSuivi) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">
+              <mat-icon>flag</mat-icon>
+              État d'avancement
+            </span>
+            <span class="info-value">{{ data.fiche.etatAvancement }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">
+              <mat-icon>person</mat-icon>
+              Ajouté par
+            </span>
+            <span class="info-value">{{ data.fiche.ajoutePar || 'Non défini' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Indicateurs de performance -->
+      <div class="detail-section">
+        <div class="section-header">
+          <mat-icon>analytics</mat-icon>
+          <h3>Indicateurs de Performance</h3>
+        </div>
+        <div class="info-list">
+          <div class="info-item">
+            <span class="info-label">
+              <mat-icon>percent</mat-icon>
+              Taux de conformité
+            </span>
+            <span class="info-value" [ngClass]="getConformiteClass(data.fiche.tauxConformite)">
+              <mat-icon>{{ getConformiteIcon(data.fiche.tauxConformite) }}</mat-icon>
+              {{ data.fiche.tauxConformite || 0 }}%
+            </span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">
+              <mat-icon>schedule</mat-icon>
+              Délai de traitement
+            </span>
+            <span class="info-value">{{ data.fiche.delaiTraitementJours || 0 }} jours</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Problèmes -->
+      <div class="detail-section full-width">
+        <div class="section-header">
+          <mat-icon>warning</mat-icon>
+          <h3>Problèmes Rencontrés</h3>
+        </div>
+        <p class="description-text">{{ data.fiche.problemes || 'Aucun problème signalé' }}</p>
+      </div>
+
+      <!-- Décisions -->
+      <div class="detail-section full-width">
+        <div class="section-header">
+          <mat-icon>gavel</mat-icon>
+          <h3>Décisions Prises</h3>
+        </div>
+        <p class="description-text">{{ data.fiche.decisions || 'Aucune décision enregistrée' }}</p>
+      </div>
+
+      <!-- Indicateurs KPI -->
+      <div class="detail-section full-width">
+        <div class="section-header">
+          <mat-icon>insights</mat-icon>
+          <h3>Indicateurs KPI</h3>
+        </div>
+        <p class="description-text">{{ data.fiche.indicateursKpi || 'Aucun indicateur défini' }}</p>
+      </div>
+
+    </div>
+  </mat-dialog-content>
+
+  <!-- Actions -->
+  <mat-dialog-actions class="details-actions">
+    <button mat-raised-button color="primary" (click)="onClose()">
+      <mat-icon>check</mat-icon>
+      <span>Fermer</span>
+    </button>
+  </mat-dialog-actions>
+</div>

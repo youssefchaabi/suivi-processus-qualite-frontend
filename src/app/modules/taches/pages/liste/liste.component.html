@@ -1,0 +1,203 @@
+<div class="taches-container">
+  <!-- En-tête amélioré -->
+  <div class="header">
+    <div class="header-top">
+      <button mat-icon-button class="back-button" routerLink="/fiche-qualite/dashboard" matTooltip="Retour au tableau de bord">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="header-info">
+        <div class="title-section">
+          <div class="icon-badge">
+            <mat-icon>assignment_turned_in</mat-icon>
+          </div>
+          <div class="title-text">
+            <h1>Gestion des Tâches</h1>
+            <p>Organisez et suivez vos tâches efficacement</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button mat-stroked-button class="action-button" matTooltip="Rafraîchir" (click)="loadTaches(); loadStatistiques()">
+            <mat-icon>refresh</mat-icon>
+            <span class="button-text">Actualiser</span>
+          </button>
+          <button mat-raised-button color="primary" (click)="ouvrirModalCreation()" class="add-button">
+            <mat-icon>add_circle</mat-icon>
+            <span>Nouvelle Tâche</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistiques -->
+  <div class="stats-container">
+    <div class="stat-card" [class.clickable]="true" (click)="filtreStatut = 'TOUS'; filtrerTaches()">
+      <div class="stat-icon total">
+        <mat-icon>assignment</mat-icon>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{{ stats.total }}</div>
+        <div class="stat-label">Total</div>
+      </div>
+    </div>
+
+    <div class="stat-card" [class.clickable]="true" (click)="filtreStatut = 'EN_RETARD'; filtrerTaches()">
+      <div class="stat-icon en-retard">
+        <mat-icon>warning</mat-icon>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{{ stats.enRetard }}</div>
+        <div class="stat-label">En Retard</div>
+      </div>
+    </div>
+
+    <div class="stat-card" [class.clickable]="true" (click)="filtreStatut = 'A_FAIRE'; filtrerTaches()">
+      <div class="stat-icon a-faire">
+        <mat-icon>schedule</mat-icon>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{{ stats.aFaire }}</div>
+        <div class="stat-label">À Faire</div>
+      </div>
+    </div>
+
+    <div class="stat-card" [class.clickable]="true" (click)="filtreStatut = 'EN_COURS'; filtrerTaches()">
+      <div class="stat-icon en-cours">
+        <mat-icon>hourglass_empty</mat-icon>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{{ stats.enCours }}</div>
+        <div class="stat-label">En Cours</div>
+      </div>
+    </div>
+
+    <div class="stat-card" [class.clickable]="true" (click)="filtreStatut = 'TERMINEE'; filtrerTaches()">
+      <div class="stat-icon terminee">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{{ stats.terminees }}</div>
+        <div class="stat-label">Terminées</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <div class="filters-container">
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Rechercher</mat-label>
+      <input matInput [(ngModel)]="filtreRecherche" (ngModelChange)="filtrerTaches()" placeholder="Titre, description...">
+      <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Statut</mat-label>
+      <mat-select [(ngModel)]="filtreStatut" (ngModelChange)="filtrerTaches()">
+        <mat-option value="TOUS">Tous</mat-option>
+        <mat-option value="A_FAIRE">À faire</mat-option>
+        <mat-option value="EN_COURS">En cours</mat-option>
+        <mat-option value="TERMINEE">Terminée</mat-option>
+        <mat-option value="EN_RETARD">En retard</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Priorité</mat-label>
+      <mat-select [(ngModel)]="filtrePriorite" (ngModelChange)="filtrerTaches()">
+        <mat-option value="TOUS">Toutes</mat-option>
+        <mat-option value="HAUTE">Haute</mat-option>
+        <mat-option value="MOYENNE">Moyenne</mat-option>
+        <mat-option value="BASSE">Basse</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Chargement des tâches...</p>
+  </div>
+
+  <!-- Liste des tâches -->
+  <div *ngIf="!isLoading" class="taches-list">
+    <div *ngIf="tachesFiltrees.length === 0" class="empty-state">
+      <mat-icon>assignment</mat-icon>
+      <h3>Aucune tâche trouvée</h3>
+      <p>Créez votre première tâche pour commencer</p>
+      <button mat-raised-button color="primary" (click)="ouvrirModalCreation()">
+        <mat-icon>add</mat-icon>
+        Créer une tâche
+      </button>
+    </div>
+
+    <div *ngFor="let tache of tachesPaginees" class="tache-card" [class.urgente]="estUrgente(tache)">
+      <div class="tache-header">
+        <div class="tache-title-section">
+          <h3 class="tache-title">{{ tache.titre }}</h3>
+          <div class="tache-badges">
+            <span class="badge" [ngClass]="getPrioriteClass(tache.priorite)">
+              {{ formatPriorite(tache.priorite) }}
+            </span>
+            <span class="badge" [ngClass]="getStatutClass(tache.statut)">
+              {{ formatStatut(tache.statut) }}
+            </span>
+            <span *ngIf="estUrgente(tache)" class="badge badge-urgente">
+              <mat-icon>access_time</mat-icon>
+              Urgent
+            </span>
+          </div>
+        </div>
+        <div class="tache-actions">
+          <button mat-icon-button [matMenuTriggerFor]="menu" class="action-button">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="ouvrirDetails(tache)">
+              <mat-icon>visibility</mat-icon>
+              <span>Voir les détails</span>
+            </button>
+            <button mat-menu-item (click)="ouvrirModalEdition(tache)">
+              <mat-icon>edit</mat-icon>
+              <span>Modifier</span>
+            </button>
+            <button mat-menu-item (click)="marquerTerminee(tache)" *ngIf="tache.statut !== StatutTache.TERMINEE">
+              <mat-icon>check_circle</mat-icon>
+              <span>Marquer terminée</span>
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item (click)="supprimerTache(tache)" class="delete-action">
+              <mat-icon>delete</mat-icon>
+              <span>Supprimer</span>
+            </button>
+          </mat-menu>
+        </div>
+      </div>
+
+      <div class="tache-body">
+        <p *ngIf="tache.description" class="tache-description">{{ tache.description }}</p>
+        
+        <div class="tache-info">
+          <div class="info-item" *ngIf="tache.projetNom">
+            <mat-icon>folder</mat-icon>
+            <span>{{ tache.projetNom }}</span>
+          </div>
+          <div class="info-item">
+            <mat-icon>event</mat-icon>
+            <span>{{ tache.dateEcheance | date: 'dd/MM/yyyy' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="tachesFiltrees.length > 0" class="pagination-container">
+      <mat-paginator 
+        [length]="tachesFiltrees.length"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[2, 5, 10, 25, 50]"
+        (page)="onPageChange($event)"
+        showFirstLastButtons>
+      </mat-paginator>
+    </div>
+  </div>
+</div>

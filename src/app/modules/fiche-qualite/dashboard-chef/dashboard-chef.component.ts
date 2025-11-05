@@ -12,8 +12,7 @@ export class DashboardChefComponent implements OnInit {
     { id: 'projects', label: 'Mes Projets', icon: 'folder_special' },
     { id: 'quality', label: 'Fiches Qualité', icon: 'verified' },
     { id: 'tracking', label: 'Fiches de Suivi', icon: 'assignment_turned_in' },
-    { id: 'tasks', label: 'Tâches', icon: 'task_alt' },
-    { id: 'reports', label: 'Rapports', icon: 'assessment' }
+    { id: 'tasks', label: 'Tâches', icon: 'task_alt' }
   ];
 
   ngOnInit(): void {

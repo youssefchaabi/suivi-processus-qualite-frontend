@@ -1,133 +1,369 @@
-<mat-card class="fiche-suivi-liste-container mat-elevation-z4" style="background: #f8fafd; padding: 24px; margin: 24px auto; max-width: 1200px;">
-  <div class="header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
-    <h2 style="margin: 0; color: #1976d2; font-weight: 600; letter-spacing: 1px;">Gestion des Fiches de Suivi</h2>
-    <div class="header-actions" style="display: flex; gap: 12px;">
-      <button *ngIf="authService.isAdmin() || authService.isChefProjet()" 
-              mat-raised-button color="primary" (click)="ajouterFiche()">
-        <mat-icon>add</mat-icon> Ajouter une fiche de suivi
-      </button>
-      <button mat-stroked-button color="accent" (click)="retourDashboard()" class="back-button">
-        <mat-icon>arrow_back</mat-icon> Retour Dashboard
-      </button>
+<div class="suivi-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">
+          <div class="title-icon-wrapper">
+            <mat-icon class="title-icon">track_changes</mat-icon>
+          </div>
+          <span class="title-text">Gestion des Fiches de Suivi</span>
+        </h1>
+        <p class="page-subtitle">Suivez et analysez l'évolution de vos fiches qualité</p>
+      </div>
+      <div class="header-actions">
+        <button mat-fab color="primary" class="fab-add" (click)="ajouterFiche()" 
+                *ngIf="authService.isAdmin() || authService.isChefProjet()"
+                matTooltip="Ajouter une fiche de suivi">
+          <mat-icon>add</mat-icon>
+        </button>
+        <button mat-fab class="fab-refresh" (click)="chargerFiches()" matTooltip="Actualiser">
+          <mat-icon>refresh</mat-icon>
+        </button>
+        <button mat-fab class="fab-back" (click)="retourDashboard()" matTooltip="Retour Dashboard">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+      </div>
     </div>
   </div>
 
-  <!-- Filtres et recherche -->
-  <div class="filters-bar" style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px;">
-    <mat-form-field appearance="outline" class="filter-field" style="min-width: 220px;">
-      <mat-label>Recherche</mat-label>
-      <input matInput [(ngModel)]="recherche" (ngModelChange)="appliquerFiltres()" placeholder="Titre, problème, décision...">
-      <button mat-icon-button matSuffix *ngIf="recherche" (click)="recherche=''; appliquerFiltres()">
-        <mat-icon>close</mat-icon>
-      </button>
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="filter-field" style="min-width: 180px;">
-      <mat-label>État</mat-label>
-      <mat-select [(ngModel)]="filtreEtat" (selectionChange)="appliquerFiltres()">
-        <mat-option value="">Tous</mat-option>
-        <mat-option *ngFor="let etat of etats" [value]="etat.code">{{ etat.libelle }}</mat-option>
-      </mat-select>
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="filter-field" style="min-width: 180px;">
-      <mat-label>Responsable</mat-label>
-      <mat-select [(ngModel)]="filtreResponsable" (selectionChange)="appliquerFiltres()">
-        <mat-option value="">Tous</mat-option>
-        <mat-option *ngFor="let resp of responsables" [value]="resp.code">{{ resp.libelle }}</mat-option>
-      </mat-select>
-    </mat-form-field>
-    <button mat-stroked-button color="primary" (click)="resetFiltres()" class="reset-btn" style="height: 56px; align-self: flex-end;">
-      <mat-icon>refresh</mat-icon> Réinitialiser
-    </button>
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card total" (click)="resetFiltres()">
+      <div class="stat-icon">
+        <mat-icon>assignment</mat-icon>
+      </div>
+      <div class="stat-content">
+        <span class="stat-number">{{ allFichesSuivi.length }}</span>
+        <span class="stat-label">TOTAL FICHES</span>
+      </div>
+      <div class="stat-badge">
+        <mat-icon>visibility</mat-icon>
+        <span>Voir tout</span>
+      </div>
+    </div>
+
+    <div class="stat-card en-cours" (click)="filtrerParEtat('En cours')">
+      <div class="stat-icon">
+        <mat-icon>pending</mat-icon>
+      </div>
+      <div class="stat-content">
+        <span class="stat-number">{{ getCountByEtat('En cours') }}</span>
+        <span class="stat-label">EN COURS</span>
+      </div>
+      <div class="stat-badge">
+        <mat-icon>filter_list</mat-icon>
+        <span>Filtrer</span>
+      </div>
+    </div>
+
+    <div class="stat-card termine" (click)="filtrerParEtat('Terminé')">
+      <div class="stat-icon">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <div class="stat-content">
+        <span class="stat-number">{{ getCountByEtat('Terminé') }}</span>
+        <span class="stat-label">TERMINÉES</span>
+      </div>
+      <div class="stat-badge">
+        <mat-icon>filter_list</mat-icon>
+        <span>Filtrer</span>
+      </div>
+    </div>
+
+    <div class="stat-card bloque" (click)="filtrerParEtat('Bloqué')">
+      <div class="stat-icon">
+        <mat-icon>block</mat-icon>
+      </div>
+      <div class="stat-content">
+        <span class="stat-number">{{ getCountByEtat('Bloqué') }}</span>
+        <span class="stat-label">BLOQUÉES</span>
+      </div>
+      <div class="stat-badge">
+        <mat-icon>filter_list</mat-icon>
+        <span>Filtrer</span>
+      </div>
+    </div>
   </div>
 
-  <mat-progress-spinner *ngIf="isLoading" mode="indeterminate" diameter="40"></mat-progress-spinner>
+  <!-- Filtres Section -->
+  <div class="filters-section">
+    <div class="filters-container-enhanced">
+      <!-- Barre de recherche -->
+      <div class="search-bar-enhanced">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Rechercher une fiche</mat-label>
+          <input matInput 
+                 [(ngModel)]="recherche" 
+                 (ngModelChange)="appliquerFiltres()" 
+                 placeholder="Problème, décision, KPI..."
+                 class="search-input">
+          <mat-icon matPrefix class="search-icon">search</mat-icon>
+          <button mat-icon-button matSuffix *ngIf="recherche" (click)="recherche=''; appliquerFiltres()" class="clear-btn">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
 
-  <table mat-table [dataSource]="fichesSuivi" class="mat-elevation-z2" *ngIf="!isLoading && fichesSuivi?.data?.length" style="background: white; border-radius: 8px; overflow: hidden;">
-    <!-- Fiche Qualité liée -->
-    <ng-container matColumnDef="ficheQualite">
-      <th mat-header-cell *matHeaderCellDef> Fiche Qualité </th>
-      <td mat-cell *matCellDef="let fiche"> {{ getTitreFicheQualite(fiche.ficheId) }} </td>
-    </ng-container>
-    <!-- Date -->
-    <ng-container matColumnDef="dateSuivi">
-      <th mat-header-cell *matHeaderCellDef> Date </th>
-      <td mat-cell *matCellDef="let fiche"> {{ fiche.dateSuivi | date:'dd/MM/yyyy' }} </td>
-    </ng-container>
-    <!-- Etat -->
-    <ng-container matColumnDef="etat">
-      <th mat-header-cell *matHeaderCellDef> Etat </th>
-      <td mat-cell *matCellDef="let fiche">
-        <mat-chip [ngClass]="{
-          'chip-en-cours': fiche.etatAvancement === 'EN_COURS',
-          'chip-termine': fiche.etatAvancement === 'TERMINE',
-          'chip-bloque': fiche.etatAvancement === 'BLOQUE'
-        }" style="font-weight: 500;">
-          <mat-icon *ngIf="fiche.etatAvancement === 'EN_COURS'">hourglass_empty</mat-icon>
-          <mat-icon *ngIf="fiche.etatAvancement === 'TERMINE'">check_circle</mat-icon>
-          <mat-icon *ngIf="fiche.etatAvancement === 'BLOQUE'">block</mat-icon>
-          {{ fiche.etatAvancement }}
-        </mat-chip>
-      </td>
-    </ng-container>
-    <!-- Délai traitement -->
-    <ng-container matColumnDef="delai">
-      <th mat-header-cell *matHeaderCellDef> Délai (j) </th>
-      <td mat-cell *matCellDef="let fiche">
-        <mat-chip color="accent" selected *ngIf="fiche.delaiTraitementJours != null">
-          {{ fiche.delaiTraitementJours }} j
-        </mat-chip>
-        <span *ngIf="fiche.delaiTraitementJours == null">-</span>
-      </td>
-    </ng-container>
-    <!-- Problèmes -->
-    <ng-container matColumnDef="problemes">
-      <th mat-header-cell *matHeaderCellDef> Problèmes </th>
-      <td mat-cell *matCellDef="let fiche">
-        <span matTooltip="{{ fiche.problemes }}" class="truncate-text">{{ fiche.problemes || '-' }}</span>
-      </td>
-    </ng-container>
-    <!-- Décisions -->
-    <ng-container matColumnDef="decisions">
-      <th mat-header-cell *matHeaderCellDef> Décisions </th>
-      <td mat-cell *matCellDef="let fiche">
-        <span matTooltip="{{ fiche.decisions }}" class="truncate-text">{{ fiche.decisions || '-' }}</span>
-      </td>
-    </ng-container>
-    <!-- Indicateurs KPI -->
-    <ng-container matColumnDef="indicateursKpi">
-      <th mat-header-cell *matHeaderCellDef> KPI </th>
-      <td mat-cell *matCellDef="let fiche">
-        <mat-chip color="primary" *ngIf="fiche.indicateursKpi">{{ fiche.indicateursKpi }}</mat-chip>
-        <span *ngIf="!fiche.indicateursKpi">-</span>
-      </td>
-    </ng-container>
-    <!-- Responsable -->
-    <ng-container matColumnDef="responsable">
-      <th mat-header-cell *matHeaderCellDef> Responsable </th>
-      <td mat-cell *matCellDef="let fiche"> {{ fiche.ajoutePar }} </td>
-    </ng-container>
-    <!-- Actions (si non Pilote Qualité) -->
-    <ng-container *ngIf="authService.isAdmin() || authService.isChefProjet()">
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef> Actions </th>
-        <td mat-cell *matCellDef="let fiche">
-          <button mat-icon-button color="accent" (click)="modifierFiche(fiche.id)" matTooltip="Modifier la fiche de suivi">
+      <!-- Filtres et actions -->
+      <div class="filters-actions-row">
+        <mat-form-field appearance="outline" class="filter-select">
+          <mat-label>État</mat-label>
+          <mat-select [(ngModel)]="filtreEtat" (selectionChange)="appliquerFiltres()">
+            <mat-option value="">
+              <mat-icon class="option-icon">all_inclusive</mat-icon>
+              Tous les états
+            </mat-option>
+            <mat-option *ngFor="let etat of etats" [value]="etat.code">
+              <mat-icon class="option-icon">{{ getEtatIcon(etat.code || '') }}</mat-icon>
+              {{ etat.libelle }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix class="filter-icon">filter_list</mat-icon>
+        </mat-form-field>
+
+        <div class="action-buttons">
+          <button mat-icon-button 
+                  class="view-toggle-btn"
+                  [class.active]="affichageCartes"
+                  (click)="basculerAffichage()"
+                  matTooltip="{{ affichageCartes ? 'Passer au tableau' : 'Passer aux cartes' }}">
+            <mat-icon>{{ affichageCartes ? 'view_list' : 'view_module' }}</mat-icon>
+          </button>
+
+          <button mat-stroked-button class="btn-reset" (click)="resetFiltres()">
+            <mat-icon>refresh</mat-icon>
+            Réinitialiser
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading">
+    <mat-spinner diameter="60"></mat-spinner>
+    <p>Chargement des fiches de suivi...</p>
+  </div>
+
+  <!-- Cards View -->
+  <div class="cards-container" *ngIf="!isLoading && fichesSuivi.data.length > 0 && affichageCartes">
+    <div class="cards-grid">
+      <mat-card *ngFor="let fiche of fichesSuivi.data" class="fiche-card">
+        <mat-card-header>
+          <div mat-card-avatar class="card-avatar">
+            <mat-icon>track_changes</mat-icon>
+          </div>
+          <mat-card-title>{{ getTitreFicheQualite(fiche.ficheId) }}</mat-card-title>
+          <mat-card-subtitle>
+            <mat-icon>event</mat-icon>
+            {{ fiche.dateSuivi | date:'dd/MM/yyyy' }}
+          </mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div class="card-info">
+            <div class="info-row">
+              <span class="info-label">État:</span>
+              <div class="etat-badge" [ngClass]="getEtatClass(fiche.etatAvancement)">
+                <mat-icon>{{ getEtatIcon(fiche.etatAvancement) }}</mat-icon>
+                <span>{{ fiche.etatAvancement }}</span>
+              </div>
+            </div>
+            <div class="info-row">
+              <span class="info-label">KPI:</span>
+              <span class="info-value">{{ getKpiLabel(fiche.indicateursKpi) }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Délai:</span>
+              <span class="info-value">{{ fiche.delaiTraitementJours || 0 }} jours</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Responsable:</span>
+              <span class="info-value">{{ fiche.ajoutePar }}</span>
+            </div>
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions *ngIf="!authService.isPiloteQualite()">
+          <button mat-icon-button color="accent" (click)="voirDetails(fiche)" matTooltip="Voir">
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button mat-icon-button color="primary" (click)="modifierFiche(fiche.id!)" matTooltip="Modifier">
             <mat-icon>edit</mat-icon>
           </button>
-          <button mat-icon-button color="warn" (click)="supprimerFiche(fiche.id)" matTooltip="Supprimer la fiche de suivi">
+          <button mat-icon-button color="warn" (click)="supprimerFiche(fiche.id!)" matTooltip="Supprimer">
             <mat-icon>delete</mat-icon>
           </button>
-        </td>
-      </ng-container>
-    </ng-container>
-
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-  </table>
-
-  <mat-paginator [pageSize]="4" [pageSizeOptions]="[4, 8, 20]" showFirstLastButtons></mat-paginator>
-
-  <div *ngIf="!isLoading && (!fichesSuivi || !fichesSuivi.data?.length)" class="empty-message" style="margin-top: 32px; text-align: center; color: #888;">
-    <mat-icon>info</mat-icon> Aucune fiche de suivi trouvée.
+        </mat-card-actions>
+      </mat-card>
+    </div>
   </div>
-</mat-card>
+
+  <!-- Table Container -->
+  <div class="table-container" *ngIf="!isLoading && fichesSuivi.data.length > 0 && !affichageCartes">
+    <div class="table-header">
+      <h2 class="table-title">
+        <mat-icon>list</mat-icon>
+        Liste des Fiches de Suivi
+      </h2>
+    </div>
+
+    <div class="table-wrapper">
+      <table mat-table [dataSource]="fichesSuivi" class="suivis-table">
+        
+        <!-- Fiche Qualité -->
+        <ng-container matColumnDef="ficheQualite">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="header-cell">
+              <mat-icon>assignment</mat-icon>
+              <span>Fiche Qualité</span>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let fiche">
+            <div class="fiche-name">
+              <mat-icon class="fiche-icon">description</mat-icon>
+              <span>{{ getTitreFicheQualite(fiche.ficheId) }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Date de Suivi -->
+        <ng-container matColumnDef="dateSuivi">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="header-cell">
+              <mat-icon>event</mat-icon>
+              <span>Date</span>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let fiche">
+            <div class="date-cell">
+              <mat-icon>calendar_today</mat-icon>
+              <span>{{ fiche.dateSuivi | date:'dd/MM/yyyy' }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- État -->
+        <ng-container matColumnDef="etat">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="header-cell">
+              <mat-icon>flag</mat-icon>
+              <span>État</span>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let fiche">
+            <div class="etat-badge" [ngClass]="getEtatClass(fiche.etatAvancement)">
+              <mat-icon>{{ getEtatIcon(fiche.etatAvancement) }}</mat-icon>
+              <span>{{ fiche.etatAvancement }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Délai -->
+        <ng-container matColumnDef="delai">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="header-cell">
+              <mat-icon>schedule</mat-icon>
+              <span>Délai</span>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let fiche">
+            <div class="delai-cell">
+              <mat-icon>timer</mat-icon>
+              <span>{{ fiche.delaiTraitementJours || 0 }} jours</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- KPI -->
+        <ng-container matColumnDef="indicateursKpi">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="header-cell">
+              <mat-icon>analytics</mat-icon>
+              <span>KPI</span>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let fiche">
+            <div class="kpi-badge">
+              <mat-icon>analytics</mat-icon>
+              <span>{{ getKpiLabel(fiche.indicateursKpi) }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Responsable -->
+        <ng-container matColumnDef="responsable">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="header-cell">
+              <mat-icon>person</mat-icon>
+              <span>Responsable</span>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let fiche">
+            <div class="responsable-cell">
+              <mat-icon>account_circle</mat-icon>
+              <span>{{ fiche.ajoutePar }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Actions -->
+        <ng-container matColumnDef="actions" *ngIf="!authService.isPiloteQualite()">
+          <th mat-header-cell *matHeaderCellDef>
+            <div class="header-cell">
+              <mat-icon>settings</mat-icon>
+              <span>Actions</span>
+            </div>
+          </th>
+          <td mat-cell *matCellDef="let fiche">
+            <div class="action-buttons">
+              <button mat-icon-button 
+                      color="accent"
+                      (click)="voirDetails(fiche)" 
+                      matTooltip="Voir détails"
+                      class="action-btn">
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button mat-icon-button 
+                      color="primary"
+                      (click)="modifierFiche(fiche.id || fiche._id)" 
+                      matTooltip="Modifier"
+                      class="action-btn">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button 
+                      color="warn"
+                      (click)="supprimerFiche(fiche.id || fiche._id)" 
+                      matTooltip="Supprimer"
+                      class="action-btn">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+      </table>
+    </div>
+
+    <mat-paginator 
+      [pageSizeOptions]="[5, 10, 25, 50]" 
+      [pageSize]="10"
+      showFirstLastButtons>
+    </mat-paginator>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!isLoading && fichesSuivi.data.length === 0">
+    <mat-icon class="empty-icon">folder_open</mat-icon>
+    <h2>Aucune fiche de suivi</h2>
+    <p>Commencez par créer votre première fiche de suivi</p>
+    <button mat-raised-button color="primary" (click)="ajouterFiche()" 
+            *ngIf="authService.isAdmin() || authService.isChefProjet()">
+      <mat-icon>add</mat-icon>
+      Créer une fiche
+    </button>
+  </div>
+</div>

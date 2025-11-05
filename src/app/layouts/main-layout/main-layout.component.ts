@@ -22,28 +22,34 @@ export class MainLayoutComponent implements OnInit {
       roles: ['ADMIN', 'CHEF_PROJET', 'PILOTE_QUALITE']
     },
     {
+      label: 'Mes Tâches',
+      icon: 'check_circle',
+      route: '/taches',
+      roles: ['ADMIN', 'CHEF_PROJET']
+    },
+    {
       label: 'Fiches Qualité',
       icon: 'description',
-      route: '/fiches-qualite',
+      route: '/fiche-qualite',
       roles: ['ADMIN', 'CHEF_PROJET', 'PILOTE_QUALITE']
     },
     {
       label: 'Fiches de Suivi',
       icon: 'assignment',
-      route: '/fiches-suivi',
+      route: '/fiche-suivi',
       roles: ['ADMIN', 'CHEF_PROJET', 'PILOTE_QUALITE']
     },
     {
-      label: 'Projets',
+      label: 'Mes Projets',
       icon: 'folder_open',
-      route: '/projets',
+      route: '/fiche-projet',
       roles: ['ADMIN', 'CHEF_PROJET']
     },
     {
       label: 'Rapports KPI',
       icon: 'assessment',
       route: '/rapports',
-      roles: ['ADMIN', 'CHEF_PROJET', 'PILOTE_QUALITE']
+      roles: ['ADMIN', 'PILOTE_QUALITE']
     },
     {
       label: 'Analytics IA',

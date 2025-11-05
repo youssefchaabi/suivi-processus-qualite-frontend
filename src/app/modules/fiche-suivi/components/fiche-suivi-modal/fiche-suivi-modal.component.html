@@ -1,0 +1,176 @@
+<div class="modal-container">
+  <!-- Header -->
+  <div class="modal-header">
+    <h2 mat-dialog-title class="modal-title">
+      <mat-icon class="title-icon">{{ isEditMode ? 'edit' : 'add_circle' }}</mat-icon>
+      <span>{{ isEditMode ? 'Modifier' : 'Nouvelle' }} Fiche de Suivi</span>
+    </h2>
+    <button mat-icon-button (click)="onCancel()" class="close-button" [disabled]="loading">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Content -->
+  <mat-dialog-content class="modal-content">
+    <!-- Indicateur de chargement -->
+    <div *ngIf="loading" class="loading-overlay">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Chargement des données...</p>
+    </div>
+    
+    <form [formGroup]="form" class="fiche-form" [class.hidden]="loading">
+      
+      <!-- Fiche Qualité et Date -->
+      <div class="form-row two-columns">
+        <mat-form-field appearance="outline">
+          <mat-label>Fiche Qualité</mat-label>
+          <mat-select formControlName="ficheId">
+            <mat-option *ngFor="let fiche of fichesQualite" [value]="fiche.id">
+              <mat-icon class="option-icon">assignment</mat-icon>
+              {{ fiche.titre }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>assignment</mat-icon>
+          <mat-error *ngIf="form.get('ficheId')?.invalid">
+            {{ getErrorMessage('ficheId') }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Date de Suivi</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="dateSuivi" 
+                 placeholder="JJ/MM/AAAA" readonly (click)="picker.open()">
+          <mat-icon matPrefix>event</mat-icon>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-error *ngIf="form.get('dateSuivi')?.invalid">
+            {{ getErrorMessage('dateSuivi') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- État d'avancement -->
+      <div class="form-row full-width">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>État d'Avancement</mat-label>
+          <mat-select formControlName="etatAvancement">
+            <mat-option *ngFor="let etat of etatsAvancement" [value]="etat.code">
+              <mat-icon class="option-icon">{{ getEtatIcon(etat.code || '') }}</mat-icon>
+              {{ etat.libelle }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>flag</mat-icon>
+          <mat-error *ngIf="form.get('etatAvancement')?.invalid">
+            {{ getErrorMessage('etatAvancement') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Problèmes -->
+      <div class="form-row full-width">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Problèmes Rencontrés</mat-label>
+          <textarea matInput formControlName="problemes" 
+                    rows="3" 
+                    placeholder="Décrivez les problèmes rencontrés..."></textarea>
+          <mat-icon matPrefix>warning</mat-icon>
+          <mat-error *ngIf="form.get('problemes')?.invalid">
+            {{ getErrorMessage('problemes') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Décisions -->
+      <div class="form-row full-width">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Décisions Prises</mat-label>
+          <textarea matInput formControlName="decisions" 
+                    rows="3" 
+                    placeholder="Décrivez les décisions prises..."></textarea>
+          <mat-icon matPrefix>gavel</mat-icon>
+          <mat-error *ngIf="form.get('decisions')?.invalid">
+            {{ getErrorMessage('decisions') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Indicateurs KPI -->
+      <div class="form-row full-width">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Indicateur KPI</mat-label>
+          <mat-select formControlName="indicateursKpi">
+            <mat-option *ngFor="let kpi of indicateursKpiOptions" [value]="kpi.value">
+              <mat-icon class="option-icon">{{ kpi.icon }}</mat-icon>
+              {{ kpi.label }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>analytics</mat-icon>
+          <mat-hint>Sélectionnez un indicateur</mat-hint>
+          <mat-error *ngIf="form.get('indicateursKpi')?.invalid">
+            {{ getErrorMessage('indicateursKpi') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Taux de conformité et Délai -->
+      <div class="form-row two-columns">
+        <mat-form-field appearance="outline">
+          <mat-label>Taux de Conformité (%)</mat-label>
+          <input matInput type="number" formControlName="tauxConformite" 
+                 min="0" max="100" placeholder="0-100">
+          <mat-icon matPrefix>percent</mat-icon>
+          <mat-hint>Valeur entre 0 et 100</mat-hint>
+          <mat-error *ngIf="form.get('tauxConformite')?.invalid">
+            {{ getErrorMessage('tauxConformite') }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Délai de Traitement (jours)</mat-label>
+          <input matInput type="number" formControlName="delaiTraitementJours" 
+                 min="0" placeholder="Nombre de jours">
+          <mat-icon matPrefix>schedule</mat-icon>
+          <mat-error *ngIf="form.get('delaiTraitementJours')?.invalid">
+            {{ getErrorMessage('delaiTraitementJours') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <!-- Responsable -->
+      <div class="form-row full-width">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Ajouté Par</mat-label>
+          <mat-select formControlName="ajoutePar">
+            <mat-option *ngFor="let user of utilisateurs" [value]="user.email">
+              <mat-icon class="option-icon">person</mat-icon>
+              {{ user.nom }} ({{ user.role }})
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>person</mat-icon>
+          <mat-error *ngIf="form.get('ajoutePar')?.invalid">
+            {{ getErrorMessage('ajoutePar') }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+    </form>
+
+    <!-- Loading Indicator -->
+    <mat-progress-bar *ngIf="loading" mode="indeterminate" class="loading-bar"></mat-progress-bar>
+  </mat-dialog-content>
+
+  <!-- Actions -->
+  <mat-dialog-actions class="modal-actions">
+    <button mat-stroked-button (click)="onCancel()" [disabled]="loading" class="btn-cancel">
+      <mat-icon>close</mat-icon>
+      <span>Annuler</span>
+    </button>
+    <button mat-raised-button color="primary" 
+            (click)="onSubmit()" 
+            [disabled]="form.invalid || loading"
+            class="btn-submit">
+      <mat-icon>{{ isEditMode ? 'save' : 'add_circle' }}</mat-icon>
+      <span>{{ isEditMode ? 'Enregistrer' : 'Créer' }}</span>
+    </button>
+  </mat-dialog-actions>
+</div>

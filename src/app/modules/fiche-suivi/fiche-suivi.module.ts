@@ -6,6 +6,8 @@ import { FicheSuiviComponent } from './fiche-suivi.component';
 import { ListeComponent } from './pages/liste/liste.component';
 import { FormulaireComponent } from './pages/formulaire/formulaire.component';
 import { DashboardPiloteComponent } from './dashboard-pilote/dashboard-pilote.component';
+import { FicheSuiviModalComponent } from './components/fiche-suivi-modal/fiche-suivi-modal.component';
+import { FicheSuiviDetailsModalComponent } from './components/fiche-suivi-details-modal/fiche-suivi-details-modal.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -22,6 +24,8 @@ import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { SharedModule } from 'src/app/shared/shared.module';
 
 
@@ -30,7 +34,9 @@ import { SharedModule } from 'src/app/shared/shared.module';
     FicheSuiviComponent,
     ListeComponent,
     FormulaireComponent,
-    DashboardPiloteComponent
+    DashboardPiloteComponent,
+    FicheSuiviModalComponent,
+    FicheSuiviDetailsModalComponent
   ],
   imports: [
     CommonModule,
@@ -51,7 +57,9 @@ import { SharedModule } from 'src/app/shared/shared.module';
     FormsModule,
     MatTooltipModule,
     MatChipsModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatDialogModule,
+    MatProgressBarModule
   ]
 })
 export class FicheSuiviModule { }

@@ -1,0 +1,144 @@
+<div class="details-header">
+  <div class="header-content">
+    <div class="icon-wrapper">
+      <mat-icon>visibility</mat-icon>
+    </div>
+    <div class="header-text">
+      <h2>Détails de la tâche</h2>
+      <p>Informations complètes</p>
+    </div>
+  </div>
+  <button mat-icon-button (click)="onClose()" class="close-button">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<mat-dialog-content>
+  <div class="details-container">
+    <!-- Titre et badges -->
+    <div class="section title-section">
+      <h3 class="task-title">{{ data.tache.titre }}</h3>
+      <div class="badges-row">
+        <span class="badge" [ngClass]="getPrioriteClass(data.tache.priorite)">
+          <mat-icon>{{ getPriorityIcon(data.tache.priorite) }}</mat-icon>
+          {{ formatPriorite(data.tache.priorite) }}
+        </span>
+        <span class="badge" [ngClass]="getStatutClass(data.tache.statut)">
+          <mat-icon>{{ getStatusIcon(data.tache.statut) }}</mat-icon>
+          {{ formatStatut(data.tache.statut) }}
+        </span>
+        <span *ngIf="estUrgente(data.tache)" class="badge badge-urgente">
+          <mat-icon>access_time</mat-icon>
+          Urgent
+        </span>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="section" *ngIf="data.tache.description">
+      <div class="section-header">
+        <mat-icon>description</mat-icon>
+        <h4>Description</h4>
+      </div>
+      <div class="section-content">
+        <p class="description-text">{{ data.tache.description }}</p>
+      </div>
+    </div>
+
+    <!-- Informations principales -->
+    <div class="section">
+      <div class="section-header">
+        <mat-icon>info</mat-icon>
+        <h4>Informations</h4>
+      </div>
+      <div class="section-content">
+        <div class="info-grid">
+          <!-- Projet -->
+          <div class="info-item" *ngIf="data.tache.projetNom">
+            <div class="info-label">
+              <mat-icon>folder</mat-icon>
+              <span>Projet</span>
+            </div>
+            <div class="info-value">{{ data.tache.projetNom }}</div>
+          </div>
+
+          <!-- Date d'échéance -->
+          <div class="info-item" *ngIf="data.tache.dateEcheance">
+            <div class="info-label">
+              <mat-icon>event</mat-icon>
+              <span>Date d'échéance</span>
+            </div>
+            <div class="info-value">
+              {{ data.tache.dateEcheance | date: 'dd/MM/yyyy' }}
+              <span class="days-remaining" [class.urgent]="estUrgente(data.tache)" [class.overdue]="getJoursRestants(data.tache) < 0">
+                <ng-container *ngIf="getJoursRestants(data.tache) > 0">
+                  (dans {{ getJoursRestants(data.tache) }} jour<span *ngIf="getJoursRestants(data.tache) > 1">s</span>)
+                </ng-container>
+                <ng-container *ngIf="getJoursRestants(data.tache) === 0">
+                  (Aujourd'hui)
+                </ng-container>
+                <ng-container *ngIf="getJoursRestants(data.tache) < 0">
+                  (En retard de {{ -getJoursRestants(data.tache) }} jour<span *ngIf="getJoursRestants(data.tache) < -1">s</span>)
+                </ng-container>
+              </span>
+            </div>
+          </div>
+
+          <!-- Date de création -->
+          <div class="info-item" *ngIf="data.tache.dateCreation">
+            <div class="info-label">
+              <mat-icon>add_circle</mat-icon>
+              <span>Créée le</span>
+            </div>
+            <div class="info-value">{{ data.tache.dateCreation | date: 'dd/MM/yyyy à HH:mm' }}</div>
+          </div>
+
+          <!-- Date de modification -->
+          <div class="info-item" *ngIf="data.tache.dateModification">
+            <div class="info-label">
+              <mat-icon>edit</mat-icon>
+              <span>Modifiée le</span>
+            </div>
+            <div class="info-value">{{ data.tache.dateModification | date: 'dd/MM/yyyy à HH:mm' }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progression -->
+    <div class="section" *ngIf="data.tache.statut !== StatutTache.TERMINEE">
+      <div class="section-header">
+        <mat-icon>trending_up</mat-icon>
+        <h4>Progression</h4>
+      </div>
+      <div class="section-content">
+        <div class="progress-info">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="data.tache.statut === StatutTache.EN_COURS ? 50 : (data.tache.statut === StatutTache.A_FAIRE ? 0 : 100)"></div>
+          </div>
+          <span class="progress-text">
+            {{ data.tache.statut === StatutTache.EN_COURS ? '50%' : (data.tache.statut === StatutTache.A_FAIRE ? '0%' : '100%') }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message de succès si terminée -->
+    <div class="section success-section" *ngIf="data.tache.statut === StatutTache.TERMINEE">
+      <div class="success-content">
+        <mat-icon>celebration</mat-icon>
+        <div>
+          <h4>Tâche terminée !</h4>
+          <p>Cette tâche a été complétée avec succès.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-raised-button color="primary" (click)="onClose()" class="close-action-button">
+    <mat-icon>check</mat-icon>
+    Fermer
+  </button>
+</mat-dialog-actions>

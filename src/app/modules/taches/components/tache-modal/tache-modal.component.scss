@@ -1,0 +1,228 @@
+::ng-deep .mat-mdc-dialog-container {
+  border-radius: 16px !important;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 24px 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+
+  .modal-title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .icon-wrapper {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(10px);
+
+      &.edit-mode {
+        background: rgba(255, 255, 255, 0.25);
+      }
+
+      mat-icon {
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+        color: white;
+      }
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 600;
+      margin: 0;
+    }
+  }
+
+  .close-button {
+    color: white;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    mat-icon {
+      color: white;
+    }
+  }
+}
+
+mat-dialog-content {
+  padding: 24px;
+  min-width: 550px;
+  max-height: 70vh;
+  overflow-y: auto;
+
+  .tache-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    .full-width {
+      width: 100%;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 16px;
+
+      .half-width {
+        flex: 1;
+      }
+    }
+
+    mat-form-field {
+      ::ng-deep {
+        .mat-mdc-text-field-wrapper {
+          background: #f9fafb;
+        }
+
+        .mat-mdc-form-field-focus-overlay {
+          background: transparent;
+        }
+      }
+    }
+  }
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  gap: 12px;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+
+  button {
+    min-width: 120px;
+    height: 44px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    mat-spinner {
+      display: inline-block;
+    }
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .cancel-button {
+    color: #6b7280;
+    border-color: #d1d5db;
+
+    &:hover {
+      background: #f3f4f6;
+      border-color: #9ca3af;
+    }
+  }
+
+  .submit-button {
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+    transition: all 0.3s ease;
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 6px 12px rgba(37, 99, 235, 0.4);
+      transform: translateY(-2px);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+    }
+  }
+}
+
+// Scrollbar personnalisée
+mat-dialog-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+mat-dialog-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+mat-dialog-content::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+
+  &:hover {
+    background: #94a3b8;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  mat-dialog-content {
+    min-width: unset;
+    width: 100%;
+    padding: 16px;
+
+    .tache-form {
+      gap: 16px;
+
+      .form-row {
+        flex-direction: column;
+
+        .half-width {
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  .modal-header {
+    padding: 20px 16px 12px;
+
+    .modal-title {
+      gap: 12px;
+
+      .icon-wrapper {
+        width: 40px;
+        height: 40px;
+
+        mat-icon {
+          font-size: 24px;
+          width: 24px;
+          height: 24px;
+        }
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+    }
+  }
+
+  mat-dialog-actions {
+    padding: 12px 16px;
+    flex-direction: column-reverse;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  mat-dialog-content {
+    min-width: 280px;
+  }
+}

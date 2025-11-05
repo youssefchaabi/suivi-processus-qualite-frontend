@@ -44,6 +44,7 @@ const routes: Routes = [
 { path: 'historique', canActivate: [AuthGuard], loadChildren: () => import('./modules/historique/historique.module').then(m => m.HistoriqueModule), data: { role: ['ADMIN', 'PILOTE_QUALITE'] } },
 { path: 'formulaires-obligatoires', canActivate: [AuthGuard], loadChildren: () => import('./modules/formulaires-obligatoires/formulaires-obligatoires.module').then(m => m.FormulairesObligatoiresModule), data: { role: ['ADMIN', 'PILOTE_QUALITE'] } },
 { path: 'fiche-projet', canActivate: [AuthGuard], loadChildren: () => import('./modules/fiche-projet/fiche-projet.module').then(m => m.FicheProjetModule), data: { role: ['ADMIN', 'CHEF_PROJET'] } },
+{ path: 'taches', canActivate: [AuthGuard], loadChildren: () => import('./modules/taches/taches.module').then(m => m.TachesModule), data: { role: ['ADMIN', 'CHEF_PROJET'] } },
 { path: 'unauthorized', component: UnauthorizedComponent },
 { path: '**', redirectTo: '' } // Rediriger vers home au lieu de login
 ];

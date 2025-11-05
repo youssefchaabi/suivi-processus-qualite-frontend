@@ -25,11 +25,22 @@
     <!-- Graphique des KPI -->
     <div class="chart-card">
       <div class="chart-header">
-        <h3><i class="material-icons">pie_chart</i> Répartition des KPI</h3>
-        <p>Répartition des indicateurs de performance qualité</p>
+        <h3><i class="material-icons">pie_chart</i> KPI Qualité Réels</h3>
+        <p>Indicateurs de performance basés sur vos données</p>
       </div>
       <div class="chart-container">
         <canvas #kpiChart width="400" height="300"></canvas>
+      </div>
+    </div>
+
+    <!-- Graphique des statuts des projets -->
+    <div class="chart-card">
+      <div class="chart-header">
+        <h3><i class="material-icons">donut_small</i> Statuts des Projets</h3>
+        <p>Répartition réelle des statuts de vos projets</p>
+      </div>
+      <div class="chart-container">
+        <canvas #statutChart width="400" height="300"></canvas>
       </div>
     </div>
   </div>

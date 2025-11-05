@@ -1,29 +1,34 @@
 <div class="ai-dashboard">
-  <!-- Header -->
-  <div class="dashboard-header">
-    <div class="header-content">
-      <div class="title-section">
-        <h1>
-          <mat-icon>psychology</mat-icon>
-          Dashboard IA - Pilote Qualité
-        </h1>
-        <p class="subtitle">Analyses prédictives et recommandations intelligentes pour optimiser la qualité</p>
-      </div>
-      <div class="header-actions">
-        <button mat-raised-button color="primary" (click)="exportDashboardPDF()" class="export-btn">
-          <mat-icon>picture_as_pdf</mat-icon>
-          Export PDF
-        </button>
-        <button mat-raised-button color="accent" (click)="exportDashboardExcel()" class="export-btn">
-          <mat-icon>table_chart</mat-icon>
-          Export Excel
-        </button>
-        <button mat-icon-button color="accent" (click)="actualiserDonnees()" matTooltip="Actualiser maintenant">
-          <mat-icon>refresh</mat-icon>
-        </button>
-        <button mat-icon-button [color]="autoRefresh ? 'primary' : 'default'" (click)="toggleAutoRefresh()" matTooltip="Auto-refresh">
-          <mat-icon>{{ autoRefresh ? 'sync' : 'sync_disabled' }}</mat-icon>
-        </button>
+  <!-- En-tête moderne et professionnel -->
+  <div class="header">
+    <div class="header-top">
+      <button mat-icon-button class="back-button" (click)="retourDashboard()" matTooltip="Retour au tableau de bord">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="header-info">
+        <div class="title-section">
+          <div class="icon-badge">
+            <mat-icon>dashboard</mat-icon>
+          </div>
+          <div class="title-text">
+            <h1>Dashboard Pilote Qualité</h1>
+            <p>Supervision et analyse de la qualité en temps réel</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button mat-stroked-button class="action-button" (click)="actualiserDonnees()" matTooltip="Rafraîchir les données">
+            <mat-icon>refresh</mat-icon>
+            <span class="button-text">Actualiser</span>
+          </button>
+          <button mat-stroked-button class="action-button" (click)="exportDashboardPDF()" matTooltip="Exporter en PDF">
+            <mat-icon>picture_as_pdf</mat-icon>
+            <span class="button-text">Export PDF</span>
+          </button>
+          <button mat-raised-button color="primary" (click)="exportDashboardExcel()" class="primary-button">
+            <mat-icon>assessment</mat-icon>
+            <span>Générer KPI</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -82,97 +87,85 @@
       </mat-card>
     </div>
 
-    <!-- Métriques IA -->
-    <div class="ai-metrics-grid">
-      <mat-card class="ai-metric-card">
-        <mat-card-content>
-          <div class="metric-content">
-            <div class="metric-icon" [style.background-color]="getScoreIAColor()">
-              <mat-icon>smart_toy</mat-icon>
-            </div>
-            <div class="metric-info">
-              <h3 class="metric-value">{{ scoreIA | number:'1.0-0' }}</h3>
-              <p class="metric-title">Score IA</p>
-              <p class="metric-description">Qualité des analyses prédictives</p>
-            </div>
-          </div>
-        </mat-card-content>
-      </mat-card>
+    <!-- Statistiques visuelles (comme module Tâches) -->
+    <div class="stats-container">
+      <div class="stat-card total" (click)="onStatClick('total')">
+        <div class="stat-icon">
+          <mat-icon>folder_open</mat-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats.totalProjets || fichesQualite.length }}</div>
+          <div class="stat-label">Total Projets</div>
+        </div>
+        <div class="stat-trend" *ngIf="getTrendIcon('total')">
+          <mat-icon>{{ getTrendIcon('total') }}</mat-icon>
+        </div>
+      </div>
 
-      <mat-card class="ai-metric-card">
-        <mat-card-content>
-          <div class="metric-content">
-            <div class="metric-icon" [style.background-color]="getNiveauConfianceColor()">
-              <mat-icon>verified</mat-icon>
-            </div>
-            <div class="metric-info">
-              <h3 class="metric-value">{{ niveauConfiance | number:'1.0-0' }}%</h3>
-              <p class="metric-title">Confiance IA</p>
-              <p class="metric-description">Fiabilité des prédictions</p>
-            </div>
-          </div>
-        </mat-card-content>
-      </mat-card>
+      <div class="stat-card en-cours" (click)="onStatClick('en-cours')">
+        <div class="stat-icon">
+          <mat-icon>hourglass_empty</mat-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats.projetsEnCours || getProjetsEnCoursCount() }}</div>
+          <div class="stat-label">En Cours</div>
+        </div>
+        <div class="stat-trend positive" *ngIf="getTrendIcon('en-cours')">
+          <mat-icon>{{ getTrendIcon('en-cours') }}</mat-icon>
+        </div>
+      </div>
 
-      <mat-card class="ai-metric-card">
-        <mat-card-content>
-          <div class="metric-content">
-            <div class="metric-icon" [style.background-color]="getTauxConformiteColor()">
-              <mat-icon>check_circle</mat-icon>
-            </div>
-            <div class="metric-info">
-              <h3 class="metric-value">{{ tauxConformiteGlobal | number:'1.0-0' }}%</h3>
-              <p class="metric-title">Taux de Conformité</p>
-              <p class="metric-description">Conformité globale des fiches</p>
-            </div>
-          </div>
-        </mat-card-content>
-      </mat-card>
+      <div class="stat-card termines" (click)="onStatClick('termines')">
+        <div class="stat-icon">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats.projetsTermines || getProjetsTerminesCount() }}</div>
+          <div class="stat-label">Terminés</div>
+        </div>
+        <div class="stat-trend positive" *ngIf="getTrendIcon('termines')">
+          <mat-icon>{{ getTrendIcon('termines') }}</mat-icon>
+        </div>
+      </div>
 
-      <mat-card class="ai-metric-card">
-        <mat-card-content>
-          <div class="metric-content">
-            <div class="metric-icon" [style.background-color]="getEfficaciteColor()">
-              <mat-icon>speed</mat-icon>
-            </div>
-            <div class="metric-info">
-              <h3 class="metric-value">{{ efficaciteProcessus | number:'1.0-0' }}%</h3>
-              <p class="metric-title">Efficacité Processus</p>
-              <p class="metric-description">Performance des processus</p>
-            </div>
-          </div>
-        </mat-card-content>
-      </mat-card>
+      <div class="stat-card en-retard" (click)="onStatClick('en-retard')">
+        <div class="stat-icon">
+          <mat-icon>warning</mat-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ stats.projetsEnRetard || fichesEnRetard }}</div>
+          <div class="stat-label">En Retard</div>
+        </div>
+        <div class="stat-trend negative" *ngIf="hasProjetsEnRetard()">
+          <mat-icon>trending_up</mat-icon>
+        </div>
+      </div>
 
-      <mat-card class="ai-metric-card">
-        <mat-card-content>
-          <div class="metric-content">
-            <div class="metric-icon" style="background-color: #f44336;">
-              <mat-icon>warning</mat-icon>
-            </div>
-            <div class="metric-info">
-              <h3 class="metric-value">{{ alertesCritiques }}</h3>
-              <p class="metric-title">Alertes Critiques</p>
-              <p class="metric-description">Risques identifiés par l'IA</p>
-            </div>
-          </div>
-        </mat-card-content>
-      </mat-card>
+      <div class="stat-card conformite" (click)="onStatClick('conformite')">
+        <div class="stat-icon">
+          <mat-icon>verified</mat-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ tauxConformiteGlobal | number:'1.0-0' }}%</div>
+          <div class="stat-label">Conformité</div>
+        </div>
+        <div class="stat-trend" [class.positive]="isConformiteHigh()" [class.negative]="isConformiteLow()">
+          <mat-icon>{{ getConformiteTrendIcon() }}</mat-icon>
+        </div>
+      </div>
 
-      <mat-card class="ai-metric-card">
-        <mat-card-content>
-          <div class="metric-content">
-            <div class="metric-icon" style="background-color: #2196f3;">
-              <mat-icon>auto_awesome</mat-icon>
-            </div>
-            <div class="metric-info">
-              <h3 class="metric-value">{{ opportunitesOptimisation }}</h3>
-              <p class="metric-title">Optimisations</p>
-              <p class="metric-description">Opportunités d'amélioration</p>
-            </div>
-          </div>
-        </mat-card-content>
-      </mat-card>
+      <div class="stat-card alertes" (click)="onStatClick('alertes')">
+        <div class="stat-icon">
+          <mat-icon>notifications_active</mat-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ alertesCritiques }}</div>
+          <div class="stat-label">Alertes</div>
+        </div>
+        <div class="stat-badge" *ngIf="hasAlertesCritiques()">
+          <span>{{ alertesCritiques }}</span>
+        </div>
+      </div>
     </div>
 
     <!-- Analyses IA -->
@@ -250,150 +243,29 @@
         </mat-card>
       </div>
 
-      <!-- Tendances et Optimisations -->
-      <div class="analysis-row">
-        <!-- Analyse des tendances -->
-        <mat-card class="analysis-card">
-          <mat-card-header>
-            <mat-card-title>
-              <mat-icon>trending_up</mat-icon>
-              Analyse des Tendances
-            </mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="trends-list" *ngIf="tendances.length > 0; else noTrends">
-              <div *ngFor="let tendance of tendances" class="trend-item">
-                <div class="trend-header">
-                  <mat-icon [style.color]="getTendanceColor(tendance.tendance)">
-                    {{ getTendanceIcon(tendance.tendance) }}
-                  </mat-icon>
-                  <span class="trend-period">{{ tendance.periode }}</span>
-                  <span class="trend-value">{{ tendance.valeur | number:'1.0-1' }}</span>
-                </div>
-                <p class="trend-variation">
-                  Variation: {{ tendance.variation > 0 ? '+' : '' }}{{ tendance.variation | number:'1.1-1' }}%
-                </p>
-                <p class="trend-explanation">{{ tendance.explication }}</p>
-              </div>
-            </div>
-            <ng-template #noTrends>
-              <p class="no-data">Aucune tendance analysée</p>
-            </ng-template>
-          </mat-card-content>
-        </mat-card>
 
-        <!-- Optimisations de processus -->
-        <mat-card class="analysis-card">
-          <mat-card-header>
-            <mat-card-title>
-              <mat-icon>speed</mat-icon>
-              Optimisations de Processus
-            </mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="optimizations-list" *ngIf="optimisations.length > 0; else noOptimizations">
-              <div *ngFor="let opt of optimisations" class="optimization-item">
-                <h4 class="opt-process">{{ opt.processus }}</h4>
-                <div class="efficiency-comparison">
-                  <div class="efficiency-bar">
-                    <div class="current-efficiency" [style.width]="opt.efficaciteActuelle + '%'">
-                      {{ opt.efficaciteActuelle | number:'1.0-0' }}%
-                    </div>
-                    <div class="optimal-efficiency" [style.width]="(opt.efficaciteOptimale - opt.efficaciteActuelle) + '%'">
-                      → {{ opt.efficaciteOptimale | number:'1.0-0' }}%
-                    </div>
-                  </div>
-                </div>
-                <div class="gains-potentiels">
-                  <h5>Gains potentiels:</h5>
-                  <ul>
-                    <li *ngFor="let gain of opt.gainsPotentiels">{{ gain }}</li>
-                  </ul>
-                </div>
-                <div class="actions-optimization">
-                  <h5>Actions d'optimisation:</h5>
-                  <ul>
-                    <li *ngFor="let action of opt.actionsOptimisation">{{ action }}</li>
-                  </ul>
-                </div>
-                <p class="implementation-delay">
-                  <strong>Délai d'implémentation:</strong> {{ opt.delaiImplementation }}
-                </p>
-              </div>
-            </div>
-            <ng-template #noOptimizations>
-              <p class="no-data">Aucune optimisation disponible</p>
-            </ng-template>
-          </mat-card-content>
-        </mat-card>
-      </div>
     </div>
 
-    <!-- Données récentes -->
-    <div class="recent-data-section">
-      <div class="data-row">
-        <!-- Fiches récentes -->
-        <mat-card class="data-card">
-          <mat-card-header>
-            <mat-card-title>
-              <mat-icon>schedule</mat-icon>
-              Fiches Qualité Récentes
-            </mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <table mat-table [dataSource]="getFichesRecentes()" class="data-table">
-              <ng-container matColumnDef="titre">
-                <th mat-header-cell *matHeaderCellDef>Titre</th>
-                <td mat-cell *matCellDef="let fiche">{{ fiche.titre }}</td>
-              </ng-container>
-              <ng-container matColumnDef="type">
-                <th mat-header-cell *matHeaderCellDef>Type</th>
-                <td mat-cell *matCellDef="let fiche">{{ fiche.typeFiche || 'Non défini' }}</td>
-              </ng-container>
-              <ng-container matColumnDef="statut">
-                <th mat-header-cell *matHeaderCellDef>Statut</th>
-                <td mat-cell *matCellDef="let fiche">
-                  <mat-chip [color]="fiche.statut === 'TERMINE' ? 'accent' : 'primary'" selected>
-                    {{ fiche.statut }}
-                  </mat-chip>
-                </td>
-              </ng-container>
-              <tr mat-header-row *matHeaderRowDef="['titre', 'type', 'statut']"></tr>
-              <tr mat-row *matRowDef="let row; columns: ['titre', 'type', 'statut'];"></tr>
-            </table>
-          </mat-card-content>
-        </mat-card>
 
-        <!-- Fiches problématiques -->
-        <mat-card class="data-card">
-          <mat-card-header>
-            <mat-card-title>
-              <mat-icon>warning</mat-icon>
-              Fiches Problématiques
-            </mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <table mat-table [dataSource]="getFichesProblematiques()" class="data-table">
-              <ng-container matColumnDef="titre">
-                <th mat-header-cell *matHeaderCellDef>Titre</th>
-                <td mat-cell *matCellDef="let fiche">{{ fiche.titre }}</td>
-              </ng-container>
-              <ng-container matColumnDef="responsable">
-                <th mat-header-cell *matHeaderCellDef>Responsable</th>
-                <td mat-cell *matCellDef="let fiche">{{ fiche.responsable }}</td>
-              </ng-container>
-              <ng-container matColumnDef="priorite">
-                <th mat-header-cell *matHeaderCellDef>Priorité</th>
-                <td mat-cell *matCellDef="let fiche">
-                  <mat-chip color="warn" selected>Élevée</mat-chip>
-                </td>
-              </ng-container>
-              <tr mat-header-row *matHeaderRowDef="['titre', 'responsable', 'priorite']"></tr>
-              <tr mat-row *matRowDef="let row; columns: ['titre', 'responsable', 'priorite'];"></tr>
-            </table>
-          </mat-card-content>
-        </mat-card>
-      </div>
+
+    <!-- Graphiques Exploitables pour Rapports -->
+    <div class="exploitable-section">
+      <mat-card class="exploitable-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>analytics</mat-icon>
+            Analyses Exploitables pour Rapports
+          </mat-card-title>
+          <mat-card-subtitle>Graphiques et statistiques liés au cahier des charges</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <app-exploitable-charts 
+            [fichesQualite]="fichesQualite"
+            [fichesSuivi]="fichesSuivi"
+            [tauxConformiteGlobal]="tauxConformiteGlobal">
+          </app-exploitable-charts>
+        </mat-card-content>
+      </mat-card>
     </div>
 
     <!-- Graphiques IA Avancés -->
@@ -401,13 +273,20 @@
       <mat-card class="charts-card">
         <mat-card-header>
           <mat-card-title>
-            <mat-icon>analytics</mat-icon>
-            Graphiques IA Avancés
+            <mat-icon>timeline</mat-icon>
+            Graphiques IA Interactifs
           </mat-card-title>
-          <mat-card-subtitle>Visualisations interactives des données IA</mat-card-subtitle>
+          <mat-card-subtitle>Visualisations avancées avec données réelles</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
-          <app-ai-charts></app-ai-charts>
+          <app-ai-charts 
+            [fichesQualite]="fichesQualite"
+            [fichesSuivi]="fichesSuivi"
+            [fichesProjet]="fichesProjet"
+            [tauxConformiteGlobal]="tauxConformiteGlobal"
+            [scoreIA]="scoreIA"
+            [niveauConfiance]="niveauConfiance">
+          </app-ai-charts>
         </mat-card-content>
       </mat-card>
     </div>
@@ -422,7 +301,7 @@
       </mat-card-header>
       <mat-card-content>
         <div class="ai-summary">
-          <div class="summary-item" *ngIf="alertesCritiques > 0">
+          <div class="summary-item" *ngIf="hasAlertesCritiques()">
             <mat-icon color="warn">priority_high</mat-icon>
             <span>{{ alertesCritiques }} alerte(s) critique(s) nécessitent une attention immédiate.</span>
           </div>
@@ -434,11 +313,11 @@
             <mat-icon color="accent">speed</mat-icon>
             <span>{{ optimisations.length }} opportunité(s) d'optimisation identifiée(s) par l'IA.</span>
           </div>
-          <div class="summary-item" *ngIf="scoreIA >= 80">
+          <div class="summary-item" *ngIf="isScoreIAHigh()">
             <mat-icon color="primary">check_circle</mat-icon>
             <span>Excellent ! Le score IA est élevé, les analyses sont fiables.</span>
           </div>
-          <div class="summary-item" *ngIf="scoreIA < 60">
+          <div class="summary-item" *ngIf="isScoreIALow()">
             <mat-icon color="warn">info</mat-icon>
             <span>Le score IA est faible, plus de données sont nécessaires pour des analyses précises.</span>
           </div>

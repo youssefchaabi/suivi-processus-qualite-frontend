@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AiDashboardComponent } from './ai-dashboard.component';
 import { AiChartsComponent } from './ai-charts.component';
+import { ExploitableChartsComponent } from './exploitable-charts.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
@@ -18,7 +19,8 @@ import { AuthGuard } from '../../guards/auth.guard';
 @NgModule({
   declarations: [
     AiDashboardComponent,
-    AiChartsComponent
+    AiChartsComponent,
+    ExploitableChartsComponent
   ],
   imports: [
     CommonModule,
